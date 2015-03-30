@@ -1,0 +1,9 @@
+{
+	"database": {
+		"type": "postgres",
+		"host": "192.168.2.29",
+		"db": "reldb_1",
+		"username": "reldb_1",
+		"password": "reldb_1"
+	}
+}

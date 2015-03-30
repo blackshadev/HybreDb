@@ -1,0 +1,7 @@
+{
+	
+	"fields": {
+		"name": { "type": "varchar", "length": 128 },
+		"age":  { "type": "int" }
+	}
+}

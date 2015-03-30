@@ -1,0 +1,51 @@
+<form class="form-horizontal" id="callForm">
+	<div class="form-group">
+		<div class="col-sm-2">
+			<select class="form-control" id="method"><option>GET</option><option>POST</option><option>PUT</option><option>DELETE</option></select>
+		</div>
+		<div class="col-sm-10">
+			<input type="text" class="form-control" id="url" placeholder="url" />
+		</div>
+	</div>
+	<div class="form-group">
+	 	<div class="col-sm">
+			<textarea class="form-control" id="data" rows="12" ></textarea>
+		</div>
+	</div>
+	<div class="form-group">
+		<div class="col-sm-offset-2 col-sm-10">
+	      <button type="submit" class="btn btn-default">Send</button>
+	    </div>
+	</div>
+
+	<div class="form-group">
+		<div class="col-sm-2" id="resultCode" ></div>
+		<div class="col-sm-offset-2 col-sm-10" id="resultText">
+	      
+	    </div>
+	</div>
+</form>
+<script type="text/javascript">
+$("#callForm").on("submit", function(e) {
+	e.preventDefault();
+
+	var m = $("#method").val();
+	var d = (m !== "GET") ? $("#data").val() : null;
+	var o = {
+		method: m,
+		url: "http://" + window.location.hostname + ":" + window.location.port +  "/" + $("#url").val(),
+		data: d,
+		success: function(d) {
+			$("#resultCode").text("Success");
+			$("#resultText").text(d);
+
+		},
+		error: function(x, t, err) {
+			$("#resultCode").text(err);
+			$("#resultText").text(x.responseText);
+		}
+	};
+
+	$.ajax(o);
+});
+</script>
