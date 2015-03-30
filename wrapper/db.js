@@ -10,9 +10,10 @@ var init_sql = [
 			"  table_name	varchar(128)	primary key		not null" +
 			", pk_fields	varchar(256)					not null" +
 		")",
-		"create table if not exists reldb.relations (" + 
+		"drop table reldb.relations; create table if not exists reldb.relations (" + 
 			"  master_table	varchar(128)	not null" + 
 			", master_field varchar(128)	not null" +
+			", join_table   varchar(128)    not null" +
 			", child_name 	varchar(128)	not null" +
 			", child_field	varchar(128)	not null" +
 		")"
