@@ -10,12 +10,15 @@ var init_sql = [
 			"  table_name	varchar(128)	primary key		not null" +
 			", pk_fields	varchar(256)					not null" +
 		")",
-		"drop table reldb.relations; create table if not exists reldb.relations (" + 
-			"  master_table	varchar(128)	not null" + 
-			", master_field varchar(128)	not null" +
-			", join_table   varchar(128)    not null" +
-			", child_name 	varchar(128)	not null" +
-			", child_field	varchar(128)	not null" +
+		"create table if not exists reldb.relations (" + 
+			"  relation_name		varchar(128)	not null primary key " +
+			", master_table			varchar(128)	not null" + 
+			", master_field 		varchar(128)	not null" +
+			", join_table			varchar(128)    not null" +
+			", join_master_field	varchar(128)    not null" +
+			", join_child_field		varchar(128)    not null" +
+			", child_name			varchar(128)	not null" +
+			", child_field			varchar(128)	not null" +
 		")"
 	];
 
@@ -31,7 +34,6 @@ module.exports = (function() {
 			initialize(cb, iX + 1);
 		})
 	}
-
 
 	var db = Adapter.Types[cnf.database.type];
 
@@ -83,6 +85,22 @@ module.exports = (function() {
 				"drop table " + t
 			];
 			d.exec(sql.join(";"), {tab:t}, cb); 
+		},
+
+		// relations
+		getRelations: function(cb) {
+			d.exec("select * from reldb.relations", null, cb);
+		},
+		getRelation: function(r, cb) {
+
+		},
+		createRelation: function(r, d, cb) {
+
+		},
+		deleteRelation: function(r, cb) {
+
 		}
+
+
 	};
 })();

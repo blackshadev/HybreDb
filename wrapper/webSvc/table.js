@@ -1,11 +1,14 @@
-var WebService = require("roadie").WebService;
 
-module.exports = WebService.extend({
+module.exports = require("./jsonSvc.js").extend({
+	getTable: function() {
+		var t = this.ctx.request.parameter("table");
 
-	error: function(err) {
-		this.ctx.response.status(500);
-		this.ctx.response.data(err);
-		this.ctx.response.send();
+		var self = this;
+		this.ctx._server.db.getTable(t, function(err, f, tab) {
+			if(err) return self.error({ error: err.toString() });
+			self.send(tab);
+		});
+
 	},
 	createTable: function() {
 		var self = this;
@@ -16,8 +19,7 @@ module.exports = WebService.extend({
 				if(err) 
 					return self.error({ error: err.toString() });
 				
-				self.ctx.response.data(["done"]);
-				self.ctx.response.send();
+				self.ctx.response.send(["done"]);
 			}
 
 
@@ -35,8 +37,7 @@ module.exports = WebService.extend({
 		var self = this;
 		this.ctx._server.db.deleteTable(this.ctx.request.parameter("table"), function(err, d) {
 			if(err) return self.error({ "error": err.toString() });
-			self.ctx.response.data(["done"]);
-			self.ctx.response.send();
+			self.ctx.response.send(["done"]);
 		});
 	}
 })

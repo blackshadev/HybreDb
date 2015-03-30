@@ -5,6 +5,13 @@ var re = new RegExp(/\{\{(\d)\}\}/);
 var template = fs.readFileSync(__dirname + "/template.html", {encoding: 'utf-8'});
 var callTemp = fs.readFileSync(__dirname + "/call.html", { encoding: 'utf-8' });
 
+var formatRe = /\{(\d+)\}/g
+String.prototype.format = function(arr) {
+	this.replace(formatRe, function(m, iX) {
+		return arr[iX];
+	});
+}
+
 module.exports = WebService.extend({
 	create: function() {
 		this.inherited().create.apply(this, arguments);
@@ -13,11 +20,21 @@ module.exports = WebService.extend({
 		this.ctx.response.header("Cache-Control", "no-cache");
 
 	},
+	send: function() {
+		var t = template.replace(re, this.body);
+
+		this.ctx.response.data(t);
+		this.ctx.response.send();
+	},
+
+	index: function() {
+		this.send();
+	},
 	call: function() {
 		this.body = callTemp;
 		this.send();
 	},
-	index: function() {
+	tables: function() {
 		var self = this;
 		self.body = "";
 		this.ctx._server.db.getTables(function(err, f, tabs) {
@@ -54,8 +71,8 @@ module.exports = WebService.extend({
 
 			for(var i = 0; i < rows.length; i++) {
 				self.body += "<tr>";
-				self.body += f_arr.map(function(e) { return "<td>" + rows[e] + "</td>"; }).join("");
-				self.body += "</tr>";				
+				self.body += f_arr.map(function(e) { return "<td>" + rows[i][e] + "</td>"; }).join("");
+				self.body += "</tr>";	
 			}
 
 
@@ -65,10 +82,26 @@ module.exports = WebService.extend({
 		});
 
 	},
-	send: function() {
-		var t = template.replace(re, this.body);
+	relations: function() {
+		var self = this;
+		this.ctx._server.db.getRelations(function(err, f, rels) {
+			if(err) return self.ctx.error(err);
+			
+			self.body += "<table class='table table-hover'>";
+			self.body += "<thead><tr><td>Relation name</td><td>Master table</td><td>Child Table</td></tr></thead><tbody>";
 
-		this.ctx.response.data(t);
-		this.ctx.response.send();
+			for(var i = 0; i < rels.length; i++) {
+				self.body += "<tr>";
+
+				self.body += "<td>{0}</td><td>{1}</td><td>{2}</td>".format([rels[i].relation_name, rels[i].master_name, rels[i].child_name])
+
+				self.body += "</ tr>";				
+			}
+
+			self.body += "</tbody></table>";
+
+			self.send();
+		});
 	}
+
 });
