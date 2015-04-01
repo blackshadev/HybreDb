@@ -85,7 +85,7 @@ namespace HybreDb.BPlusTree {
 
         /// <returns>The index of the key which is the given key or at first bigger than the key</returns>
         public int Index(int k) {
-            int idx = Array.BinarySearch(_keys, k);
+            int idx = Array.BinarySearch(_keys, 0, Count, k);
             return idx > -1 ? idx : ~idx < Count ? ~idx : Count - 1;
         }
 
@@ -94,11 +94,14 @@ namespace HybreDb.BPlusTree {
             Array.Copy(_keys, start, d._keys, 0, Count - start);
             Array.Copy(_values, start, d._values, 0, Count - start);
 
+
+            for (var i = 0; i < Count - start; i++) {
+                _keys[start + i] = default(K);
+                _values[start + i] = default(V);
+            }
+
             d.Count = Count - start;
             Count -= d.Count;
-
-            Array.Copy(d._keys, start, _keys, start, Count);
-            Array.Copy(d._values, start, _values, start, Count);
 
             return d;
         }
