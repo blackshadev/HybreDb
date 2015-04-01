@@ -61,7 +61,7 @@ namespace HybreDb.BPlusTree {
         /// <param name="key"></param>
         /// <returns></returns>
         public INode<T> Select(int key) {
-            return Buckets.ValueAt(Buckets.Index(key));
+            return Buckets.ValueAt(Buckets.NearestIndex(key));
         }
 
         public T Get(int key) {
@@ -76,7 +76,7 @@ namespace HybreDb.BPlusTree {
         }
 
         public INode<T> Insert(int key, T data) {
-            var idx = Buckets.Index(key);
+            var idx = Buckets.NearestIndex(key);
             var n = Buckets.ValueAt(idx);
             var _n = n.Insert(key, data);
 

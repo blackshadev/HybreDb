@@ -35,11 +35,17 @@ namespace HybreDb.BPlusTree {
             _values = new V[size];
         }
 
+
+        public void Set(int idx, K key, V value) {
+            _keys[idx] = key;
+            _values[idx] = value;
+        }
+
         public void Add(K key, V value) {
             if (Count == Capacity)
                 throw new ArgumentException("Dictionary is full");
 
-            int idx = Array.BinarySearch(_keys, 0, Count, key);
+            int idx = Index(key);
             if (idx > -1) throw new ArgumentException("Key with the same key already exists");
             idx = ~idx;
 
@@ -57,15 +63,28 @@ namespace HybreDb.BPlusTree {
             Count++;
         }
 
-        public V TryGetValue(int key) {
+        public void Remove(K key) {
+            int idx = Index(key);
+            if(idx < 0) throw new ArgumentException("Key does not exist");
+
+            Array.Copy(_keys, idx + 1, _keys, idx, Count - idx);
+            Array.Copy(_values, idx + 1, _values, idx, Count - idx);
+            
+            Count--;
+
+            _keys[Count] = default(K);
+            _values[Count] = default(V);
+        }
+
+        public V TryGetValue(K key) {
             V val = default(V);
-            int idx = Array.BinarySearch(_keys, key);
+            int idx = Index(key);
             if (idx < 0) return val;
             return _values[idx];
         }
 
         public V Get(K key) {
-            int idx = Array.BinarySearch(_keys, key);
+            int idx = Index(key);
             if (idx < 0) throw new KeyNotFoundException();
             return _values[idx];
         }
@@ -78,14 +97,13 @@ namespace HybreDb.BPlusTree {
             return _keys[k];
         }
 
-        public void Set(int idx, K key, V value) {
-            _keys[idx] = key;
-            _values[idx] = value;
+        public int Index(K k) {
+            return Array.BinarySearch(_keys, 0, Count, k);
         }
 
         /// <returns>The index of the key which is the given key or at first bigger than the key</returns>
-        public int Index(int k) {
-            int idx = Array.BinarySearch(_keys, 0, Count, k);
+        public int NearestIndex(K k) {
+            int idx = Index(k);
             return idx > -1 ? idx : ~idx < Count ? ~idx : Count - 1;
         }
 

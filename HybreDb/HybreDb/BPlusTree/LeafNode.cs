@@ -40,6 +40,10 @@ namespace HybreDb.BPlusTree {
             return this;
         }
 
+        public void Delete(int k) {
+            Data.Remove(k);
+        }
+
         public INode<T> Insert(int key, T data) {
             Data.Add(key, data);
             if (Data.Count == Size)
