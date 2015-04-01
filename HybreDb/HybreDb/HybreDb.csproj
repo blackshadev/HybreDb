@@ -43,6 +43,7 @@
   <ItemGroup>
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\LeafNode.cs" />
+    <Compile Include="BPlusTree\Node.cs" />
     <Compile Include="BPlusTree\SortedBuckets.cs" />
     <Compile Include="BPlusTree\Tree.cs" />
     <Compile Include="Program.cs" />

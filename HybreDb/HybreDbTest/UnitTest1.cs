@@ -47,8 +47,6 @@ namespace HybreDbTest {
         }
 
         public void CheckAccess() {
-
-
             var sw = new Stopwatch();
             sw.Start();
             foreach (var n in Tree) {

@@ -15,50 +15,19 @@ namespace HybreDb {
             var rnd = new Random();
 
             var nums = new List<int>();
-            //nums.Add(10);
-            //nums.Add(0);
-            //nums.Add(15);
-            //nums.Add(6);
-            //nums.Add(9);
-            //nums.Add(8);
-            //nums.Add(17);
-            //nums.Add(16);
-            //nums.Add(116);
-            //nums.Add(60);
-            //nums.Add(61);
-            //nums.Add(98);
-            //nums.Add(-8);
-            //nums.Add(56);
-            //nums.Add(102);
-            //nums.Add(-65);
-            //nums.Add(21);
-            //nums.Add(22);
-            //nums.Add(20);
-            //nums.Add(14);
 
+            for (int i = 0; i < 10; i++)
+                t.Insert(i, i);
 
+            Console.WriteLine("Before delete");
+            foreach(var v in t)
+                Console.WriteLine(v);
 
-            //for (var i = 0; i < nums.Count; i++)
-            //    t.Insert(nums[i], nums[i]);
+            t.Remove(5);
 
-            while (nums.Count < n) {
-                int k = rnd.Next();
-                if (nums.Contains(k)) continue;
-                t.Insert(k, k);
-                nums.Add(k);
-            }
-
-            int total = 0;
-            int prev = int.MinValue;
-            foreach (var v in t) {
-                if(v < prev)
-                    throw new Exception("NOOP");
-                Console.WriteLine(v.ToString());
-                prev = v;
-                total++;
-            }
-            if (nums.Count != total)
-                throw new Exception("Something went wong");
+            Console.WriteLine("\nAfter delete");
+            foreach (var v in t)
+                Console.WriteLine(v);
 
             Console.ReadKey();
         }

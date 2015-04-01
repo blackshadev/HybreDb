@@ -47,6 +47,11 @@ namespace HybreDb.BPlusTree {
             //set { Root.Insert(k.GetHashCode(), value); }
         }
 
+        public void Remove(object k) {
+            int key = k.GetHashCode();
+            Root.Delete(key);
+        }
+
         protected LeafNode<T> GetFirstLeaf() {
             var n = Root;
 

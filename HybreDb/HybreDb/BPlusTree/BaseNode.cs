@@ -67,10 +67,7 @@ namespace HybreDb.BPlusTree {
 
 
         public INode<T> Split() {
-            var node = new BaseNode<T>(Size);
-            node.Buckets = Buckets.Slice(Size / 2);
-
-            return node;
+            return new BaseNode<T>(Size) { Buckets = Buckets.Slice(Size/2) };
         }
 
         public INode<T> Merge() {
