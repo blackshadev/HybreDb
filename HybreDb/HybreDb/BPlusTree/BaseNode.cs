@@ -55,6 +55,8 @@ namespace HybreDb.BPlusTree {
 
             Buckets.Set(idx, n.HighestKey, n);
 
+            // TODO upon changing the highest value, parent need to change
+
             if (_n != null)
                 return InsertNode(_n);
             return null;
