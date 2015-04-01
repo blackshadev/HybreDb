@@ -8,34 +8,6 @@ using System.Threading.Tasks;
 
 namespace HybreDb.BPlusTree {
 
-    public interface INode<T> {
-
-        int HighestKey { get; }
-        int LowestKey { get; }
-
-        /// <summary>
-        /// Selects a node in within the current node based on the given key
-        /// </summary>
-        /// <param name="key">Key to find the node of</param>
-        /// <returns>Returns the node</returns>
-        INode<T> Select(int k);
-
-        /// <summary>
-        /// Gets a data item from the tree
-        /// </summary>
-        /// <param name="k">Key to lookup</param>
-        /// <returns>Data item bound to given key</returns>
-        T Get(int k);
-
-        /// <summary>
-        /// Inserts given data with given key in the tree
-        /// </summary>
-        /// <param name="key">Key to insert with</param>
-        /// <param name="data">Data to associate with given key</param>
-        /// <returns>A newly created node when the bucket is full</returns>
-        INode<T> Insert(int key, T data);
-    }
-
     public class BaseNode<T> : INode<T> {
 
         public SortedBuckets<int, INode<T>> Buckets;
@@ -64,16 +36,17 @@ namespace HybreDb.BPlusTree {
             return Buckets.ValueAt(Buckets.NearestIndex(key));
         }
 
-        public T Get(int key) {
-            return Select(key).Get(key);
-        }
-
         public INode<T> InsertNode(INode<T> node) {
             Buckets.Add(node.HighestKey, node);
             if (Buckets.Count == Buckets.Capacity)
                 return Split();
             return null;
         }
+
+        public T Get(int key) {
+            return Select(key).Get(key);
+        }
+
 
         public INode<T> Insert(int key, T data) {
             var idx = Buckets.NearestIndex(key);
@@ -87,6 +60,12 @@ namespace HybreDb.BPlusTree {
             return null;
         }
 
+        public INode<T> Delete(int key) {
+            return Select(key).Delete(key);
+            // TODO need merge here?
+        }
+
+
         public INode<T> Split() {
             var node = new BaseNode<T>(Size);
             node.Buckets = Buckets.Slice(Size / 2);
@@ -94,6 +73,9 @@ namespace HybreDb.BPlusTree {
             return node;
         }
 
+        public INode<T> Merge() {
+            throw new NotImplementedException();
+        }
     }
 
 

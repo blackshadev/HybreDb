@@ -40,8 +40,12 @@ namespace HybreDb.BPlusTree {
             return this;
         }
 
-        public void Delete(int k) {
+        public INode<T> Delete(int k) {
             Data.Remove(k);
+
+            if (Data.Count < Data.Capacity/3)
+                return Merge();
+            return null;
         }
 
         public INode<T> Insert(int key, T data) {
@@ -51,6 +55,15 @@ namespace HybreDb.BPlusTree {
             return null;
         }
 
+
+        public T Get(int key) {
+            return Data.TryGetValue(key);
+        }
+
+        public INode<T> Merge() {
+            throw new NotImplementedException();    
+        } 
+
         public INode<T> Split() {
             var node = new LeafNode<T>(Size);
             node.Data = Data.Slice(Size / 2);
@@ -59,10 +72,6 @@ namespace HybreDb.BPlusTree {
             Next = node;
 
             return node;
-        }
-
-        public T Get(int key) {
-            return Data.TryGetValue(key);
         }
 
     }
