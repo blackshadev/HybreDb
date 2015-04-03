@@ -12,10 +12,26 @@ namespace HybreDb.BPlusTree {
         /// Contains the actual stored data
         /// </summary>
         public SortedBuckets<int, T> Data;
+
         /// <summary>
-        /// Max size, equal to Data.Capacity
+        /// Current items, equals to Data.Count
         /// </summary>
-        public int Size;
+        public int Count {
+            get { return Data.Count; }
+        }
+
+        public INode<T> First {
+            get { return this; }
+        } 
+
+        /// <summary>
+        /// Max size
+        /// </summary>
+        public int Capacity {
+            get { return Data.Capacity; }
+        }
+
+
         /// <summary>
         /// Highest key in Data
         /// </summary>
@@ -29,10 +45,11 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Pointer to the next leaf node
         /// </summary>
-        public LeafNode<T> Next; 
+        public LeafNode<T> Next;
+
+        public LeafNode<T> Prev; 
 
         public LeafNode(int size) {
-            Size = size;
             Data = new SortedBuckets<int, T>(size);
         } 
 
@@ -40,17 +57,15 @@ namespace HybreDb.BPlusTree {
             return this;
         }
 
-        public INode<T> Delete(int k) {
+        public RemoveResult<T> Remove(int k) {
             Data.Remove(k);
 
-            if (Data.Count < Data.Capacity/3)
-                return Merge();
-            return null;
+            return new RemoveResult<T> { Type = MergeType.None };
         }
 
         public INode<T> Insert(int key, T data) {
             Data.Add(key, data);
-            if (Data.Count == Size)
+            if (Data.Count == Capacity)
                 return Split();
             return null;
         }
@@ -60,18 +75,55 @@ namespace HybreDb.BPlusTree {
             return Data.TryGetValue(key);
         }
 
-        public INode<T> Merge() {
-            throw new NotImplementedException();    
-        } 
-
         public INode<T> Split() {
-            var node = new LeafNode<T>(Size);
-            node.Data = Data.Slice(Size / 2);
+            var node = new LeafNode<T>(Capacity) {
+                Data = Data.SliceEnd(Capacity / 2), 
+                Next = Next,
+                Prev = this
+            };
 
-            node.Next = Next;
             Next = node;
 
             return node;
+        }
+
+
+        public bool Borrow(INode<T> left, INode<T> right) {
+            var l = left as LeafNode<T>;
+            var r = right as LeafNode<T>;
+
+            SortedBuckets<int, T> s;
+            if (l != null && l.Count - 1 - l.Capacity / 4 > Capacity / 4) {
+                s = l.Data.SliceEnd(l.Count - Capacity / 4);
+                Data.AddBegin(s);
+
+                return true;
+            }
+            if (r == null || r.Count - 1 - r.Capacity / 4 <= Capacity/4) return false;
+
+            s = r.Data.SliceBegin(Capacity / 4);
+            Data.AddEnd(s);
+
+            return true;
+        }
+
+        public bool Merge(INode<T> n) {
+            if (!(n is LeafNode<T>)) return false;
+            var _n = (LeafNode<T>)n;
+
+            _n.Data.AddBegin(Data);
+            
+            Dispose();
+            
+            return true;
+        } 
+
+        public void Dispose() {
+            if (Next != null) Next.Prev = Prev;
+            if (Prev != null) Prev.Next = Next;
+
+            Data.Dispose();
+            Next = null;
         }
 
     }

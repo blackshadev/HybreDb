@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -9,21 +10,23 @@ namespace HybreDb {
     public class Program {
         static void Main(string[] args) {
 
-            int n = 1000;
-
+            
+            
             var t = new Tree<int>(5);
-            var rnd = new Random();
 
-            var nums = new List<int>();
+            var nums = new int[] {9, 5, 1, 13, 54, 4, 23, 8, 45, 3, 12, 44};
+            
 
-            for (int i = 0; i < 10; i++)
+            foreach(var i in nums)
                 t.Insert(i, i);
 
             Console.WriteLine("Before delete");
             foreach(var v in t)
                 Console.WriteLine(v);
 
-            t.Remove(5);
+            foreach (var i in nums)
+                t.Remove(i);
+
 
             Console.WriteLine("\nAfter delete");
             foreach (var v in t)

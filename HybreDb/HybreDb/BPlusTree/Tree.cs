@@ -27,9 +27,9 @@ namespace HybreDb.BPlusTree {
         /// <returns>Newly created root node</returns>
         public INode<T> NewRootNode(INode<T> l, INode<T> r) {
             var n = new BaseNode<T>(BucketSize);
-            n.InsertNode(l);
             n.InsertNode(r);
-
+            n.InsertNode(l);
+            
             return n;
         }
 
@@ -49,14 +49,19 @@ namespace HybreDb.BPlusTree {
 
         public void Remove(object k) {
             int key = k.GetHashCode();
-            Root.Delete(key);
+            var n = Root.Remove(key);
+
+            if ((n.Type == MergeType.Merged || n.Type == MergeType.Removed) && Root.Count == 1)
+                Root = Root.First;
+            
+
         }
 
         protected LeafNode<T> GetFirstLeaf() {
             var n = Root;
 
             while (!(n is LeafNode<T>))
-                n = n.Select(n.LowestKey);
+                n = n.First;
             
             return (LeafNode<T>)n;
         }

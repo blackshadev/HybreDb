@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace HybreDb.BPlusTree {
 
-    public class SortedBuckets<K, V> : IEnumerable<KeyValuePair<K,V>> {
+    public class SortedBuckets<K, V> : IEnumerable<KeyValuePair<K,V>>, IDisposable {
 
         private K[] _keys;
         private V[] _values;
@@ -67,9 +67,13 @@ namespace HybreDb.BPlusTree {
             int idx = Index(key);
             if(idx < 0) throw new ArgumentException("Key does not exist");
 
+            RemoveIndex(idx);
+        }
+
+        public void RemoveIndex(int idx) {
             Array.Copy(_keys, idx + 1, _keys, idx, Count - idx);
             Array.Copy(_values, idx + 1, _values, idx, Count - idx);
-            
+
             Count--;
 
             _keys[Count] = default(K);
@@ -107,7 +111,38 @@ namespace HybreDb.BPlusTree {
             return idx > -1 ? idx : ~idx < Count ? ~idx : Count - 1;
         }
 
-        public SortedBuckets<K, V> Slice(int start) {
+        /// <summary>
+        /// Takes items from the beginning of the sorted buckets to the end
+        /// </summary>
+        /// <param name="end"></param>
+        /// <returns></returns>
+        public SortedBuckets<K, V> SliceBegin(int end) {
+            var d = new SortedBuckets<K, V>(Capacity);
+
+            Array.Copy(_keys, 0, d._keys, 0, end);
+            Array.Copy(_values, 0, d._values, 0, end);
+
+            Array.Copy(_keys, end, _keys, 0, Count - end);
+            Array.Copy(_values, end, _values, 0, Count - end);
+
+            for (var i = 0; i < end; i++) {
+                _keys[Count - end + i] = default(K);
+                _values[Count - end + i] = default(V);
+            }
+
+
+            d.Count = end;
+            Count -= d.Count;
+
+            return d;
+        }
+
+        /// <summary>
+        ///  Takes items from the end of the sorted buckets beginning by start
+        /// </summary>
+        /// <param name="start"></param>
+        /// <returns></returns>
+        public SortedBuckets<K, V> SliceEnd(int start) {
             var d = new SortedBuckets<K, V>(Capacity);
             Array.Copy(_keys, start, d._keys, 0, Count - start);
             Array.Copy(_values, start, d._values, 0, Count - start);
@@ -124,6 +159,30 @@ namespace HybreDb.BPlusTree {
             return d;
         }
 
+        public void AddEnd(SortedBuckets<K, V> s) {
+            if (Count + s.Count > Capacity)
+                throw new ArgumentException("Resulting bucket is to big");
+
+            Array.Copy(s._keys, 0, _keys, Count, s.Count);
+            Array.Copy(s._values, 0, _values, Count, s.Count);
+
+            Count += s.Count;
+        }
+
+        public void AddBegin(SortedBuckets<K, V> s) {
+            if (Count + s.Count > Capacity)
+                throw new ArgumentException("Resulting bucket is to big");
+
+            // Make place
+            Array.Copy(_keys, 0, _keys, s.Count, Count);
+            Array.Copy(_values, 0, _values, s.Count, Count);
+
+            Array.Copy(s._keys, 0, _keys, 0, s.Count);
+            Array.Copy(s._values, 0, _values, 0, s.Count);
+
+            Count += s.Count;
+
+        }
 
         public IEnumerator<KeyValuePair<K, V>> GetEnumerator() {
             for (var i = 0; i < Count; i++)
@@ -132,6 +191,13 @@ namespace HybreDb.BPlusTree {
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        public void Dispose() {
+            _keys = null;
+            _values = null;
+            Count = 0;
+            Capacity = 0;
         }
     }
 }

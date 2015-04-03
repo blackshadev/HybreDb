@@ -11,19 +11,27 @@ namespace HybreDb.BPlusTree {
     public class BaseNode<T> : INode<T> {
 
         public SortedBuckets<int, INode<T>> Buckets;
-        public int Size;
+        public int Count {
+            get { return Buckets.Count; }
+        }
+        public int Capacity {
+            get { return Buckets.Capacity; }
+        }
 
         public int HighestKey {
             get { return Buckets.KeyAt(Buckets.Count - 1); }
         }
 
+        public INode<T> First {
+            get { return Buckets.ValueAt(0); }
+        
+    } 
+
         public int LowestKey {
             get { return Buckets.KeyAt(0); }
         }
 
-
         public BaseNode(int size) {
-            Size = size;
             Buckets = new SortedBuckets<int, INode<T>>(size);
         }
 
@@ -43,6 +51,12 @@ namespace HybreDb.BPlusTree {
             return null;
         }
 
+        public INode<T> RemoveNode(INode<T> node) {
+            Buckets.Remove(node.HighestKey);
+
+            return Count < Capacity / 4 ? this : null;
+        } 
+
         public T Get(int key) {
             return Select(key).Get(key);
         }
@@ -53,27 +67,111 @@ namespace HybreDb.BPlusTree {
             var n = Buckets.ValueAt(idx);
             var _n = n.Insert(key, data);
 
+            // Always update the index, faster than branching
             Buckets.Set(idx, n.HighestKey, n);
-
-            // TODO upon changing the highest value, parent need to change
 
             if (_n != null)
                 return InsertNode(_n);
             return null;
         }
 
-        public INode<T> Delete(int key) {
-            return Select(key).Delete(key);
-            // TODO need merge here?
+        /// <summary>
+        /// Remove returns the newly merged node
+        /// if no merge occured return null
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public RemoveResult<T> Remove(int key) {
+            var idx = Buckets.NearestIndex(key);
+            var node = Buckets.ValueAt(idx);
+
+            var _n = node.Remove(key);
+
+            // flatten
+            if ( (_n.Type == MergeType.Merged || _n.Type == MergeType.Removed ) && node.Count == 1) {
+                Buckets.RemoveIndex(idx);
+
+                if (node.First.Count == 0) {
+                    node.First.Dispose();
+                } else
+                    InsertNode(node.First);
+                return new RemoveResult<T> { Type = MergeType.Removed };
+            }
+
+            // Nothing to do
+            if (node.Count >= node.Capacity / 4) {
+                Buckets.Set(idx, node.HighestKey, node);
+                return new RemoveResult<T> {Type = MergeType.None};
+            }
+
+            var l = idx > 0 ? Buckets.ValueAt(idx - 1) : null;
+            var r = idx < Capacity - 1 ? Buckets.ValueAt(idx + 1) : null;
+
+            if (node.Borrow(l, r)) {
+                Buckets.Set(idx, node.HighestKey, node);
+                if(l != null) Buckets.Set(idx - 1, l.HighestKey, l);
+
+                return new RemoveResult<T> {
+                    Type = MergeType.Borrowed
+                };
+            }
+
+            if (r != null && node.Merge(r)) {
+                Buckets.RemoveIndex(idx);
+                return new RemoveResult<T> {
+                    Type = MergeType.Merged,
+                    Node = r
+                };
+            }
+
+            if(node is LeafNode<T> && node.Count == 0 && l == null && r == null)
+                return new RemoveResult<T> { Type = MergeType.Merged };
+
+            if (node.Count == 0) {
+                Buckets.RemoveIndex(idx);
+                node.Dispose();
+                return new RemoveResult<T> { Type = MergeType.Removed };
+            }
+
+            return new RemoveResult<T> {Type = MergeType.None};
         }
 
+        public bool Merge(INode<T> n) {
+            if (!(n is BaseNode<T>)) return false;
+
+            var _n = (BaseNode<T>) n;
+            
+            _n.Buckets.AddBegin(Buckets);
+            return true;
+        } 
 
         public INode<T> Split() {
-            return new BaseNode<T>(Size) { Buckets = Buckets.Slice(Size/2) };
+            return new BaseNode<T>(Capacity) { Buckets = Buckets.SliceEnd(Capacity / 2) };
         }
 
-        public INode<T> Merge() {
-            throw new NotImplementedException();
+
+        public bool Borrow(INode<T> left, INode<T> right) {
+            var l = left as BaseNode<T>;
+            var r = right as BaseNode<T>;
+
+            SortedBuckets<int, INode<T>> s;
+            if (l != null && l.Count - 1 - l.Capacity / 4 > Capacity / 4) {
+                s = l.Buckets.SliceEnd(l.Buckets.Count - Capacity / 4);
+                Buckets.AddBegin(s);
+
+                return true;
+            }
+            if (r == null || r.Count - 1 - r.Capacity / 4 <= Capacity / 4) return false;
+
+            s = r.Buckets.SliceBegin(Capacity / 4);
+            Buckets.AddEnd(s);
+
+            return true;
+        }
+
+        public void Dispose() {
+            Buckets.Dispose();
+            
         }
     }
 

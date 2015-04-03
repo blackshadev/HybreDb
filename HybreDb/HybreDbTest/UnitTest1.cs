@@ -44,6 +44,8 @@ namespace HybreDbTest {
 
             CheckTree();
             CheckAccess();
+            //CheckRemoves();
+            CheckTree();
         }
 
         public void CheckAccess() {
@@ -55,6 +57,18 @@ namespace HybreDbTest {
             }
             sw.Stop();
             Trace.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
+        }
+
+        public void CheckRemoves() {
+            var sw = new Stopwatch();
+            sw.Start();
+
+            foreach (var n in RandomNumbers) {
+                Tree.Remove(n);
+            }
+
+            sw.Stop();
+            Trace.WriteLine("Removes took " + sw.ElapsedMilliseconds + "ms");
         }
 
         public void CheckTree() {
@@ -73,6 +87,27 @@ namespace HybreDbTest {
             Assert.IsFalse(total != N, "Missing keys");
 
             Trace.WriteLine("CheckTree took " + sw.ElapsedMilliseconds + "ms");
+        }
+
+        [TestMethod] 
+        public void TestRemoval() {
+            var t = new Tree<int>(5);
+            var nums = RandomNumbers.Take(100).ToArray();
+            foreach (int i in nums)
+                t.Insert(i, i);
+
+            foreach (int i in nums) {
+                Assert.IsFalse(t[i] != i, "Tree is invalid");
+            }
+
+            for(var i = 0; i < nums.Length; i++) {
+                t.Remove(nums[i]);
+                
+                for(int j = i + 1; j < nums.Length; j++)
+                    Assert.IsFalse(t[nums[j]] != nums[j] , "Remove corrupted tree");
+            }
+
+            t.Insert(25, 25);
         }
     }
 }
