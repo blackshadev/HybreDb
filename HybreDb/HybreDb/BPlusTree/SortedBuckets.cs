@@ -184,6 +184,18 @@ namespace HybreDb.BPlusTree {
 
         }
 
+        public void LoadSorted(IEnumerable<KeyValuePair<K, V>> data) {
+            int iX = 0;
+            foreach (var v in data) {
+                _keys[iX] = v.Key;
+                _values[iX] = v.Value;
+
+                iX++;
+            }
+
+            Count = iX;
+        }
+
         public IEnumerator<KeyValuePair<K, V>> GetEnumerator() {
             for (var i = 0; i < Count; i++)
                 yield return new KeyValuePair<K, V>(_keys[i], _values[i]);
@@ -199,5 +211,6 @@ namespace HybreDb.BPlusTree {
             Count = 0;
             Capacity = 0;
         }
+
     }
 }

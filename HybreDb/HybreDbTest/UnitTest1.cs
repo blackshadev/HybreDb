@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using HybreDb.BPlusTree;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -108,6 +109,27 @@ namespace HybreDbTest {
             }
 
             t.Insert(25, 25);
+        }
+
+        [TestMethod] 
+        public void TestBulkInsert() {
+            var nums = RandomNumbers.OrderBy(e => e).Select(e => new KeyValuePair<int, int>(e, e)).ToArray();
+            
+
+            var sw = new Stopwatch();
+            sw.Start();
+            var t = new Tree<int>(10, nums);
+            sw.Stop();
+            Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
+
+            var iX = t.Count();
+
+            Assert.IsFalse(nums.Length != iX, "Missing entries");
+
+            foreach (var n in nums) 
+                Assert.IsFalse(n.Value != t[n.Key], "Invalid key");
+            
+
         }
     }
 }

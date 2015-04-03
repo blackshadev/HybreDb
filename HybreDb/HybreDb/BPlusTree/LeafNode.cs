@@ -47,7 +47,7 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public LeafNode<T> Next;
 
-        public LeafNode<T> Prev; 
+        public LeafNode<T> Prev;
 
         public LeafNode(int size) {
             Data = new SortedBuckets<int, T>(size);
@@ -57,10 +57,10 @@ namespace HybreDb.BPlusTree {
             return this;
         }
 
-        public RemoveResult<T> Remove(int k) {
+        public RemoveResult Remove(int k) {
             Data.Remove(k);
 
-            return new RemoveResult<T> { Type = MergeType.None };
+            return RemoveResult.None;
         }
 
         public INode<T> Insert(int key, T data) {
@@ -125,6 +125,13 @@ namespace HybreDb.BPlusTree {
             Data.Dispose();
             Next = null;
         }
+
+        public static LeafNode<T> Create(int size, IEnumerable<KeyValuePair<int, T>> data) {
+            var l =  new LeafNode<T>(size);
+            l.Data.LoadSorted(data);
+
+            return l;
+        } 
 
     }
 }

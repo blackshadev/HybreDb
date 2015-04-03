@@ -81,27 +81,27 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public RemoveResult<T> Remove(int key) {
+        public RemoveResult Remove(int key) {
             var idx = Buckets.NearestIndex(key);
             var node = Buckets.ValueAt(idx);
 
-            var _n = node.Remove(key);
+            var t = node.Remove(key);
 
             // flatten
-            if ( (_n.Type == MergeType.Merged || _n.Type == MergeType.Removed ) && node.Count == 1) {
+            if ( (t == RemoveResult.Merged || t == RemoveResult.Removed ) && node.Count == 1) {
                 Buckets.RemoveIndex(idx);
 
                 if (node.First.Count == 0) {
                     node.First.Dispose();
                 } else
                     InsertNode(node.First);
-                return new RemoveResult<T> { Type = MergeType.Removed };
+                return RemoveResult.Removed;
             }
 
             // Nothing to do
             if (node.Count >= node.Capacity / 4) {
                 Buckets.Set(idx, node.HighestKey, node);
-                return new RemoveResult<T> {Type = MergeType.None};
+                return RemoveResult.None;
             }
 
             var l = idx > 0 ? Buckets.ValueAt(idx - 1) : null;
@@ -111,29 +111,26 @@ namespace HybreDb.BPlusTree {
                 Buckets.Set(idx, node.HighestKey, node);
                 if(l != null) Buckets.Set(idx - 1, l.HighestKey, l);
 
-                return new RemoveResult<T> {
-                    Type = MergeType.Borrowed
-                };
+                return RemoveResult.Borrowed;
+
             }
 
             if (r != null && node.Merge(r)) {
                 Buckets.RemoveIndex(idx);
-                return new RemoveResult<T> {
-                    Type = MergeType.Merged,
-                    Node = r
-                };
+                return RemoveResult.Merged;
+            
             }
 
             if(node is LeafNode<T> && node.Count == 0 && l == null && r == null)
-                return new RemoveResult<T> { Type = MergeType.Merged };
+                return RemoveResult.Merged;
 
             if (node.Count == 0) {
                 Buckets.RemoveIndex(idx);
                 node.Dispose();
-                return new RemoveResult<T> { Type = MergeType.Removed };
+                return RemoveResult.Removed;
             }
 
-            return new RemoveResult<T> {Type = MergeType.None};
+            return RemoveResult.None;
         }
 
         public bool Merge(INode<T> n) {
@@ -173,7 +170,12 @@ namespace HybreDb.BPlusTree {
             Buckets.Dispose();
             
         }
+
+        public static BaseNode<T> Create(int size, IEnumerable<KeyValuePair<int, INode<T>>> data) {
+            var n = new BaseNode<T>(size);
+            n.Buckets.LoadSorted(data);
+            return n;
+        } 
+
     }
-
-
 }

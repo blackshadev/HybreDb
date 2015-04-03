@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HybreDb.BPlusTree {
     public class Tree<T> : IEnumerable<T> {
@@ -18,6 +19,10 @@ namespace HybreDb.BPlusTree {
                 throw new ArgumentException("The minimal allowed bucketsize is 4");
             Root = new LeafNode<T>(bucketSize);
         }
+
+        public Tree(int size, KeyValuePair<int, T>[] data) : this(size) {
+            Root = bulkInsert(data);
+        } 
 
         /// <summary>
         /// Creates a new root node of 2 given nodes
@@ -49,9 +54,9 @@ namespace HybreDb.BPlusTree {
 
         public void Remove(object k) {
             int key = k.GetHashCode();
-            var n = Root.Remove(key);
+            var t = Root.Remove(key);
 
-            if ((n.Type == MergeType.Merged || n.Type == MergeType.Removed) && Root.Count == 1)
+            if ((t == RemoveResult.Merged || t == RemoveResult.Removed) && Root.Count == 1)
                 Root = Root.First;
             
 
@@ -65,6 +70,47 @@ namespace HybreDb.BPlusTree {
             
             return (LeafNode<T>)n;
         }
+
+        protected INode<T> bulkInsert(KeyValuePair<int, T>[] sorted) {
+            var nodes = new List<KeyValuePair<int, INode<T>>>();
+
+            // creating leafnodes
+            int l = 0;
+            LeafNode<T> prev = null;
+            for (var i = 0; i < sorted.Length; i += BucketSize - 1) {
+                l = Math.Min(BucketSize - 1, sorted.Length - i);
+                var d_slices = new KeyValuePair<int, T>[l];
+                Array.Copy(sorted, i, d_slices, 0, l);
+                
+                var leaf = LeafNode<T>.Create(BucketSize, d_slices);
+                leaf.Prev = prev;
+                
+                if (prev != null) prev.Next = leaf;
+                
+                nodes.Add(new KeyValuePair<int, INode<T>>(leaf.HighestKey, leaf));
+                
+                prev = leaf;
+            }
+
+            // Create intermidiate nodes
+            while (nodes.Count > 1) {
+                var newNodes = new List<KeyValuePair<int, INode<T>>>();
+
+                var a_nodes = nodes.ToArray();
+                for (var i = 0; i < a_nodes.Length; i += BucketSize - 1) {
+                    l = Math.Min(BucketSize - 1, a_nodes.Length - i);
+                    var n_slice = new KeyValuePair<int, INode<T>>[l];
+                    Array.Copy(a_nodes, i, n_slice, 0, l);
+                
+                    var node = BaseNode<T>.Create(BucketSize, n_slice);
+                    newNodes.Add(new KeyValuePair<int, INode<T>>(node.HighestKey, node));
+                }
+
+                nodes = newNodes;
+            }
+
+            return nodes[0].Value;
+        } 
 
         public IEnumerator<T> GetEnumerator() {
             var n = GetFirstLeaf();
