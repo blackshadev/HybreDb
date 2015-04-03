@@ -113,12 +113,12 @@ namespace HybreDbTest {
 
         [TestMethod] 
         public void TestBulkInsert() {
-            var nums = RandomNumbers.OrderBy(e => e).Select(e => new KeyValuePair<int, int>(e, e)).ToArray();
+            var nums = RandomNumbers.Select(e => new KeyValuePair<int, int>(e, e)).ToArray();
             
 
             var sw = new Stopwatch();
             sw.Start();
-            var t = new Tree<int>(10, nums);
+            var t = new Tree<int>(100, nums);
             sw.Stop();
             Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 

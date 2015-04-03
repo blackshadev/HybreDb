@@ -73,16 +73,16 @@ namespace HybreDb.BPlusTree {
 
         protected INode<T> bulkInsert(KeyValuePair<int, T>[] sorted) {
             var nodes = new List<KeyValuePair<int, INode<T>>>();
+            Array.Sort(sorted, (a, b) => a.Key.CompareTo(b.Key));
 
             // creating leafnodes
             int l = 0;
             LeafNode<T> prev = null;
             for (var i = 0; i < sorted.Length; i += BucketSize - 1) {
                 l = Math.Min(BucketSize - 1, sorted.Length - i);
-                var d_slices = new KeyValuePair<int, T>[l];
-                Array.Copy(sorted, i, d_slices, 0, l);
-                
-                var leaf = LeafNode<T>.Create(BucketSize, d_slices);
+
+                var seg = new ArraySegment<KeyValuePair<int, T>>(sorted, i, l);
+                var leaf = LeafNode<T>.Create(BucketSize, seg);
                 leaf.Prev = prev;
                 
                 if (prev != null) prev.Next = leaf;
@@ -99,10 +99,9 @@ namespace HybreDb.BPlusTree {
                 var a_nodes = nodes.ToArray();
                 for (var i = 0; i < a_nodes.Length; i += BucketSize - 1) {
                     l = Math.Min(BucketSize - 1, a_nodes.Length - i);
-                    var n_slice = new KeyValuePair<int, INode<T>>[l];
-                    Array.Copy(a_nodes, i, n_slice, 0, l);
-                
-                    var node = BaseNode<T>.Create(BucketSize, n_slice);
+
+                    var seg = new ArraySegment<KeyValuePair<int, INode<T>>>(a_nodes, i, l);
+                    var node = BaseNode<T>.Create(BucketSize, seg);
                     newNodes.Add(new KeyValuePair<int, INode<T>>(node.HighestKey, node));
                 }
 
