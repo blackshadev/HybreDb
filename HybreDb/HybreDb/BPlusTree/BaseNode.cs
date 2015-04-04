@@ -11,27 +11,13 @@ namespace HybreDb.BPlusTree {
     public class BaseNode<T> : INode<T> {
 
         public SortedBuckets<int, INode<T>> Buckets;
-        public int Count {
-            get { return Buckets.Count; }
-        }
-        public int Capacity {
-            get { return Buckets.Capacity; }
-        }
+        public int Count { get { return Buckets.Count; } }
+        public int Capacity { get { return Buckets.Capacity; } }
+        public int HighestKey { get { return Buckets.KeyAt(Buckets.Count - 1); } }
+        public int LowestKey { get { return Buckets.KeyAt(0); } }
+        public INode<T> First { get { return Buckets.ValueAt(0); } }
 
-        public int HighestKey {
-            get { return Buckets.KeyAt(Buckets.Count - 1); }
-        }
-        public int LowestKey {
-            get { return Buckets.KeyAt(0); }
-        }
-
-        public INode<T> First {
-            get { return Buckets.ValueAt(0); }
-        }
-
-        public Tree<T> Tree {
-            get { return _tree; }
-        }
+        public Tree<T> Tree { get { return _tree; } }
         private Tree<T> _tree;
 
 
@@ -40,11 +26,7 @@ namespace HybreDb.BPlusTree {
             Buckets = new SortedBuckets<int, INode<T>>(t.BucketSize);
         }
 
-        /// <summary>
-        /// Iterate over the bucket to find the next node
-        /// </summary>
-        /// <param name="key"></param>
-        /// <returns></returns>
+
         public INode<T> Select(int key) {
             return Buckets.ValueAt(Buckets.NearestIndex(key));
         }
@@ -81,8 +63,7 @@ namespace HybreDb.BPlusTree {
         }
 
         /// <summary>
-        /// Remove returns the newly merged node
-        /// if no merge occured return null
+        /// Recursively remove, if needed borrow, merge or remove the node.
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
@@ -92,10 +73,11 @@ namespace HybreDb.BPlusTree {
 
             var t = node.Remove(key);
 
-            // flatten
+            // Tries to flatten the tree by removing a useless node.
             if ( (t == RemoveResult.Merged || t == RemoveResult.Removed ) && node.Count == 1) {
                 Buckets.RemoveIndex(idx);
 
+                // Remove empty node
                 if (node.First.Count == 0) {
                     node.First.Dispose();
                 } else
@@ -103,12 +85,13 @@ namespace HybreDb.BPlusTree {
                 return RemoveResult.Removed;
             }
 
-            // Nothing to do
+            // Nothing to do node is big enough
             if (node.Count >= node.Capacity / 4) {
                 Buckets.Set(idx, node.HighestKey, node);
                 return RemoveResult.None;
             }
 
+            // Get the left and right neighbour and tries to borrow keys
             var l = idx > 0 ? Buckets.ValueAt(idx - 1) : null;
             var r = idx < Capacity - 1 ? Buckets.ValueAt(idx + 1) : null;
 
@@ -117,18 +100,20 @@ namespace HybreDb.BPlusTree {
                 if(l != null) Buckets.Set(idx - 1, l.HighestKey, l);
 
                 return RemoveResult.Borrowed;
-
             }
 
+            // Borrow failed, try to merge to the right
             if (r != null && node.Merge(r)) {
                 Buckets.RemoveIndex(idx);
                 return RemoveResult.Merged;
             
             }
 
+            // Cannot borrow but deleting the leafnode without neighbours will result in a broken tree
             if(node is LeafNode<T> && node.Count == 0 && l == null && r == null)
                 return RemoveResult.Merged;
 
+            // Remove empty base node or leafnode with neighbours
             if (node.Count == 0) {
                 Buckets.RemoveIndex(idx);
                 node.Dispose();
@@ -175,7 +160,6 @@ namespace HybreDb.BPlusTree {
 
         public void Dispose() {
             Buckets.Dispose();
-            
         }
 
 

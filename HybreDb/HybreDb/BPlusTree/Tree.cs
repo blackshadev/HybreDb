@@ -28,11 +28,16 @@ namespace HybreDb.BPlusTree {
         /// Creates a new base node bound to the tree
         /// </summary>
         public BaseNode<T> CreateBaseNode() { return new BaseNode<T>(this); }
-        
+
         /// <summary>
         /// Creates a new leaf node bound to the tree
         /// </summary>
-        public LeafNode<T> CreateLeafNode() { return new LeafNode<T>(this); } 
+        public LeafNode<T> CreateLeafNode(LeafNode<T> prev = null, LeafNode<T> next = null) {
+            return new LeafNode<T>(this) {
+                Prev = prev,
+                Next = next
+            };
+        } 
 
         /// <summary>
         /// Creates a new root node of 2 given nodes
@@ -92,9 +97,8 @@ namespace HybreDb.BPlusTree {
                 l = Math.Min(BucketSize - 1, sorted.Length - i);
 
                 var seg = new ArraySegment<KeyValuePair<int, T>>(sorted, i, l);
-                var leaf = CreateLeafNode();
+                var leaf = CreateLeafNode(prev);
                 leaf.Data.LoadSorted(seg);
-                leaf.Prev = prev;
                 
                 if (prev != null) prev.Next = leaf;
                 

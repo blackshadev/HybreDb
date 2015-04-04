@@ -8,45 +8,18 @@ using System.Threading.Tasks;
 
 namespace HybreDb.BPlusTree {
     public class LeafNode<T> : INode<T> {
-        /// <summary>
-        /// Contains the actual stored data
-        /// </summary>
         public SortedBuckets<int, T> Data;
 
-        /// <summary>
-        /// Current items, equals to Data.Count
-        /// </summary>
-        public int Count {
-            get { return Data.Count; }
-        }
+        public int Count { get { return Data.Count; } }
 
-        public INode<T> First {
-            get { return this; }
-        }
+        public INode<T> First { get { return this; } }
 
-        public Tree<T> Tree {
-            get { return _tree; }
-        }
-
+        public Tree<T> Tree { get { return _tree; } }
         private Tree<T> _tree; 
 
-        /// <summary>
-        /// Max size
-        /// </summary>
-        public int Capacity {
-            get { return Data.Capacity; }
-        }
-
-
-        /// <summary>
-        /// Highest key in Data
-        /// </summary>
-        public int HighestKey {
-            get { return Data.KeyAt(Data.Count - 1); }
-        }
-        public int LowestKey {
-            get { return Data.KeyAt(0); }
-        }
+        public int Capacity { get { return Data.Capacity; } }
+        public int HighestKey { get { return Data.KeyAt(Data.Count - 1); } }
+        public int LowestKey { get { return Data.KeyAt(0); } }
 
         /// <summary>
         /// Pointer to the next leaf node
@@ -83,11 +56,9 @@ namespace HybreDb.BPlusTree {
         }
 
         public INode<T> Split() {
-            var node = Tree.CreateLeafNode();
+            var node = Tree.CreateLeafNode(this, Next);
             node.Data = Data.SliceEnd(Capacity / 2);
-            node.Next = Next;
-            node.Prev = this;
-
+            
             Next = node;
 
             return node;
