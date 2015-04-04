@@ -18,7 +18,7 @@ namespace HybreDb.BPlusTree {
         public INode<T> First { get { return Buckets.ValueAt(0); } }
 
         public Tree<T> Tree { get { return _tree; } }
-        private Tree<T> _tree;
+        protected Tree<T> _tree;
 
 
         public BaseNode(Tree<T> t ) {

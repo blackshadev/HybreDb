@@ -27,12 +27,12 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Creates a new base node bound to the tree
         /// </summary>
-        public BaseNode<T> CreateBaseNode() { return new BaseNode<T>(this); }
+        public virtual BaseNode<T> CreateBaseNode() { return new BaseNode<T>(this); }
 
         /// <summary>
         /// Creates a new leaf node bound to the tree
         /// </summary>
-        public LeafNode<T> CreateLeafNode(LeafNode<T> prev = null, LeafNode<T> next = null) {
+        public virtual LeafNode<T> CreateLeafNode(LeafNode<T> prev = null, LeafNode<T> next = null) {
             return new LeafNode<T>(this) {
                 Prev = prev,
                 Next = next
