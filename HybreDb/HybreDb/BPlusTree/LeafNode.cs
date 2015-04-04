@@ -22,7 +22,13 @@ namespace HybreDb.BPlusTree {
 
         public INode<T> First {
             get { return this; }
-        } 
+        }
+
+        public Tree<T> Tree {
+            get { return _tree; }
+        }
+
+        private Tree<T> _tree; 
 
         /// <summary>
         /// Max size
@@ -49,8 +55,9 @@ namespace HybreDb.BPlusTree {
 
         public LeafNode<T> Prev;
 
-        public LeafNode(int size) {
-            Data = new SortedBuckets<int, T>(size);
+        public LeafNode(Tree<T> t ) {
+            _tree = t;
+            Data = new SortedBuckets<int, T>(t.BucketSize);
         } 
 
         public INode<T> Select(int k) {
@@ -76,11 +83,10 @@ namespace HybreDb.BPlusTree {
         }
 
         public INode<T> Split() {
-            var node = new LeafNode<T>(Capacity) {
-                Data = Data.SliceEnd(Capacity / 2), 
-                Next = Next,
-                Prev = this
-            };
+            var node = Tree.CreateLeafNode();
+            node.Data = Data.SliceEnd(Capacity / 2);
+            node.Next = Next;
+            node.Prev = this;
 
             Next = node;
 
@@ -125,13 +131,6 @@ namespace HybreDb.BPlusTree {
             Data.Dispose();
             Next = null;
         }
-
-        public static LeafNode<T> Create(int size, IEnumerable<KeyValuePair<int, T>> data) {
-            var l =  new LeafNode<T>(size);
-            l.Data.LoadSorted(data);
-
-            return l;
-        } 
 
     }
 }

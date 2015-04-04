@@ -23,8 +23,9 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// First child node
         /// </summary>
-        INode<T> First { get;  } 
+        INode<T> First { get;  }
 
+        Tree<T> Tree { get; } 
 
         /// <summary>
         /// Highest key present in the node

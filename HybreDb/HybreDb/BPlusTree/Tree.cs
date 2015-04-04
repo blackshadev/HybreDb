@@ -10,19 +10,29 @@ namespace HybreDb.BPlusTree {
 
         public Tree() {
             BucketSize = 50;
-            Root = new LeafNode<T>(BucketSize);
+            Root = CreateLeafNode();
         }
 
         public Tree(int bucketSize) {
             BucketSize = bucketSize;
             if(BucketSize < 4) 
                 throw new ArgumentException("The minimal allowed bucketsize is 4");
-            Root = new LeafNode<T>(bucketSize);
+            Root = CreateLeafNode();
         }
 
         public Tree(int size, KeyValuePair<int, T>[] data) : this(size) {
             Root = bulkInsert(data);
-        } 
+        }
+
+        /// <summary>
+        /// Creates a new base node bound to the tree
+        /// </summary>
+        public BaseNode<T> CreateBaseNode() { return new BaseNode<T>(this); }
+        
+        /// <summary>
+        /// Creates a new leaf node bound to the tree
+        /// </summary>
+        public LeafNode<T> CreateLeafNode() { return new LeafNode<T>(this); } 
 
         /// <summary>
         /// Creates a new root node of 2 given nodes
@@ -31,7 +41,7 @@ namespace HybreDb.BPlusTree {
         /// <param name="r">right (upper) node</param>
         /// <returns>Newly created root node</returns>
         public INode<T> NewRootNode(INode<T> l, INode<T> r) {
-            var n = new BaseNode<T>(BucketSize);
+            var n = CreateBaseNode();
             n.InsertNode(r);
             n.InsertNode(l);
             
@@ -82,7 +92,8 @@ namespace HybreDb.BPlusTree {
                 l = Math.Min(BucketSize - 1, sorted.Length - i);
 
                 var seg = new ArraySegment<KeyValuePair<int, T>>(sorted, i, l);
-                var leaf = LeafNode<T>.Create(BucketSize, seg);
+                var leaf = CreateLeafNode();
+                leaf.Data.LoadSorted(seg);
                 leaf.Prev = prev;
                 
                 if (prev != null) prev.Next = leaf;
@@ -101,7 +112,8 @@ namespace HybreDb.BPlusTree {
                     l = Math.Min(BucketSize - 1, a_nodes.Length - i);
 
                     var seg = new ArraySegment<KeyValuePair<int, INode<T>>>(a_nodes, i, l);
-                    var node = BaseNode<T>.Create(BucketSize, seg);
+                    var node = CreateBaseNode();
+                    node.Buckets.LoadSorted(seg);
                     newNodes.Add(new KeyValuePair<int, INode<T>>(node.HighestKey, node));
                 }
 

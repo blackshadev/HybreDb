@@ -21,18 +21,23 @@ namespace HybreDb.BPlusTree {
         public int HighestKey {
             get { return Buckets.KeyAt(Buckets.Count - 1); }
         }
-
-        public INode<T> First {
-            get { return Buckets.ValueAt(0); }
-        
-    } 
-
         public int LowestKey {
             get { return Buckets.KeyAt(0); }
         }
 
-        public BaseNode(int size) {
-            Buckets = new SortedBuckets<int, INode<T>>(size);
+        public INode<T> First {
+            get { return Buckets.ValueAt(0); }
+        }
+
+        public Tree<T> Tree {
+            get { return _tree; }
+        }
+        private Tree<T> _tree;
+
+
+        public BaseNode(Tree<T> t ) {
+            _tree = t;
+            Buckets = new SortedBuckets<int, INode<T>>(t.BucketSize);
         }
 
         /// <summary>
@@ -143,7 +148,9 @@ namespace HybreDb.BPlusTree {
         } 
 
         public INode<T> Split() {
-            return new BaseNode<T>(Capacity) { Buckets = Buckets.SliceEnd(Capacity / 2) };
+            var n = Tree.CreateBaseNode();
+            n.Buckets = Buckets.SliceEnd(Capacity / 2);
+            return n;
         }
 
 
@@ -171,11 +178,6 @@ namespace HybreDb.BPlusTree {
             
         }
 
-        public static BaseNode<T> Create(int size, IEnumerable<KeyValuePair<int, INode<T>>> data) {
-            var n = new BaseNode<T>(size);
-            n.Buckets.LoadSorted(data);
-            return n;
-        } 
 
     }
 }
