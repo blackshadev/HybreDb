@@ -1,14 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-
-    public class BaseNode<T> : INode<T> {
+    public class BaseNode<T> : INode<T>
+        where T : ITreeSerializable
+    {
 
         public SortedBuckets<int, INode<T>> Buckets;
         public int Count { get { return Buckets.Count; } }
@@ -21,7 +24,7 @@ namespace HybreDb.BPlusTree {
         protected Tree<T> _tree;
 
 
-        public BaseNode(Tree<T> t ) {
+        public BaseNode(Tree<T> t) {
             _tree = t;
             Buckets = new SortedBuckets<int, INode<T>>(t.BucketSize);
         }
@@ -162,6 +165,12 @@ namespace HybreDb.BPlusTree {
             Buckets.Dispose();
         }
 
+        public void Serialize(BinaryWriter wrtr) {
+            throw new NotImplementedException();
+        }
 
+        public void Deserialize(BinaryReader rdr) {
+            throw new NotImplementedException();
+        }
     }
 }

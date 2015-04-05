@@ -1,13 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public class LeafNode<T> : INode<T> {
+    public class LeafNode<T> : INode<T> 
+        where T : ITreeSerializable
+    {
         public SortedBuckets<int, T> Data;
 
         public int Count { get { return Data.Count; } }
@@ -30,7 +34,7 @@ namespace HybreDb.BPlusTree {
 
         public LeafNode(Tree<T> t ) {
             _tree = t;
-            Data = new SortedBuckets<int, T>(t.BucketSize);
+            Data = t.CreateLeafNodeBuckets();
         } 
 
         public INode<T> Select(int k) {
@@ -103,5 +107,12 @@ namespace HybreDb.BPlusTree {
             Next = null;
         }
 
+        public void Serialize(BinaryWriter wrtr) {
+            throw new NotImplementedException();
+        }
+
+        public void Deserialize(BinaryReader rdr) {
+            throw new NotImplementedException();
+        }
     }
 }

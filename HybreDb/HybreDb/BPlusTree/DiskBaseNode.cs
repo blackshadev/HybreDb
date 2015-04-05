@@ -1,28 +1,59 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    class DiskBaseNode<T> : BaseNode<T>, IDiskNode<T> {
+    class DiskBaseNode<T> : BaseNode<T>, IDiskNode<T>
+        where T : ITreeSerializable
+    {
 
-
-        public int FileOffset { get; private set; }
+        public long FileOffset { get; private set; }
         public NodeState State { get; private set; }
 
-        private DiskTree<T> _tree; 
+        public DiskBaseNode(DiskTree<T> t, int offset) : this(t) {
+            FileOffset = offset;
+            State = NodeState.OnDisk;
+            
+            Free();
+        }
 
         public DiskBaseNode(DiskTree<T> t) : base(t) {
-            _tree = t;
+            State = NodeState.Changed;
+        }
+
+        public void Free() {
+            Buckets.Dispose();
+            Buckets = null;
+            State = NodeState.OnDisk;
         }
 
 
-        public void Write() {
-            throw new NotImplementedException();
+        public void Write(BinaryWriter wrtr) {
+
+            // First make sure all children are written to file
+            foreach (var n in Buckets)
+                ((IDiskNode<T>)n.Value).Write(wrtr);
+
+            FileOffset = wrtr.BaseStream.Position;
+            Buckets.Serialize(wrtr);
         }
 
-        public void Read() {
+        public void Read(Stream strm) {
+            
+        }
+
+        public void Serialize(BinaryWriter wrtr) {
+            wrtr.Write((byte)DiskNode.Types.BaseNode);
+            wrtr.Write(FileOffset);
+        }
+
+        public void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();
         }
     }

@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BPlusTree\BaseNode.cs" />
+    <Compile Include="BPlusTree\DataTypes\Number.cs" />
     <Compile Include="BPlusTree\DiskBaseNode.cs" />
     <Compile Include="BPlusTree\DiskLeafNode.cs" />
     <Compile Include="BPlusTree\DiskNode.cs" />
@@ -52,6 +53,10 @@
     <Compile Include="BPlusTree\Tree.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Storage\ByteSerializable.cs" />
+    <Compile Include="Storage\Crc32.cs" />
+    <Compile Include="Storage\Storage.cs" />
+    <Compile Include="Test\TestData.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

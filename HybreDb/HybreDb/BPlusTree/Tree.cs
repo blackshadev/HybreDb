@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public class Tree<T> : IEnumerable<T> {
+    public class Tree<T> : IEnumerable<T> 
+        where T : ITreeSerializable
+    {
 
         public int BucketSize { get; private set; }
         public INode<T> Root { get; private set; }
@@ -24,6 +27,8 @@ namespace HybreDb.BPlusTree {
             Root = bulkInsert(data);
         }
 
+
+        #region Create functions
         /// <summary>
         /// Creates a new base node bound to the tree
         /// </summary>
@@ -37,7 +42,17 @@ namespace HybreDb.BPlusTree {
                 Prev = prev,
                 Next = next
             };
+        }
+
+        public virtual SortedBuckets<int, INode<T>> CreateBaseNodeBuckets() {
+            return new SortedBuckets<int, INode<T>>(BucketSize);
+        }
+
+        public virtual SortedBuckets<int, T> CreateLeafNodeBuckets() {
+            return new SortedBuckets<int, T>(BucketSize);
         } 
+
+        #endregion
 
         /// <summary>
         /// Creates a new root node of 2 given nodes

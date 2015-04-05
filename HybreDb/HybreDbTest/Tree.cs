@@ -4,18 +4,19 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using HybreDb.BPlusTree;
+using HybreDb.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HybreDbTest {
     [TestClass]
     public class TreeTest {
-        private Tree<int> Tree; 
+        private Tree<TestData> Tree; 
         private int N = 10000;
         private List<int> RandomNumbers; 
 
 
         public TreeTest() {
-            Tree = new Tree<int>(50);
+            Tree = new Tree<TestData>(50);
             RandomNumbers = GenerateRandomNumbers(N);
         }
 
@@ -39,7 +40,7 @@ namespace HybreDbTest {
             var sw = new Stopwatch();
             sw.Start();
             foreach (int t in RandomNumbers)
-                Tree.Insert(t, t);
+                Tree.Insert(t, new TestData {Key = t, Value = "Test_" + t });
             sw.Stop();
             Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
 
@@ -53,7 +54,7 @@ namespace HybreDbTest {
             var sw = new Stopwatch();
             sw.Start();
             foreach (var n in Tree) {
-                var v = Tree[n];
+                var v = Tree[n.Key];
                 Assert.IsFalse(v != n, "Access failed");
             }
             sw.Stop();
@@ -79,8 +80,8 @@ namespace HybreDbTest {
 
             sw.Start();
             foreach (var v in Tree) {
-                Assert.IsFalse(v < prev, "Invalid tree");
-                prev = v;
+                Assert.IsFalse(v.Key < prev, "Invalid tree");
+                prev = v.Key;
                 total++;
             }
             sw.Stop();
@@ -92,33 +93,33 @@ namespace HybreDbTest {
 
         [TestMethod] 
         public void TestRemoval() {
-            var t = new Tree<int>(5);
+            var t = new Tree<TestData>(5);
             var nums = RandomNumbers.Take(100).ToArray();
             foreach (int i in nums)
-                t.Insert(i, i);
+                t.Insert(i, new TestData { Key = i, Value = "Test_" + i } );
 
             foreach (int i in nums) {
-                Assert.IsFalse(t[i] != i, "Tree is invalid");
+                Assert.IsFalse(t[i].Key != i, "Tree is invalid");
             }
 
             for(var i = 0; i < nums.Length; i++) {
                 t.Remove(nums[i]);
                 
                 for(int j = i + 1; j < nums.Length; j++)
-                    Assert.IsFalse(t[nums[j]] != nums[j] , "Remove corrupted tree");
+                    Assert.IsFalse(t[nums[j]].Key != nums[j] , "Remove corrupted tree");
             }
 
-            t.Insert(25, 25);
+            t.Insert(25, new TestData { Key = 25, Value = "new" });
         }
 
         [TestMethod] 
         public void TestBulkInsert() {
-            var nums = RandomNumbers.Select(e => new KeyValuePair<int, int>(e, e)).ToArray();
+            var nums = RandomNumbers.Select(e => new KeyValuePair<int, TestData>(e, new TestData { Key = e, Value = "Test_" + e })).ToArray();
             
 
             var sw = new Stopwatch();
             sw.Start();
-            var t = new Tree<int>(100, nums);
+            var t = new Tree<TestData>(50, nums);
             sw.Stop();
             Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 

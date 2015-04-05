@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
     /// <summary>
     /// Node interface for all nodes in BPlusTree
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface INode<T> : IDisposable {
+    public interface INode<T> : IDisposable, ITreeSerializable 
+        where T : ITreeSerializable
+    {
         
         /// <summary>
         /// Current items in node
