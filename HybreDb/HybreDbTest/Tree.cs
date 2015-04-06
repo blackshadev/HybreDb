@@ -133,5 +133,31 @@ namespace HybreDbTest {
             
 
         }
+
+        [TestMethod] 
+        public void TestText() {
+            var t = new Tree<Text, TestData>(50);
+
+            var data = RandomNumbers.Select(e => new KeyValuePair<Text, TestData>(new Text("Tester_" + e), new TestData {Key = e, Value = "Tester_" + e}) );
+
+            var sw = new Stopwatch();
+            sw.Start();
+            foreach (var i in data) {
+                t.Insert(i.Key, i.Value);
+            }
+            sw.Stop();
+            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            sw.Reset();
+            
+            sw.Start();
+            foreach (var d in data) {
+                Assert.IsFalse(d.Value.Key != t[d.Key].Key, "String values don't match");
+            }
+            sw.Stop();
+            Trace.WriteLine("Accesses took " + sw.ElapsedMilliseconds + "ms");
+            sw.Reset();
+                
+
+        }
     }
 }

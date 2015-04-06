@@ -18,7 +18,7 @@ namespace HybreDbTest {
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
 
-            var t = new DiskTree<Number, TestData>("test.dat", 20);
+            var t = new DiskTree<IDataType, TestData>("test.dat", 20);
 
             sw.Start();
             foreach(var n in numbers)
@@ -41,14 +41,14 @@ namespace HybreDbTest {
             
         }
 
-        public static void CheckAccess(DiskTree<Number, TestData> t, Number[] nums) {
+        public static void CheckAccess(DiskTree<IDataType, TestData> t, Number[] nums) {
 
             foreach (var n in nums) 
                 Assert.IsFalse(n != t[n].Key, "Inaccessable number");
             
         }
 
-        public static void CheckIterate(DiskTree<Number, TestData> t, Number[] nums) {
+        public static void CheckIterate(DiskTree<IDataType, TestData> t, Number[] nums) {
             int prev = int.MinValue;
 
             int iX = 0;

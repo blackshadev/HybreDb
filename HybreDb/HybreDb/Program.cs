@@ -15,20 +15,20 @@ namespace HybreDb {
         
         static void Main(string[] args) {
 
-            var t = new Tree<Number, TestData>(5);
+            var t = new Tree<Text, TestData>(5);
 
             var nums = new int[] {9, 5, 1, 13, 54, 4, 23, 8, 45, 3, 12, 44};
             
 
             foreach(var i in nums)
-                t.Insert(i, new TestData { Key = i, Value = "test_" + i });
+                t.Insert(new Text("Test_" + i), new TestData { Key = i, Value = "test_" + i });
 
             Console.WriteLine("Before delete");
             foreach(var v in t)
                 Console.WriteLine(v);
 
             foreach (var i in nums)
-                t.Remove(i);
+                t.Remove("Test_" + i);
 
 
             Console.WriteLine("\nAfter delete");

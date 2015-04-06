@@ -42,7 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BPlusTree\BaseNode.cs" />
+    <Compile Include="BPlusTree\DataTypes\IDataType.cs" />
     <Compile Include="BPlusTree\DataTypes\Number.cs" />
+    <Compile Include="BPlusTree\DataTypes\Text.cs" />
     <Compile Include="BPlusTree\DiskBaseNode.cs" />
     <Compile Include="BPlusTree\DiskLeafNode.cs" />
     <Compile Include="BPlusTree\DiskNode.cs" />

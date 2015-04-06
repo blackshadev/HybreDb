@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree.DataTypes {
-    public class Number : ITreeSerializable, IComparable {
+    public class Number : IDataType {
         private int Data;
 
 
@@ -29,6 +29,10 @@ namespace HybreDb.BPlusTree.DataTypes {
 
         public static implicit operator int(Number n) {
             return n.Data;
+        }
+
+        public override string ToString() {
+            return Data.ToString();
         }
 
         public int CompareTo(object obj) {
