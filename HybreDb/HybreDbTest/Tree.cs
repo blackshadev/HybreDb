@@ -6,22 +6,23 @@ using System.Linq;
 using HybreDb.BPlusTree;
 using HybreDb.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using HybreDb.BPlusTree.DataTypes;
 
 namespace HybreDbTest {
     [TestClass]
     public class TreeTest {
-        private Tree<TestData> Tree; 
+        private Tree<Number, TestData> Tree; 
         private int N = 10000;
-        private List<int> RandomNumbers; 
+        private List<Number> RandomNumbers; 
 
 
         public TreeTest() {
-            Tree = new Tree<TestData>(50);
+            Tree = new Tree<Number, TestData>(50);
             RandomNumbers = GenerateRandomNumbers(N);
         }
 
-        protected static List<int> GenerateRandomNumbers(int n) {
-            var l = new List<int>();
+        protected static List<Number> GenerateRandomNumbers(int n) {
+            var l = new List<Number>();
 
             var rnd = new Random();
             while (l.Count < n) {
@@ -93,7 +94,7 @@ namespace HybreDbTest {
 
         [TestMethod] 
         public void TestRemoval() {
-            var t = new Tree<TestData>(5);
+            var t = new Tree<Number, TestData>(5);
             var nums = RandomNumbers.Take(100).ToArray();
             foreach (int i in nums)
                 t.Insert(i, new TestData { Key = i, Value = "Test_" + i } );
@@ -114,12 +115,12 @@ namespace HybreDbTest {
 
         [TestMethod] 
         public void TestBulkInsert() {
-            var nums = RandomNumbers.Select(e => new KeyValuePair<int, TestData>(e, new TestData { Key = e, Value = "Test_" + e })).ToArray();
+            var nums = RandomNumbers.Select(e => new KeyValuePair<Number, TestData>(e, new TestData { Key = e, Value = "Test_" + e })).ToArray();
             
 
             var sw = new Stopwatch();
             sw.Start();
-            var t = new Tree<TestData>(50, nums);
+            var t = new Tree<Number, TestData>(50, nums);
             sw.Stop();
             Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 

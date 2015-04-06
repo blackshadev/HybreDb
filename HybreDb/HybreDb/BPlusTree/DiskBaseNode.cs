@@ -9,21 +9,24 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    class DiskBaseNode<T> : BaseNode<T>, IDiskNode<T>
-        where T : ITreeSerializable
+    class DiskBaseNode<TKey, TValue> : BaseNode<TKey, TValue>, IDiskNode<TKey, TValue>
+        where TKey : ITreeSerializable, IComparable
+        where TValue : ITreeSerializable
     {
 
         public long FileOffset { get; private set; }
         public NodeState State { get; private set; }
 
-        public DiskBaseNode(DiskTree<T> t, int offset) : this(t) {
+        public DiskBaseNode(DiskTree<TKey, TValue> t, int offset)
+            : this(t) {
             FileOffset = offset;
             State = NodeState.OnDisk;
             
             Free();
         }
 
-        public DiskBaseNode(DiskTree<T> t) : base(t) {
+        public DiskBaseNode(DiskTree<TKey, TValue> t)
+            : base(t) {
             State = NodeState.Changed;
         }
 
@@ -38,7 +41,7 @@ namespace HybreDb.BPlusTree {
 
             // First make sure all children are written to file
             foreach (var n in Buckets)
-                ((IDiskNode<T>)n.Value).Write(wrtr);
+                ((IDiskNode<TKey, TValue>)n.Value).Write(wrtr);
 
             FileOffset = wrtr.BaseStream.Position;
             Buckets.Serialize(wrtr);

@@ -9,23 +9,26 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public class DiskLeafNode<T> : LeafNode<T>, IDiskNode<T>
-        where T : ITreeSerializable
+    public class DiskLeafNode<TKey, TValue> : LeafNode<TKey, TValue>, IDiskNode<TKey, TValue>
+        where TKey : ITreeSerializable, IComparable
+        where TValue : ITreeSerializable
     {
         
         public long FileOffset { get; private set; }
         public NodeState State { get; private set; }
-        
-        private DiskTree<T> _tree;
 
-        public DiskLeafNode(DiskTree<T> t, int offset) : this(t) {
+        private DiskTree<TKey, TValue> _tree;
+
+        public DiskLeafNode(DiskTree<TKey, TValue> t, int offset)
+            : this(t) {
             FileOffset = offset;
             State = NodeState.OnDisk;
 
             Free();
         }
 
-        public DiskLeafNode(DiskTree<T> t) : base(t) {
+        public DiskLeafNode(DiskTree<TKey, TValue> t)
+            : base(t) {
             _tree = t;
         }
 

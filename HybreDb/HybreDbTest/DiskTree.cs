@@ -4,6 +4,7 @@ using System.Linq;
 using HybreDb.BPlusTree;
 using HybreDb.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using HybreDb.BPlusTree.DataTypes;
 
 namespace HybreDbTest {
     [TestClass]
@@ -14,10 +15,10 @@ namespace HybreDbTest {
 
         [TestMethod]
         public void TestInserts() {
-            var numbers = new int[N];
+            var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
 
-            var t = new DiskTree<TestData>("test.dat", 20);
+            var t = new DiskTree<Number, TestData>("test.dat", 20);
 
             sw.Start();
             foreach(var n in numbers)
@@ -40,14 +41,14 @@ namespace HybreDbTest {
             
         }
 
-        public static void CheckAccess(DiskTree<TestData> t, int[] nums) {
+        public static void CheckAccess(DiskTree<Number, TestData> t, Number[] nums) {
 
             foreach (var n in nums) 
                 Assert.IsFalse(n != t[n].Key, "Inaccessable number");
             
         }
 
-        public static void CheckIterate(DiskTree<TestData> t, int[] nums) {
+        public static void CheckIterate(DiskTree<Number, TestData> t, Number[] nums) {
             int prev = int.MinValue;
 
             int iX = 0;
@@ -59,12 +60,12 @@ namespace HybreDbTest {
             Assert.IsFalse(nums.Length != iX, "Missing items");
         }
 
-        public static void GenerateRandomNumbers(int[] nums) {
+        public static void GenerateRandomNumbers(Number[] nums) {
             var rnd = new Random();
 
             for (int i = 0; i < nums.Length;) {
                 var n = rnd.Next();
-                if (nums.Contains(n)) continue;
+                if (nums.Contains(new Number(n))) continue;
                 nums[i++] = n;
             } 
         }

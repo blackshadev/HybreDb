@@ -9,8 +9,9 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public interface IDiskNode<T> : INode<T>
-        where T : ITreeSerializable {
+    public interface IDiskNode<TKey, TValue> : INode<TKey, TValue>
+        where TKey : IComparable, ITreeSerializable
+        where TValue : ITreeSerializable {
         /// <summary>
         /// Offset of the node within the file.
         /// </summary>

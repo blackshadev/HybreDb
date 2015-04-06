@@ -7,8 +7,9 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public class DiskTree<T> : Tree<T>
-        where T : ITreeSerializable
+    public class DiskTree<TKey, TValue> : Tree<TKey, TValue>
+        where TKey : IComparable, ITreeSerializable
+        where TValue : ITreeSerializable
     {
 
         public string Filename { get; private set; }
@@ -22,12 +23,12 @@ namespace HybreDb.BPlusTree {
         }
 
         #region Creators overrides
-        public override BaseNode<T> CreateBaseNode() {
-            return new DiskBaseNode<T>(this);
+        public override BaseNode<TKey, TValue> CreateBaseNode() {
+            return new DiskBaseNode<TKey, TValue>(this);
         }
 
-        public override LeafNode<T> CreateLeafNode(LeafNode<T> prev = null, LeafNode<T> next = null) {
-            return new DiskLeafNode<T>(this) { Prev =  prev, Next = next };
+        public override LeafNode<TKey, TValue> CreateLeafNode(LeafNode<TKey, TValue> prev = null, LeafNode<TKey, TValue> next = null) {
+            return new DiskLeafNode<TKey, TValue>(this) { Prev = prev, Next = next };
         }
         
         #endregion

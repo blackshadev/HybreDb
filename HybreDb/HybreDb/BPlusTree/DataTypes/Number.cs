@@ -10,6 +10,11 @@ namespace HybreDb.BPlusTree.DataTypes {
     public class Number : ITreeSerializable, IComparable {
         private int Data;
 
+
+        public Number(int i) {
+            Data = i;
+        }
+
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Data);
         }
@@ -19,7 +24,7 @@ namespace HybreDb.BPlusTree.DataTypes {
         }
 
         public static implicit operator Number(int i) {
-            return new Number {Data = i};
+            return new Number(i);
         }
 
         public static implicit operator int(Number n) {

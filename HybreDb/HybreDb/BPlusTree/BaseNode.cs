@@ -9,50 +9,51 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public class BaseNode<T> : INode<T>
-        where T : ITreeSerializable
+    public class BaseNode<TKey, TValue> : INode<TKey, TValue>
+        where TKey : IComparable, ITreeSerializable
+        where TValue : ITreeSerializable
     {
 
-        public SortedBuckets<int, INode<T>> Buckets;
+        public SortedBuckets<TKey, INode<TKey, TValue>> Buckets;
         public int Count { get { return Buckets.Count; } }
         public int Capacity { get { return Buckets.Capacity; } }
-        public int HighestKey { get { return Buckets.KeyAt(Buckets.Count - 1); } }
-        public int LowestKey { get { return Buckets.KeyAt(0); } }
-        public INode<T> First { get { return Buckets.ValueAt(0); } }
+        public TKey HighestKey { get { return Buckets.KeyAt(Buckets.Count - 1); } }
+        public TKey LowestKey { get { return Buckets.KeyAt(0); } }
+        public INode<TKey, TValue> First { get { return Buckets.ValueAt(0); } }
 
-        public Tree<T> Tree { get { return _tree; } }
-        protected Tree<T> _tree;
+        public Tree<TKey, TValue> Tree { get { return _tree; } }
+        protected Tree<TKey, TValue> _tree;
 
 
-        public BaseNode(Tree<T> t) {
+        public BaseNode(Tree<TKey, TValue> t) {
             _tree = t;
-            Buckets = new SortedBuckets<int, INode<T>>(t.BucketSize);
+            Buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(t.BucketSize);
         }
 
 
-        public INode<T> Select(int key) {
+        public INode<TKey, TValue> Select(TKey key) {
             return Buckets.ValueAt(Buckets.NearestIndex(key));
         }
 
-        public INode<T> InsertNode(INode<T> node) {
+        public INode<TKey, TValue> InsertNode(INode<TKey, TValue> node) {
             Buckets.Add(node.HighestKey, node);
             if (Buckets.Count == Buckets.Capacity)
                 return Split();
             return null;
         }
 
-        public INode<T> RemoveNode(INode<T> node) {
+        public INode<TKey, TValue> RemoveNode(INode<TKey, TValue> node) {
             Buckets.Remove(node.HighestKey);
 
             return Count < Capacity / 4 ? this : null;
         } 
 
-        public T Get(int key) {
+        public TValue Get(TKey key) {
             return Select(key).Get(key);
         }
 
 
-        public INode<T> Insert(int key, T data) {
+        public INode<TKey, TValue> Insert(TKey key, TValue data) {
             var idx = Buckets.NearestIndex(key);
             var n = Buckets.ValueAt(idx);
             var _n = n.Insert(key, data);
@@ -70,7 +71,7 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public RemoveResult Remove(int key) {
+        public RemoveResult Remove(TKey key) {
             var idx = Buckets.NearestIndex(key);
             var node = Buckets.ValueAt(idx);
 
@@ -113,7 +114,7 @@ namespace HybreDb.BPlusTree {
             }
 
             // Cannot borrow but deleting the leafnode without neighbours will result in a broken tree
-            if(node is LeafNode<T> && node.Count == 0 && l == null && r == null)
+            if (node is LeafNode<TKey, TValue> && node.Count == 0 && l == null && r == null)
                 return RemoveResult.Merged;
 
             // Remove empty base node or leafnode with neighbours
@@ -126,27 +127,27 @@ namespace HybreDb.BPlusTree {
             return RemoveResult.None;
         }
 
-        public bool Merge(INode<T> n) {
-            if (!(n is BaseNode<T>)) return false;
+        public bool Merge(INode<TKey, TValue> n) {
+            if (!(n is BaseNode<TKey, TValue>)) return false;
 
-            var _n = (BaseNode<T>) n;
+            var _n = (BaseNode<TKey, TValue>)n;
             
             _n.Buckets.AddBegin(Buckets);
             return true;
-        } 
+        }
 
-        public INode<T> Split() {
+        public INode<TKey, TValue> Split() {
             var n = Tree.CreateBaseNode();
             n.Buckets = Buckets.SliceEnd(Capacity / 2);
             return n;
         }
 
 
-        public bool Borrow(INode<T> left, INode<T> right) {
-            var l = left as BaseNode<T>;
-            var r = right as BaseNode<T>;
+        public bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
+            var l = left as BaseNode<TKey, TValue>;
+            var r = right as BaseNode<TKey, TValue>;
 
-            SortedBuckets<int, INode<T>> s;
+            SortedBuckets<TKey, INode<TKey, TValue>> s;
             if (l != null && l.Count - 1 - l.Capacity / 4 > Capacity / 4) {
                 s = l.Buckets.SliceEnd(l.Buckets.Count - Capacity / 4);
                 Buckets.AddBegin(s);
