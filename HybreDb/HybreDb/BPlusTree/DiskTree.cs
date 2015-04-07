@@ -7,6 +7,12 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
+
+    /// <summary>
+    /// BTree extension which can be written to file
+    /// </summary>
+    /// <typeparam name="TKey"></typeparam>
+    /// <typeparam name="TValue"></typeparam>
     public class DiskTree<TKey, TValue> : Tree<TKey, TValue>, ITreeSerializable, IEnumerable<TValue>
         where TKey : IComparable, ITreeSerializable, new()
         where TValue : ITreeSerializable, new()

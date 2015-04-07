@@ -65,28 +65,24 @@ namespace HybreDbTest {
             sw.Stop();
             Trace.WriteLine("Writeout took  " + sw.ElapsedMilliseconds + "ms");
 
-        }
-
-        [TestMethod]
-        public void ReadCheck() {
-            var t = new DiskTree<Number, TestData>("test.dat", 64);
-
-            var sw = new Stopwatch();
+            sw.Reset();
             sw.Start();
             t.Read();
             sw.Stop();
             Trace.WriteLine("Read took " + sw.ElapsedMilliseconds + "ms");
-            sw.Reset();
-
-            sw.Start();
-            int prev = int.MinValue;
-            foreach(var k in t) {
-                Assert.IsFalse(k.Key < prev, "Read failed");
-                prev = k.Key;
-            }
-            sw.Stop();
-            Trace.WriteLine("Iter took " + sw.ElapsedMilliseconds + "ms");
             
+            sw.Reset();
+            sw.Start();
+            CheckAccess(t, numbers);
+            sw.Stop();
+            Trace.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
+
+            sw.Reset();
+            sw.Start();
+            CheckAccess(t, numbers);
+            sw.Stop();
+            Trace.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
+
 
         }
 

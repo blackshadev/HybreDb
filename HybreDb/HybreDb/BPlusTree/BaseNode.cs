@@ -32,27 +32,43 @@ namespace HybreDb.BPlusTree {
             Buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(t.BucketSize);
         }
 
-
+        /// <summary>
+        /// Inserts a node into the bucket of the current node
+        /// </summary>
+        /// <param name="node"></param>
+        /// <returns></returns>
         public INode<TKey, TValue> InsertNode(INode<TKey, TValue> node) {
             Buckets.Add(node.HighestKey, node);
             if (Buckets.Count == Buckets.Capacity)
                 return Split();
             return null;
         }
-
+            
+        /// <summary>
+        /// Removes a node from the bucket of current node
+        /// </summary>
         public INode<TKey, TValue> RemoveNode(INode<TKey, TValue> node) {
             Buckets.Remove(node.HighestKey);
 
             return Count < Capacity / 4 ? this : null;
         } 
 
+        /// <summary>
+        /// Gets a value with given key
+        /// </summary>
         public TValue Get(TKey key) {
+            Read();
             var n = Buckets.ValueAt(Buckets.NearestIndex(key));
             return n.Get(key);
         }
 
-
+        /// <summary>
+        /// Inserts data with given key
+        /// </summary>
+        /// <returns>Newly created ndoe due to splitting</returns>
         public INode<TKey, TValue> Insert(TKey key, TValue data) {
+            Read();
+
             var idx = Buckets.NearestIndex(key);
             var n = Buckets.ValueAt(idx);
             var _n = n.Insert(key, data);
@@ -71,6 +87,8 @@ namespace HybreDb.BPlusTree {
         /// <param name="key"></param>
         /// <returns></returns>
         public RemoveResult Remove(TKey key) {
+            Read();
+
             var idx = Buckets.NearestIndex(key);
             var node = Buckets.ValueAt(idx);
 
@@ -160,6 +178,11 @@ namespace HybreDb.BPlusTree {
 
             return true;
         }
+
+        /// <summary>
+        /// Function which reads in data of the node, overridden in the Disk Nodes
+        /// </summary>
+        public virtual void Read() {}
 
         public void Dispose() {
             if(Buckets != null) Buckets.Dispose();

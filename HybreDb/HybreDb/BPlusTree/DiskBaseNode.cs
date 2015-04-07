@@ -36,6 +36,9 @@ namespace HybreDb.BPlusTree {
                 State = NodeState.Changed;
         }
 
+        /// <summary>
+        /// Frees the resources from the node.
+        /// </summary>
         public void Free() {
             Buckets.Dispose();
             Buckets = null;
@@ -56,7 +59,10 @@ namespace HybreDb.BPlusTree {
             Free();
         }
 
-        public void Read() {
+        /// <summary>
+        /// Reads the data into the node with the given offset within the file.
+        /// </summary>
+        public override void Read() {
             if (State != NodeState.OnDisk) return;
 
             _tree.Stream.Position = FileOffset;
@@ -65,8 +71,13 @@ namespace HybreDb.BPlusTree {
                 _rdr => { var v = new TKey(); v.Deserialize(_rdr); return v; },
                 _rdr => DiskNode<TKey, TValue>.Create(_tree, rdr)
             );
+
+            State = NodeState.Loaded;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write((byte)Type);
             wrtr.Write(FileOffset);
