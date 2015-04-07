@@ -16,10 +16,12 @@ namespace HybreDb.BPlusTree {
 
         public SortedBuckets<TKey, INode<TKey, TValue>> Buckets;
         public int Count { get { return Buckets.Count; } }
-        public int Capacity { get { return Buckets.Capacity; } }
+        public int Capacity { get { return Tree.BucketSize; } }
         public TKey HighestKey { get { return Buckets.KeyAt(Buckets.Count - 1); } }
         public TKey LowestKey { get { return Buckets.KeyAt(0); } }
         public INode<TKey, TValue> First { get { return Buckets.ValueAt(0); } }
+
+        public NodeTypes Type { get { return NodeTypes.Base; } }
 
         public Tree<TKey, TValue> Tree { get { return _tree; } }
         protected Tree<TKey, TValue> _tree;
@@ -30,10 +32,6 @@ namespace HybreDb.BPlusTree {
             Buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(t.BucketSize);
         }
 
-
-        public INode<TKey, TValue> Select(TKey key) {
-            return Buckets.ValueAt(Buckets.NearestIndex(key));
-        }
 
         public INode<TKey, TValue> InsertNode(INode<TKey, TValue> node) {
             Buckets.Add(node.HighestKey, node);
@@ -49,7 +47,8 @@ namespace HybreDb.BPlusTree {
         } 
 
         public TValue Get(TKey key) {
-            return Select(key).Get(key);
+            var n = Buckets.ValueAt(Buckets.NearestIndex(key));
+            return n.Get(key);
         }
 
 
@@ -163,8 +162,9 @@ namespace HybreDb.BPlusTree {
         }
 
         public void Dispose() {
-            Buckets.Dispose();
+            if(Buckets != null) Buckets.Dispose();
         }
+
 
         public void Serialize(BinaryWriter wrtr) {
             throw new NotImplementedException();

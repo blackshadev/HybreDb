@@ -19,6 +19,8 @@ namespace HybreDb.BPlusTree {
 
         public INode<TKey, TValue> First { get { return this; } }
 
+        public NodeTypes Type { get { return NodeTypes.Leaf; } }
+
         public Tree<TKey, TValue> Tree { get { return _tree; } }
         private Tree<TKey, TValue> _tree; 
 
@@ -35,7 +37,7 @@ namespace HybreDb.BPlusTree {
 
         public LeafNode(Tree<TKey, TValue> t ) {
             _tree = t;
-            Data = t.CreateLeafNodeBuckets();
+            Data = new SortedBuckets<TKey, TValue>(Tree.BucketSize);
         }
 
         public INode<TKey, TValue> Select(TKey k) {
@@ -108,6 +110,7 @@ namespace HybreDb.BPlusTree {
             Next = null;
         }
 
+
         public void Serialize(BinaryWriter wrtr) {
             throw new NotImplementedException();
         }
@@ -115,5 +118,6 @@ namespace HybreDb.BPlusTree {
         public void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();
         }
+
     }
 }

@@ -32,7 +32,12 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Tree the node belongs to
         /// </summary>
-        Tree<TKey, TValue> Tree { get; } 
+        Tree<TKey, TValue> Tree { get; }
+
+        /// <summary>
+        /// Returns the Type of the node
+        /// </summary>
+        NodeTypes Type { get; }
 
         /// <summary>
         /// Highest key present in the node
@@ -43,13 +48,6 @@ namespace HybreDb.BPlusTree {
         /// Lowest key present in the node
         /// </summary>
         TKey LowestKey { get; }
-
-        /// <summary>
-        /// Selects a node within the current node based on the given key
-        /// </summary>
-        /// <param name="key">Key to find the node of</param>
-        /// <returns>Returns the node</returns>
-        INode<TKey, TValue> Select(TKey k);
 
         /// <summary>
         /// Gets a data item from the tree, uses Select recursively
@@ -105,4 +103,8 @@ namespace HybreDb.BPlusTree {
         Removed
     };
 
+    public enum NodeTypes {
+        Base,
+        Leaf
+    }
 }

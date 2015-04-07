@@ -13,7 +13,7 @@ using HybreDb.Storage;
 namespace HybreDb.BPlusTree {
 
     public class SortedBuckets<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable, ITreeSerializable
-        where TKey : IComparable
+        where TKey : IComparable, ITreeSerializable
         where TValue : ITreeSerializable
     {
 
@@ -43,8 +43,22 @@ namespace HybreDb.BPlusTree {
             _values = new TValue[size];
 
             var t = _keys.GetType();
-            
         }
+
+        public SortedBuckets(BinaryReader rdr, Func<BinaryReader, TKey> kConstructor, Func<BinaryReader, TValue> vConstructor) {
+            Capacity = rdr.ReadInt32();
+            Count = rdr.ReadInt32();
+
+            _keys = new TKey[Capacity];
+            _values = new TValue[Capacity];
+
+
+
+            for (int i = 0; i < Count; i++) {
+                _keys[i] = kConstructor(rdr);
+                _values[i] = vConstructor(rdr);
+            }
+        } 
 
 
         public void Set(int idx, TKey key, TValue value) {
@@ -225,17 +239,18 @@ namespace HybreDb.BPlusTree {
         }
 
         public void Serialize(BinaryWriter wrtr) {
+            wrtr.Write(Capacity);
             wrtr.Write(Count);
 
             for (int i = 0; i < Count; i++) {
-               // _keys[i].Serialize(wrtr);
+                _keys[i].Serialize(wrtr);
                 _values[i].Serialize(wrtr);
             }
 
         }
 
         public void Deserialize(BinaryReader rdr) {
-            
+            throw new NotImplementedException();
         }
     }
 }

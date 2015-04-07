@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree.DataTypes {
-    public class Number : IDataType {
+    public class Number : DataType {
         private int Data;
 
 
@@ -15,11 +15,13 @@ namespace HybreDb.BPlusTree.DataTypes {
             Data = i;
         }
 
-        public void Serialize(BinaryWriter wrtr) {
+        public Number(BinaryReader rdr) : base(rdr) {}
+
+        public override void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Data);
         }
 
-        public void Deserialize(BinaryReader rdr) {
+        public override void Deserialize(BinaryReader rdr) {
             Data = rdr.ReadInt32();
         }
 
@@ -35,7 +37,7 @@ namespace HybreDb.BPlusTree.DataTypes {
             return Data.ToString();
         }
 
-        public int CompareTo(object obj) {
+        public override int CompareTo(object obj) {
             var n = obj as Number;
             if (n == null) throw new ArgumentException("Number cannot be compared to a non numeric");
 

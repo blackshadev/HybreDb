@@ -35,7 +35,7 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Reads the node from disk based on the FileOffset
         /// </summary>
-        //void Read(Stream strm);
+        //void Read(Stream Stream);
     }
 
     public enum NodeState {
@@ -44,10 +44,21 @@ namespace HybreDb.BPlusTree {
         Changed
     }
 
-    public static class DiskNode {
-        public enum Types {
-            BaseNode,
-            LeafNode
+    public static class DiskNode<TKey, TValue> 
+        where TKey : IComparable, ITreeSerializable, new()
+        where TValue : ITreeSerializable, new()
+    {
+        public static INode<TKey, TValue> Create(DiskTree<TKey, TValue> tree, BinaryReader rdr) {
+            var t = (NodeTypes)rdr.ReadByte();
+            var offs = rdr.ReadInt64();
+            switch (t) {
+                case NodeTypes.Leaf:
+                    return tree.CreateLeafNode(offs);
+                case NodeTypes.Base:
+                    return tree.CreateBaseNode(offs);
+            }
+
+            return null;
         }
     }
 }

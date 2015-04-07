@@ -4,13 +4,13 @@ using System.Linq;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public class Tree<TKey, TValue> : IEnumerable<TValue> 
+    public class Tree<TKey, TValue> : IEnumerable<TValue> , IDisposable
         where TKey : ITreeSerializable, IComparable
         where TValue : ITreeSerializable
     {
 
-        public int BucketSize { get; private set; }
-        public INode<TKey, TValue> Root { get; private set; }
+        public int BucketSize { get; protected set; }
+        public INode<TKey, TValue> Root { get; protected set; }
 
         public Tree() {
             BucketSize = 50;
@@ -45,13 +45,6 @@ namespace HybreDb.BPlusTree {
             };
         }
 
-        public virtual SortedBuckets<int, INode<TKey, TValue>> CreateBaseNodeBuckets() {
-            return new SortedBuckets<int, INode<TKey, TValue>>(BucketSize);
-        }
-
-        public virtual SortedBuckets<TKey, TValue> CreateLeafNodeBuckets() {
-            return new SortedBuckets<TKey, TValue>(BucketSize);
-        } 
 
         #endregion
 
@@ -96,8 +89,8 @@ namespace HybreDb.BPlusTree {
 
             while (!(n is LeafNode<TKey, TValue>))
                 n = n.First;
-
-            return (LeafNode<TKey, TValue>)n;
+            
+            return (LeafNode<TKey, TValue>)n.First;
         }
 
         protected INode<TKey, TValue> bulkInsert(KeyValuePair<TKey, TValue>[] sorted) {
@@ -143,16 +136,22 @@ namespace HybreDb.BPlusTree {
 
         public IEnumerator<TValue> GetEnumerator() {
             var n = GetFirstLeaf();
-
+            
             do {
-                foreach (var v in n.Data.Values)
-                    yield return v;
+                foreach (var v in n.Data)
+                    yield return v.Value;
+
             } while( (n = n.Next) != null );
             
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        public void Dispose() {
+            Root.Dispose();
+            Root = null;
         }
     }
 }

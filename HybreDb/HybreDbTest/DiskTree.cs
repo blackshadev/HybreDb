@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using HybreDb.BPlusTree;
 using HybreDb.Test;
@@ -38,7 +39,45 @@ namespace HybreDbTest {
             sw.Stop();
             Trace.WriteLine("Iterate took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
+
+        }
+
+        [TestMethod] 
+        public void WriteCheck() {
+            if(File.Exists("test.dat"))
+                File.Delete("test.dat");
+
+            var t = new DiskTree<Number, TestData>("test.dat", 32);
+
+            for (var i = 0; i < 10; i++)
+                t.Insert(i, new TestData{ Key = i, Value = "test_" + i});
             
+            t.Write();
+
+
+        }
+
+        [TestMethod]
+        public void ReadCheck() {
+            var t = new DiskTree<Number, TestData>("test.dat", 32);
+
+            var sw = new Stopwatch();
+            sw.Start();
+            t.Read();
+            sw.Stop();
+            Trace.WriteLine("Read took " + sw.ElapsedTicks + "ticks");
+            sw.Reset();
+
+            sw.Start();
+            int prev = int.MinValue;
+            foreach(var k in t) {
+                Assert.IsFalse(k.Key < prev, "Read failed");
+                prev = k.Key;
+            }
+            sw.Stop();
+            Trace.WriteLine("Iter took " + sw.ElapsedMilliseconds + "ms");
+            
+
         }
 
         public static void CheckAccess(DiskTree<IDataType, TestData> t, Number[] nums) {
