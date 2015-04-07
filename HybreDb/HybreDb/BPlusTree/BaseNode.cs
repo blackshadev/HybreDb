@@ -56,8 +56,7 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Gets a value with given key
         /// </summary>
-        public TValue Get(TKey key) {
-            Read();
+        public virtual TValue Get(TKey key) {
             var n = Buckets.ValueAt(Buckets.NearestIndex(key));
             return n.Get(key);
         }
@@ -66,9 +65,7 @@ namespace HybreDb.BPlusTree {
         /// Inserts data with given key
         /// </summary>
         /// <returns>Newly created ndoe due to splitting</returns>
-        public INode<TKey, TValue> Insert(TKey key, TValue data) {
-            Read();
-
+        public virtual INode<TKey, TValue> Insert(TKey key, TValue data) {
             var idx = Buckets.NearestIndex(key);
             var n = Buckets.ValueAt(idx);
             var _n = n.Insert(key, data);
@@ -86,9 +83,7 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public RemoveResult Remove(TKey key) {
-            Read();
-
+        public virtual RemoveResult Remove(TKey key) {
             var idx = Buckets.NearestIndex(key);
             var node = Buckets.ValueAt(idx);
 
@@ -179,10 +174,6 @@ namespace HybreDb.BPlusTree {
             return true;
         }
 
-        /// <summary>
-        /// Function which reads in data of the node, overridden in the Disk Nodes
-        /// </summary>
-        public virtual void Read() {}
 
         public void Dispose() {
             if(Buckets != null) Buckets.Dispose();

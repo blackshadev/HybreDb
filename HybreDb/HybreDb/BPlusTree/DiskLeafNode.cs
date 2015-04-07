@@ -41,6 +41,21 @@ namespace HybreDb.BPlusTree {
             _tree = t;
         }
 
+        #region Node operations
+        public override TValue Get(TKey key) {
+            Read();
+            return base.Get(key);
+        }
+        public override INode<TKey, TValue> Insert(TKey key, TValue data) {
+            Read();
+            return base.Insert(key, data);
+        }
+        public override RemoveResult Remove(TKey k) {
+            Read();
+            return base.Remove(k);
+        }
+        #endregion
+
         /// <summary>
         /// Free all resources hold bu this node
         /// </summary>
@@ -74,7 +89,7 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Reads the data into the node with given reader
         /// </summary>
-        public override void Read() {
+        public void Read() {
             if (State != NodeState.OnDisk) return;
 
             var rdr = new BinaryReader(_tree.Stream);

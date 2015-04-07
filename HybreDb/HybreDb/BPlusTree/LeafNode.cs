@@ -40,16 +40,13 @@ namespace HybreDb.BPlusTree {
             Data = new SortedBuckets<TKey, TValue>(Tree.BucketSize);
         }
 
-        public RemoveResult Remove(TKey k) {
-            Read();
+        public virtual RemoveResult Remove(TKey k) {
             Data.Remove(k);
 
             return RemoveResult.None;
         }
 
-        public INode<TKey, TValue> Insert(TKey key, TValue data) {
-            Read();
-
+        public virtual INode<TKey, TValue> Insert(TKey key, TValue data) {
             Data.Add(key, data);
             if (Data.Count == Capacity)
                 return Split();
@@ -57,8 +54,7 @@ namespace HybreDb.BPlusTree {
         }
 
 
-        public TValue Get(TKey key) {
-            Read();
+        public virtual TValue Get(TKey key) {
             return Data.TryGetValue(key);
         }
 
@@ -110,10 +106,6 @@ namespace HybreDb.BPlusTree {
             Next = null;
         }
 
-        /// <summary>
-        /// Function which reads in data of the node, overridden in the Disk Nodes
-        /// </summary>
-        public virtual void Read() { }
 
         public void Serialize(BinaryWriter wrtr) {
             throw new NotImplementedException();

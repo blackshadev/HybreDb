@@ -36,6 +36,21 @@ namespace HybreDb.BPlusTree {
                 State = NodeState.Changed;
         }
 
+        #region Node operations
+        public override TValue Get(TKey key) {
+            Read();
+            return base.Get(key);
+        }
+        public override INode<TKey, TValue> Insert(TKey key, TValue data) {
+            Read();
+            return base.Insert(key, data);
+        }
+        public override RemoveResult Remove(TKey k) {
+            Read();
+            return base.Remove(k);
+        }
+        #endregion
+
         /// <summary>
         /// Frees the resources from the node.
         /// </summary>
@@ -59,10 +74,11 @@ namespace HybreDb.BPlusTree {
             Free();
         }
 
+
         /// <summary>
         /// Reads the data into the node with the given offset within the file.
         /// </summary>
-        public override void Read() {
+        public void Read() {
             if (State != NodeState.OnDisk) return;
 
             _tree.Stream.Position = FileOffset;
