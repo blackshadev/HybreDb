@@ -106,7 +106,7 @@ namespace HybreDb.BPlusTree {
             if (Next != null) Next.Prev = Prev;
             if (Prev != null) Prev.Next = Next;
 
-            Data.Dispose();
+            if(Data != null) Data.Dispose();
             Next = null;
         }
 

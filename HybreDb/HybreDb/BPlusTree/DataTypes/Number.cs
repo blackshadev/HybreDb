@@ -10,6 +10,8 @@ namespace HybreDb.BPlusTree.DataTypes {
     public class Number : DataType {
         private int Data;
 
+        public Number() {}
+
 
         public Number(int i) {
             Data = i;

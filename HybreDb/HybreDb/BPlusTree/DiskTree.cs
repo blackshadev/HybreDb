@@ -44,6 +44,12 @@ namespace HybreDb.BPlusTree {
             Stream = new FileStream(Filename, FileMode.OpenOrCreate);
         }
 
+        public DiskTree(string filename, int size, KeyValuePair<TKey, TValue>[] dat) : base(size, dat) {
+            Filename = filename;
+
+            Stream = new FileStream(Filename, FileMode.OpenOrCreate);
+        } 
+
         #region Creators overrides
         public override BaseNode<TKey, TValue> CreateBaseNode() {
             return new DiskBaseNode<TKey, TValue>(this);

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -19,7 +20,7 @@ namespace HybreDbTest {
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
 
-            var t = new DiskTree<IDataType, TestData>("test.dat", 20);
+            var t = new DiskTree<Number, TestData>("test.dat", 64);
 
             sw.Start();
             foreach(var n in numbers)
@@ -47,25 +48,34 @@ namespace HybreDbTest {
             if(File.Exists("test.dat"))
                 File.Delete("test.dat");
 
-            var t = new DiskTree<Number, TestData>("test.dat", 32);
-
-            for (var i = 0; i < 10; i++)
-                t.Insert(i, new TestData{ Key = i, Value = "test_" + i});
             
-            t.Write();
+            var numbers = new Number[N];
+            GenerateRandomNumbers(numbers);
+            var nums = numbers.Select(e => new KeyValuePair<Number, TestData>(e, new TestData { Key = e, Value = "Test_" + e })).ToArray();
+            var sw = new Stopwatch();
 
+            sw.Start();
+            var t = new DiskTree<Number, TestData>("test.dat", 64, nums);
+            sw.Stop();
+            Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
+
+            sw.Reset();
+            sw.Start();
+            t.Write();
+            sw.Stop();
+            Trace.WriteLine("Writeout took  " + sw.ElapsedMilliseconds + "ms");
 
         }
 
         [TestMethod]
         public void ReadCheck() {
-            var t = new DiskTree<Number, TestData>("test.dat", 32);
+            var t = new DiskTree<Number, TestData>("test.dat", 64);
 
             var sw = new Stopwatch();
             sw.Start();
             t.Read();
             sw.Stop();
-            Trace.WriteLine("Read took " + sw.ElapsedTicks + "ticks");
+            Trace.WriteLine("Read took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
             sw.Start();
@@ -80,14 +90,14 @@ namespace HybreDbTest {
 
         }
 
-        public static void CheckAccess(DiskTree<IDataType, TestData> t, Number[] nums) {
+        public static void CheckAccess(DiskTree<Number, TestData> t, Number[] nums) {
 
             foreach (var n in nums) 
                 Assert.IsFalse(n != t[n].Key, "Inaccessable number");
             
         }
 
-        public static void CheckIterate(DiskTree<IDataType, TestData> t, Number[] nums) {
+        public static void CheckIterate(DiskTree<Number, TestData> t, Number[] nums) {
             int prev = int.MinValue;
 
             int iX = 0;

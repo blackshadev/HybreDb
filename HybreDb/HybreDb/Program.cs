@@ -18,7 +18,7 @@ namespace HybreDb {
             if(File.Exists("test.dat"))
                 File.Delete("test.dat");
 
-            var t = new DiskTree<Text, TestData>("test.dat", 5);
+            var t = new DiskTree<Text, TestData>("test.dat", 35);
 
             var nums = new int[] {9, 5, 1, 13, 54, 4, 23, 8, 45, 3, 12, 44};
             
