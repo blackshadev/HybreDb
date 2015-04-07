@@ -41,7 +41,7 @@ namespace HybreDb.BPlusTree {
             _tree = t;
         }
 
-        #region Node operations
+        #region Tree operations
         public override TValue Get(TKey key) {
             Read();
             return base.Get(key);
@@ -67,6 +67,7 @@ namespace HybreDb.BPlusTree {
             State = NodeState.OnDisk;
         }
 
+        #region Reading/Writing
         /// <summary>
         /// Writes the data from the node to the given stream.
         /// </summary>
@@ -118,11 +119,12 @@ namespace HybreDb.BPlusTree {
         }
 
         /// <summary>
-        /// Not implemeted because this is done via DiskNode.Create
+        /// Not implemeted because these nodes are created via DiskNode.Create
         /// </summary>
         public void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();
         }
+        #endregion
 
     }
 }

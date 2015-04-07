@@ -32,6 +32,7 @@ namespace HybreDb.BPlusTree {
             Buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(t.BucketSize);
         }
 
+        #region Internal inserts
         /// <summary>
         /// Inserts a node into the bucket of the current node
         /// </summary>
@@ -51,8 +52,10 @@ namespace HybreDb.BPlusTree {
             Buckets.Remove(node.HighestKey);
 
             return Count < Capacity / 4 ? this : null;
-        } 
+        }
+        #endregion
 
+        #region Tree operations
         /// <summary>
         /// Gets a value with given key
         /// </summary>
@@ -138,6 +141,14 @@ namespace HybreDb.BPlusTree {
 
             return RemoveResult.None;
         }
+        #endregion
+
+        #region Split/Merge
+        public INode<TKey, TValue> Split() {
+            var n = Tree.CreateBaseNode();
+            n.Buckets = Buckets.SliceEnd(Capacity / 2);
+            return n;
+        }
 
         public bool Merge(INode<TKey, TValue> n) {
             if (!(n is BaseNode<TKey, TValue>)) return false;
@@ -147,13 +158,6 @@ namespace HybreDb.BPlusTree {
             _n.Buckets.AddBegin(Buckets);
             return true;
         }
-
-        public INode<TKey, TValue> Split() {
-            var n = Tree.CreateBaseNode();
-            n.Buckets = Buckets.SliceEnd(Capacity / 2);
-            return n;
-        }
-
 
         public bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
             var l = left as BaseNode<TKey, TValue>;
@@ -173,6 +177,7 @@ namespace HybreDb.BPlusTree {
 
             return true;
         }
+        #endregion
 
 
         public void Dispose() {

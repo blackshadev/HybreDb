@@ -40,6 +40,7 @@ namespace HybreDb.BPlusTree {
             Data = new SortedBuckets<TKey, TValue>(Tree.BucketSize);
         }
 
+        #region Tree operations
         public virtual RemoveResult Remove(TKey k) {
             Data.Remove(k);
 
@@ -57,7 +58,9 @@ namespace HybreDb.BPlusTree {
         public virtual TValue Get(TKey key) {
             return Data.TryGetValue(key);
         }
+        #endregion
 
+        #region Split/Merge
         public INode<TKey, TValue> Split() {
             var node = Tree.CreateLeafNode(this, Next);
             node.Data = Data.SliceEnd(Capacity / 2);
@@ -96,7 +99,8 @@ namespace HybreDb.BPlusTree {
             Dispose();
             
             return true;
-        } 
+        }
+        #endregion
 
         public void Dispose() {
             if (Next != null) Next.Prev = Prev;
