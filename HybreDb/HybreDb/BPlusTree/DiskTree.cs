@@ -63,7 +63,7 @@ namespace HybreDb.BPlusTree {
 
         protected void CreateCache(int s) {
             Cache = new LRUCache<IDiskNode<TKey, TValue>>(s);
-            Cache.OnOutDated += node => node.Write();
+            Cache.OnOutDated += node => {/* node.Write()}; */ };
         }
 
         #region Creators overrides

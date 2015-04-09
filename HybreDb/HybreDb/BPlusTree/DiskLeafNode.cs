@@ -70,8 +70,6 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public void Free() {
             Data.Dispose();
-            Next = null;
-            Prev = null;
             Data = null;
             State = NodeState.OnDisk;
         }
@@ -86,14 +84,43 @@ namespace HybreDb.BPlusTree {
         /// Writes the data from the node to the given stream.
         /// </summary>
         public void Write(BinaryWriter wrtr) {
-            if (Next != null) ((DiskLeafNode<TKey, TValue>)Next).Write(wrtr);
-
             if (State != NodeState.Changed) return;
 
+            var next = ((DiskLeafNode<TKey, TValue>)Next);
+            var prev = ((DiskLeafNode<TKey, TValue>)Prev);
+
+
+            if (next != null)
+                next.Write(wrtr);
+
+
             FileOffset = wrtr.BaseStream.Position;
+            if (Next != null)
+                wrtr.Write(next.FileOffset);
+            else
+                wrtr.Write(-1L);
             Data.Serialize(wrtr);
+            
 
             Free();
+
+            if(prev != null) prev.UpdateNextFileOffset(wrtr);
+
+        }
+
+        /// <summary>
+        /// Updates the Neighbour reference on disk.
+        /// </summary>
+        public void UpdateNextFileOffset(BinaryWriter wrtr) {
+            if (State != NodeState.OnDisk) return;
+
+            var offs = wrtr.BaseStream.Position;
+
+            wrtr.BaseStream.Position = FileOffset;
+
+            wrtr.Write( ((DiskLeafNode<TKey, TValue>)Next).FileOffset);
+
+            wrtr.BaseStream.Position = offs;
         }
 
         /// <summary>
@@ -105,11 +132,11 @@ namespace HybreDb.BPlusTree {
             var rdr = new BinaryReader(DiskTree.Stream);
             rdr.BaseStream.Seek(FileOffset, SeekOrigin.Begin);
 
+            var offs = rdr.ReadInt64();
             Data = new SortedBuckets<TKey, TValue>(rdr,
                 _rdr => { var v = new TKey(); v.Deserialize(_rdr); return v; },
                 _rdr => { var v = new TValue(); v.Deserialize(_rdr); return v; }
             );
-            var offs = rdr.ReadInt64();
             if (offs > -1) {
                 Next = DiskTree.CreateLeafNode(offs);
                 Next.Prev = this;
@@ -126,10 +153,7 @@ namespace HybreDb.BPlusTree {
             wrtr.Write((byte)Type);
             wrtr.Write(FileOffset);
             
-            if (Next != null)
-                wrtr.Write(((DiskLeafNode<TKey, TValue>)Next).FileOffset);
-            else
-                wrtr.Write(-1L);
+            
         }
 
         /// <summary>

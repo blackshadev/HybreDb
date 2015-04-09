@@ -58,6 +58,8 @@ namespace HybreDb.BPlusTree {
             var n = CreateBaseNode();
             n.InsertNode(r);
             n.InsertNode(l);
+
+            n.Changed();
             
             return n;
         }
@@ -67,6 +69,7 @@ namespace HybreDb.BPlusTree {
 
             if (n != null)
                 Root = NewRootNode(Root, n);
+            Root.Accessed();
         }
 
 

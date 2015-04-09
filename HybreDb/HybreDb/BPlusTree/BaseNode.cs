@@ -81,9 +81,11 @@ namespace HybreDb.BPlusTree {
             // Always update the index, faster than branching
             Buckets.Set(idx, n.HighestKey, n);
 
+            var res = _n != null ? InsertNode(_n) : null;
+
             n.Accessed();
 
-            return _n != null ? InsertNode(_n) : null;
+            return res;
         }
 
         /// <summary>
