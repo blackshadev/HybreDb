@@ -100,7 +100,7 @@ namespace HybreDb.BPlusTree {
 
                 var seg = new ArraySegment<KeyValuePair<TKey, TValue>>(sorted, i, l);
                 var leaf = CreateLeafNode(prev);
-                leaf.Data.LoadSorted(seg);
+                leaf.Buckets.LoadSorted(seg);
                 
                 if (prev != null) prev.Next = leaf;
 
@@ -127,17 +127,10 @@ namespace HybreDb.BPlusTree {
             }
 
             return nodes[0].Value;
-        } 
+        }
 
         public IEnumerator<TValue> GetEnumerator() {
-            var n = Root.FirstLeaf;
-            
-            do {
-                foreach (var v in n.Data)
-                    yield return v.Value;
-
-            } while( (n = n.Next) != null );
-            
+            return Root.GetEnumerator();
         }
 
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {

@@ -10,7 +10,7 @@ namespace HybreDb.BPlusTree {
     /// Node interface for all nodes in BPlusTree
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public interface INode<TKey, TValue> : IDisposable, ITreeSerializable
+    public interface INode<TKey, TValue> : IDisposable, ITreeSerializable, IEnumerable<TValue> 
         where TKey : IComparable, ITreeSerializable
         where TValue : ITreeSerializable
     {
@@ -24,7 +24,8 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         int Capacity { get; }
 
-        /// <summary>
+        
+            /// <summary>
         /// First child node
         /// </summary>
         INode<TKey, TValue> First { get;  }

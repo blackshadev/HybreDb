@@ -14,6 +14,13 @@ namespace HybreDb.BPlusTree {
         where TValue : ITreeSerializable, new()
     {
 
+        public SortedBuckets<TKey, INode<TKey, TValue>> Buckets {
+            get { 
+                Read();
+                return _buckets;
+            }
+        }
+
         public long FileOffset { get; private set; }
         public NodeState State { get; private set; }
 
@@ -75,8 +82,8 @@ namespace HybreDb.BPlusTree {
         /// Frees the resources from the node.
         /// </summary>
         public void Free() {
-            Buckets.Dispose();
-            Buckets = null;
+            _buckets.Dispose();
+            _buckets = null;
             State = NodeState.OnDisk;
         }
 
@@ -109,7 +116,7 @@ namespace HybreDb.BPlusTree {
 
             DiskTree.Stream.Position = FileOffset;
             var rdr = new BinaryReader(DiskTree.Stream);
-            Buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(rdr, 
+            _buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(rdr, 
                 _rdr => { var v = new TKey(); v.Deserialize(_rdr); return v; },
                 _rdr => DiskNode<TKey, TValue>.Create(DiskTree, rdr)
             );
@@ -150,5 +157,13 @@ namespace HybreDb.BPlusTree {
 
             base.Dispose();
         }
+
+        public override IEnumerator<TValue> GetEnumerator() {
+            Read();
+
+            return base.GetEnumerator();
+        }
+
+
     }
 }

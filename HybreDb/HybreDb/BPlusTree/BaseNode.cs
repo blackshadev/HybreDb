@@ -14,7 +14,11 @@ namespace HybreDb.BPlusTree {
         where TValue : ITreeSerializable
     {
 
-        public SortedBuckets<TKey, INode<TKey, TValue>> Buckets;
+        protected SortedBuckets<TKey, INode<TKey, TValue>> _buckets;
+        public SortedBuckets<TKey, INode<TKey, TValue>> Buckets {
+            get { return _buckets; }
+        }
+
         public int Count { get { return Buckets.Count; } }
         public int Capacity { get { return Tree.BucketSize; } }
         public TKey HighestKey { get { return Buckets.KeyAt(Buckets.Count - 1); } }
@@ -30,7 +34,7 @@ namespace HybreDb.BPlusTree {
 
         public BaseNode(Tree<TKey, TValue> t) {
             _tree = t;
-            Buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(t.BucketSize);
+            _buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(t.BucketSize);
         }
 
         #region Internal inserts
@@ -162,7 +166,7 @@ namespace HybreDb.BPlusTree {
         #region Split/Merge
         public INode<TKey, TValue> Split() {
             var n = Tree.CreateBaseNode();
-            n.Buckets = Buckets.SliceEnd(Capacity / 2);
+            n._buckets = Buckets.SliceEnd(Capacity / 2);
 
             Changed();
             n.Changed();
@@ -222,6 +226,16 @@ namespace HybreDb.BPlusTree {
 
         public void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();
+        }
+
+        public virtual IEnumerator<TValue> GetEnumerator() {
+            var e = Buckets.Values.SelectMany(n => n).GetEnumerator();
+            Accessed();
+            return e;
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
     }
 }

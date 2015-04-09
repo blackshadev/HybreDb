@@ -22,6 +22,13 @@ namespace HybreDb.BPlusTree {
     {
         public static int Total = 0;
         
+        public SortedBuckets<TKey, TValue> Buckets {
+            get {
+                Read();
+                return _buckets;
+            }
+        }
+
         public long FileOffset { get; private set; }
         public NodeState State { get; private set; }
 
@@ -69,8 +76,8 @@ namespace HybreDb.BPlusTree {
         /// Free all resources hold bu this node
         /// </summary>
         public void Free() {
-            Data.Dispose();
-            Data = null;
+            _buckets.Dispose();
+            _buckets = null;
             State = NodeState.OnDisk;
         }
 
@@ -95,16 +102,16 @@ namespace HybreDb.BPlusTree {
 
 
             FileOffset = wrtr.BaseStream.Position;
-            if (Next != null)
-                wrtr.Write(next.FileOffset);
-            else
-                wrtr.Write(-1L);
-            Data.Serialize(wrtr);
+            //if (Next != null)
+            //    wrtr.Write(next.FileOffset);
+            //else
+            //    wrtr.Write(-1L);
+            Buckets.Serialize(wrtr);
             
 
             Free();
 
-            if(prev != null) prev.UpdateNextFileOffset(wrtr);
+            //if(prev != null) prev.UpdateNextFileOffset(wrtr);
 
         }
 
@@ -132,15 +139,15 @@ namespace HybreDb.BPlusTree {
             var rdr = new BinaryReader(DiskTree.Stream);
             rdr.BaseStream.Seek(FileOffset, SeekOrigin.Begin);
 
-            var offs = rdr.ReadInt64();
-            Data = new SortedBuckets<TKey, TValue>(rdr,
+            //var offs = rdr.ReadInt64();
+            _buckets = new SortedBuckets<TKey, TValue>(rdr,
                 _rdr => { var v = new TKey(); v.Deserialize(_rdr); return v; },
                 _rdr => { var v = new TValue(); v.Deserialize(_rdr); return v; }
             );
-            if (offs > -1) {
-                Next = DiskTree.CreateLeafNode(offs);
-                Next.Prev = this;
-            }
+            //if (offs > -1) {
+            //    Next = DiskTree.CreateLeafNode(offs);
+            //    Next.Prev = this;
+            //}
 
             State = NodeState.Loaded;
         }
@@ -179,6 +186,11 @@ namespace HybreDb.BPlusTree {
             DiskTree.Cache.Remove(this);
 
             base.Dispose();
+        }
+
+        public override IEnumerator<TValue> GetEnumerator() {
+            Read();
+            return base.GetEnumerator();
         }
 
     }
