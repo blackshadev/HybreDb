@@ -26,7 +26,7 @@ namespace HybreDb.BPlusTree {
 
         public INode<TKey, TValue> First { get { Read(); return this; } } 
 
-        private DiskTree<TKey, TValue> _tree;
+        public DiskTree<TKey, TValue> DiskTree { get; private set; }
 
         public DiskLeafNode(DiskTree<TKey, TValue> t, long offset)
             : this(t) {
@@ -38,7 +38,7 @@ namespace HybreDb.BPlusTree {
 
         public DiskLeafNode(DiskTree<TKey, TValue> t)
             : base(t) {
-            _tree = t;
+            DiskTree = t;
         }
 
         #region Tree operations
@@ -93,7 +93,7 @@ namespace HybreDb.BPlusTree {
         public void Read() {
             if (State != NodeState.OnDisk) return;
 
-            var rdr = new BinaryReader(_tree.Stream);
+            var rdr = new BinaryReader(DiskTree.Stream);
             rdr.BaseStream.Seek(FileOffset, SeekOrigin.Begin);
 
             Data = new SortedBuckets<TKey, TValue>(rdr,
@@ -102,7 +102,7 @@ namespace HybreDb.BPlusTree {
             );
             var offs = rdr.ReadInt64();
             if (offs > -1) {
-                Next = _tree.CreateLeafNode(offs);
+                Next = DiskTree.CreateLeafNode(offs);
                 Next.Prev = this;
             }
 
@@ -119,7 +119,7 @@ namespace HybreDb.BPlusTree {
         }
 
         /// <summary>
-        /// Not implemeted because these nodes are created via DiskNode.Create
+        /// Not implemeted because these nodes are created via DiskTree.Create
         /// </summary>
         public void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();

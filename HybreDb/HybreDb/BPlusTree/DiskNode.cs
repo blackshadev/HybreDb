@@ -10,8 +10,9 @@ using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
     public interface IDiskNode<TKey, TValue> : INode<TKey, TValue>
-        where TKey : IComparable, ITreeSerializable
-        where TValue : ITreeSerializable {
+        where TKey : IComparable, ITreeSerializable, new()
+        where TValue : ITreeSerializable, new() 
+    {
         /// <summary>
         /// Offset of the node within the file.
         /// </summary>
@@ -21,6 +22,8 @@ namespace HybreDb.BPlusTree {
         /// State of the node: OnDisk, Changed, Loaded
         /// </summary>
         NodeState State { get; }
+
+        DiskTree<TKey, TValue> DiskTree { get; } 
 
         /// <summary>
         /// Frees the data of the node.

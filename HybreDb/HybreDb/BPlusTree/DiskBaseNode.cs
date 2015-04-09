@@ -19,11 +19,11 @@ namespace HybreDb.BPlusTree {
 
         public INode<TKey, TValue> First { get { Read(); return Buckets.ValueAt(0); } }
         
-        private DiskTree<TKey, TValue> _tree;
+        public DiskTree<TKey, TValue> DiskTree { get; private set; }
 
         public DiskBaseNode(DiskTree<TKey, TValue> t, long offset)
             : this(t) {
-                _tree = t;
+                DiskTree = t;
             FileOffset = offset;
                 State = NodeState.OnDisk;
             
@@ -32,7 +32,7 @@ namespace HybreDb.BPlusTree {
 
         public DiskBaseNode(DiskTree<TKey, TValue> t)
             : base(t) {
-                _tree = t;
+                DiskTree = t;
                 State = NodeState.Changed;
         }
 
@@ -81,11 +81,11 @@ namespace HybreDb.BPlusTree {
         public void Read() {
             if (State != NodeState.OnDisk) return;
 
-            _tree.Stream.Position = FileOffset;
-            var rdr = new BinaryReader(_tree.Stream);
+            DiskTree.Stream.Position = FileOffset;
+            var rdr = new BinaryReader(DiskTree.Stream);
             Buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(rdr, 
                 _rdr => { var v = new TKey(); v.Deserialize(_rdr); return v; },
-                _rdr => DiskNode<TKey, TValue>.Create(_tree, rdr)
+                _rdr => DiskNode<TKey, TValue>.Create(DiskTree, rdr)
             );
 
             State = NodeState.Loaded;

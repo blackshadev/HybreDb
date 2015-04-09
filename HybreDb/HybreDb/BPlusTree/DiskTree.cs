@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.BPlusTree.Collections;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
@@ -38,23 +39,32 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public long FileOffset { get; private set; }
 
+        public LRUCache<IDiskNode<TKey, TValue>> Cache;
+
         public IDiskNode<TKey, TValue> DiskRoot {
             get { return (IDiskNode<TKey, TValue>) Root; } 
         }
 
         public FileStream Stream { get; protected set; }
 
-        public DiskTree(string filename, int size) : base(size) {
+        public DiskTree(string filename, int bucketSize, int cacheSize) : base(bucketSize) {
             Filename = filename;
 
             Stream = new FileStream(Filename, FileMode.OpenOrCreate);
+            CreateCache(cacheSize);
         }
 
-        public DiskTree(string filename, int size, KeyValuePair<TKey, TValue>[] dat) : base(size, dat) {
+        public DiskTree(string filename, int bucketSize, int cacheSize, KeyValuePair<TKey, TValue>[] dat) : base(bucketSize, dat) {
             Filename = filename;
 
             Stream = new FileStream(Filename, FileMode.OpenOrCreate);
-        } 
+            CreateCache(cacheSize);
+        }
+
+        protected void CreateCache(int s) {
+            Cache = new LRUCache<IDiskNode<TKey, TValue>>(s);
+            Cache.OnRemoved += node => node.Free();
+        }
 
         #region Creators overrides
         public override BaseNode<TKey, TValue> CreateBaseNode() {

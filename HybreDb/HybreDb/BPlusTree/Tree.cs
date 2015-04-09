@@ -24,7 +24,7 @@ namespace HybreDb.BPlusTree {
             Root = CreateLeafNode();
         }
 
-        public Tree(int size, KeyValuePair<TKey, TValue>[] data) : this(size) {
+        public Tree(int bucketSize, KeyValuePair<TKey, TValue>[] data) : this(bucketSize) {
             Root = bulkInsert(data);
         }
 

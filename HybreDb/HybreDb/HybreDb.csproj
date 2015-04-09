@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BPlusTree\BaseNode.cs" />
+    <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
     <Compile Include="BPlusTree\DataTypes\IDataType.cs" />
     <Compile Include="BPlusTree\DataTypes\Number.cs" />
     <Compile Include="BPlusTree\DataTypes\Text.cs" />
@@ -49,6 +50,7 @@
     <Compile Include="BPlusTree\DiskLeafNode.cs" />
     <Compile Include="BPlusTree\DiskNode.cs" />
     <Compile Include="BPlusTree\DiskTree.cs" />
+    <Compile Include="BPlusTree\Collections\LRUCache.cs" />
     <Compile Include="BPlusTree\LeafNode.cs" />
     <Compile Include="BPlusTree\Node.cs" />
     <Compile Include="BPlusTree\SortedBuckets.cs" />

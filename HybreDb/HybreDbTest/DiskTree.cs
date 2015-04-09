@@ -13,14 +13,18 @@ namespace HybreDbTest {
     public class DiskTree {
 
         public const int N = 10000;
+        public const int BucketSize = 64;
+        public const int CacheSize = 8;
+
         public Stopwatch sw = new Stopwatch();
+        public DiskTree Cache { get; private set; }
 
         [TestMethod]
         public void TestInserts() {
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
 
-            var t = new DiskTree<Number, TestData>("test.dat", 64);
+            var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize);
 
             sw.Start();
             foreach(var n in numbers)
@@ -55,7 +59,7 @@ namespace HybreDbTest {
             var sw = new Stopwatch();
 
             sw.Start();
-            var t = new DiskTree<Number, TestData>("test.dat", 64, nums);
+            var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize, nums);
             sw.Stop();
             Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 

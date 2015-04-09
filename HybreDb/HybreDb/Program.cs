@@ -18,7 +18,7 @@ namespace HybreDb {
             if(File.Exists("test.dat"))
                 File.Delete("test.dat");
 
-            var t = new DiskTree<Text, TestData>("test.dat", 35);
+            var t = new DiskTree<Text, TestData>("test.dat", 35, 8);
 
             var nums = new int[] {9, 5, 1, 13, 54, 4, 23, 8, 45, 3, 12, 44};
             
@@ -34,7 +34,7 @@ namespace HybreDb {
 
             t.Dispose();
 
-            t = new DiskTree<Text, TestData>("test.dat", 50);
+            t = new DiskTree<Text, TestData>("test.dat", 50, 8);
             t.Read();
 
             Console.WriteLine("\nAfter Read");
