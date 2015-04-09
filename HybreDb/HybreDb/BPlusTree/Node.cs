@@ -30,6 +30,11 @@ namespace HybreDb.BPlusTree {
         INode<TKey, TValue> First { get;  }
 
         /// <summary>
+        /// Gets the first elaf with recursion
+        /// </summary>
+        LeafNode<TKey, TValue> FirstLeaf { get; } 
+        
+        /// <summary>
         /// Tree the node belongs to
         /// </summary>
         Tree<TKey, TValue> Tree { get; }
@@ -91,6 +96,16 @@ namespace HybreDb.BPlusTree {
         /// <param name="r">Right neighbour with upper keys</param>
         /// <returns>Whenever enough items could be borrowed. When false is returned, nothing was done.</returns>
         bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r);
+
+        /// <summary>
+        /// Function used to control the LRU cache
+        /// </summary>
+        void Accessed();
+
+        /// <summary>
+        /// Function used to control the state of nodes.
+        /// </summary>
+        void Changed();
     }
 
     /// <summary>

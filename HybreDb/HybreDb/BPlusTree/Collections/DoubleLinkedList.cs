@@ -14,8 +14,10 @@ namespace HybreDb.BPlusTree.Collections {
         }
 
         public LinkedNode<T> AddHead(LinkedNode<T> l) {
-            l.InsertBefore(Head);
+            if(Head != null) l.InsertBefore(Head);
             Head = l;
+
+            if (l.Next == null) Tail = l;
 
             return l;
         } 
@@ -27,6 +29,8 @@ namespace HybreDb.BPlusTree.Collections {
         public LinkedNode<T> AddTail(LinkedNode<T> l) {
             l.InsertAfter(Tail);
             Tail = l;
+
+            if (l.Prev == null) Head = l;
 
             return l;
         } 

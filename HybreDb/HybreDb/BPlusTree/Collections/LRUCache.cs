@@ -9,9 +9,9 @@ using HybreDb.Storage;
 namespace HybreDb.BPlusTree.Collections {
     public class LRUCache<T> {
 
-        public delegate void RemoveHandler(T dat);
+        public delegate void OutDatedHandler(T dat);
 
-        public event RemoveHandler OnRemoved;
+        public event OutDatedHandler OnOutDated;
 
         public int Capacity { get; private set; }
         public int Count { get; private set; }
@@ -37,6 +37,16 @@ namespace HybreDb.BPlusTree.Collections {
 
         }
 
+        public void Remove(T d) {
+            LinkedNode<T> l;
+
+            if (!Lookup.TryGetValue(d, out l)) return;
+
+            Lookup.Remove(d);
+            l.Unlink();
+            Count--;
+        }
+
         protected void UpdateExisting(LinkedNode<T> n) {
             n.Unlink();
             List.AddHead(n);
@@ -47,11 +57,13 @@ namespace HybreDb.BPlusTree.Collections {
 
             if (l != null) {
                 Lookup.Remove(l.Data);
-                if (OnRemoved != null) OnRemoved(l.Data);
+                if (OnOutDated != null) OnOutDated(l.Data);
+                Count--;
             }
 
             l = List.AddHead(k);
             Lookup.Add(k, l);
+            Count++;
         }
     }
 }

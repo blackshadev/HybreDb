@@ -18,13 +18,23 @@ namespace HybreDb.BPlusTree {
         public NodeState State { get; private set; }
 
         public INode<TKey, TValue> First { get { Read(); return Buckets.ValueAt(0); } }
-        
+
+        public LeafNode<TKey, TValue> FirstLeaf {
+            get {
+                var n = First;
+                var _n = n.FirstLeaf;
+                n.Accessed();
+
+                return _n;
+            }
+        }
+
         public DiskTree<TKey, TValue> DiskTree { get; private set; }
 
         public DiskBaseNode(DiskTree<TKey, TValue> t, long offset)
             : this(t) {
                 DiskTree = t;
-            FileOffset = offset;
+                FileOffset = offset;
                 State = NodeState.OnDisk;
             
                 Free();
@@ -39,16 +49,26 @@ namespace HybreDb.BPlusTree {
         #region Tree operations
         public override TValue Get(TKey key) {
             Read();
+
+            State = NodeState.Changed;
+
             return base.Get(key);
         }
         public override INode<TKey, TValue> Insert(TKey key, TValue data) {
             Read();
+
+            State = NodeState.Changed;
+
             return base.Insert(key, data);
         }
         public override RemoveResult Remove(TKey k) {
             Read();
+
+            State = NodeState.Changed;
+
             return base.Remove(k);
         }
+
         #endregion
 
         /// <summary>
@@ -61,8 +81,14 @@ namespace HybreDb.BPlusTree {
         }
 
         #region Reading/Writing
+
+        public void Write() {
+            DiskTree.Stream.Seek(0, SeekOrigin.End);
+            Write(new BinaryWriter(DiskTree.Stream));
+        }
+
         public void Write(BinaryWriter wrtr) {
-            if (State == NodeState.OnDisk) return;
+            if (State != NodeState.Changed) return;
 
             // First make sure all children are written to file
             foreach (var n in Buckets)
@@ -92,7 +118,7 @@ namespace HybreDb.BPlusTree {
         }
 
         /// <summary>
-        /// 
+        /// Serializes the node  with its type and the offset of the data bucket within the file
         /// </summary>
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write((byte)Type);
@@ -106,5 +132,23 @@ namespace HybreDb.BPlusTree {
             throw new NotImplementedException();
         }
         #endregion
+
+
+        /// <summary>
+        /// Upon a access update the cache
+        /// </summary>
+        public void Accessed() {
+            DiskTree.Cache.Update(this);
+        }
+
+        public void Changed() {
+            State = NodeState.Changed;
+        }
+
+        public override void Dispose() {
+            DiskTree.Cache.Remove(this);
+
+            base.Dispose();
+        }
     }
 }

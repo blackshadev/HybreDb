@@ -20,6 +20,7 @@ namespace HybreDb.BPlusTree {
         public TKey HighestKey { get { return Buckets.KeyAt(Buckets.Count - 1); } }
         public TKey LowestKey { get { return Buckets.KeyAt(0); } }
         public INode<TKey, TValue> First { get { return Buckets.ValueAt(0); } }
+        public LeafNode<TKey, TValue> FirstLeaf { get { var n = First; return n.FirstLeaf; } } 
 
         public NodeTypes Type { get { return NodeTypes.Base; } }
 
@@ -61,7 +62,11 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public virtual TValue Get(TKey key) {
             var n = Buckets.ValueAt(Buckets.NearestIndex(key));
-            return n.Get(key);
+            var v = n.Get(key);
+            
+            n.Accessed();
+
+            return v;
         }
 
         /// <summary>
@@ -76,9 +81,9 @@ namespace HybreDb.BPlusTree {
             // Always update the index, faster than branching
             Buckets.Set(idx, n.HighestKey, n);
 
-            if (_n != null)
-                return InsertNode(_n);
-            return null;
+            n.Accessed();
+
+            return _n != null ? InsertNode(_n) : null;
         }
 
         /// <summary>
@@ -101,12 +106,16 @@ namespace HybreDb.BPlusTree {
                     node.First.Dispose();
                 } else
                     InsertNode(node.First);
+                
+                node.Dispose();
                 return RemoveResult.Removed;
             }
 
             // Nothing to do node is big enough
             if (node.Count >= node.Capacity / 4) {
                 Buckets.Set(idx, node.HighestKey, node);
+                
+                node.Accessed();
                 return RemoveResult.None;
             }
 
@@ -118,19 +127,23 @@ namespace HybreDb.BPlusTree {
                 Buckets.Set(idx, node.HighestKey, node);
                 if(l != null) Buckets.Set(idx - 1, l.HighestKey, l);
 
+                node.Accessed();
                 return RemoveResult.Borrowed;
             }
 
             // Borrow failed, try to merge to the right
             if (r != null && node.Merge(r)) {
                 Buckets.RemoveIndex(idx);
+                node.Dispose();
                 return RemoveResult.Merged;
             
             }
 
             // Cannot borrow but deleting the leafnode without neighbours will result in a broken tree
-            if (node is LeafNode<TKey, TValue> && node.Count == 0 && l == null && r == null)
+            if (node is LeafNode<TKey, TValue> && node.Count == 0 && l == null && r == null) {
+                node.Accessed();
                 return RemoveResult.Merged;
+            }
 
             // Remove empty base node or leafnode with neighbours
             if (node.Count == 0) {
@@ -139,6 +152,7 @@ namespace HybreDb.BPlusTree {
                 return RemoveResult.Removed;
             }
 
+            node.Accessed();
             return RemoveResult.None;
         }
         #endregion
@@ -147,6 +161,10 @@ namespace HybreDb.BPlusTree {
         public INode<TKey, TValue> Split() {
             var n = Tree.CreateBaseNode();
             n.Buckets = Buckets.SliceEnd(Capacity / 2);
+
+            Changed();
+            n.Changed();
+
             return n;
         }
 
@@ -156,6 +174,10 @@ namespace HybreDb.BPlusTree {
             var _n = (BaseNode<TKey, TValue>)n;
             
             _n.Buckets.AddBegin(Buckets);
+
+            Changed();
+            _n.Changed();
+
             return true;
         }
 
@@ -167,7 +189,9 @@ namespace HybreDb.BPlusTree {
             if (l != null && l.Count - 1 - l.Capacity / 4 > Capacity / 4) {
                 s = l.Buckets.SliceEnd(l.Buckets.Count - Capacity / 4);
                 Buckets.AddBegin(s);
-
+                
+                l.Changed();
+                Changed();
                 return true;
             }
             if (r == null || r.Count - 1 - r.Capacity / 4 <= Capacity / 4) return false;
@@ -175,12 +199,17 @@ namespace HybreDb.BPlusTree {
             s = r.Buckets.SliceBegin(Capacity / 4);
             Buckets.AddEnd(s);
 
+            r.Changed();
+            Changed();
             return true;
         }
         #endregion
 
+        public void Accessed() { }
 
-        public void Dispose() {
+        public void Changed() {}
+
+        public virtual void Dispose() {
             if(Buckets != null) Buckets.Dispose();
         }
 

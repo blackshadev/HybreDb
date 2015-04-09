@@ -63,7 +63,7 @@ namespace HybreDb.BPlusTree {
 
         protected void CreateCache(int s) {
             Cache = new LRUCache<IDiskNode<TKey, TValue>>(s);
-            Cache.OnRemoved += node => node.Free();
+            Cache.OnOutDated += node => node.Write();
         }
 
         #region Creators overrides
@@ -109,14 +109,20 @@ namespace HybreDb.BPlusTree {
         }
 
         public IEnumerator<TValue> GetEnumerator() {
-            var n = (DiskLeafNode<TKey, TValue>)GetFirstLeaf();
+            var n = (DiskLeafNode<TKey, TValue>)Root.FirstLeaf;
+            LeafNode<TKey, TValue> _n;
 
+            var iX = 0;
             do {
                 n.Read();
                 foreach (var v in n.Data)
                     yield return v.Value;
 
-            } while ((n = (DiskLeafNode<TKey, TValue>)n.Next) != null);
+                iX++;
+                _n = n.Next;
+                n.Accessed();
+            } while ((n = (DiskLeafNode<TKey, TValue>)_n) != null);
+
 
         }
 

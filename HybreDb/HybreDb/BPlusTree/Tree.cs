@@ -84,14 +84,6 @@ namespace HybreDb.BPlusTree {
 
         }
 
-        protected LeafNode<TKey, TValue> GetFirstLeaf() {
-            var n = Root;
-
-            while (!(n is LeafNode<TKey, TValue>))
-                n = n.First;
-            
-            return (LeafNode<TKey, TValue>)n.First;
-        }
 
         protected INode<TKey, TValue> bulkInsert(KeyValuePair<TKey, TValue>[] sorted) {
             var nodes = new List<KeyValuePair<TKey, INode<TKey, TValue>>>();
@@ -135,7 +127,7 @@ namespace HybreDb.BPlusTree {
         } 
 
         public IEnumerator<TValue> GetEnumerator() {
-            var n = GetFirstLeaf();
+            var n = Root.FirstLeaf;
             
             do {
                 foreach (var v in n.Data)

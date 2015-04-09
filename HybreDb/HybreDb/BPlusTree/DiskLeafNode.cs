@@ -18,8 +18,9 @@ namespace HybreDb.BPlusTree {
     /// <typeparam name="TKey">Value type</typeparam>
     public class DiskLeafNode<TKey, TValue> : LeafNode<TKey, TValue>, IDiskNode<TKey, TValue>
         where TKey : ITreeSerializable, IComparable, new()
-        where TValue : ITreeSerializable, new()
+        where TValue : ITreeSerializable, new() 
     {
+        public static int Total = 0;
         
         public long FileOffset { get; private set; }
         public NodeState State { get; private set; }
@@ -39,6 +40,8 @@ namespace HybreDb.BPlusTree {
         public DiskLeafNode(DiskTree<TKey, TValue> t)
             : base(t) {
             DiskTree = t;
+            State = NodeState.Changed;
+            Total += 1;
         }
 
         #region Tree operations
@@ -48,12 +51,18 @@ namespace HybreDb.BPlusTree {
         }
         public override INode<TKey, TValue> Insert(TKey key, TValue data) {
             Read();
+
+            State = NodeState.Changed;
             return base.Insert(key, data);
         }
         public override RemoveResult Remove(TKey k) {
             Read();
+
+            State = NodeState.Changed;
             return base.Remove(k);
         }
+
+      
         #endregion
 
         /// <summary>
@@ -68,21 +77,21 @@ namespace HybreDb.BPlusTree {
         }
 
         #region Reading/Writing
+        public void Write() {
+            DiskTree.Stream.Seek(0, SeekOrigin.End);
+            Write(new BinaryWriter(DiskTree.Stream));
+        }
+
         /// <summary>
         /// Writes the data from the node to the given stream.
         /// </summary>
         public void Write(BinaryWriter wrtr) {
             if (Next != null) ((DiskLeafNode<TKey, TValue>)Next).Write(wrtr);
 
-            if (State == NodeState.OnDisk) return;
+            if (State != NodeState.Changed) return;
 
             FileOffset = wrtr.BaseStream.Position;
             Data.Serialize(wrtr);
-
-            if (Next != null)
-                wrtr.Write(((DiskLeafNode<TKey, TValue>)Next).FileOffset);
-            else 
-                wrtr.Write(-1L);
 
             Free();
         }
@@ -116,6 +125,11 @@ namespace HybreDb.BPlusTree {
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write((byte)Type);
             wrtr.Write(FileOffset);
+            
+            if (Next != null)
+                wrtr.Write(((DiskLeafNode<TKey, TValue>)Next).FileOffset);
+            else
+                wrtr.Write(-1L);
         }
 
         /// <summary>
@@ -125,6 +139,23 @@ namespace HybreDb.BPlusTree {
             throw new NotImplementedException();
         }
         #endregion
+
+        /// <summary>
+        /// Upon a access update the cache
+        /// </summary>
+        public void Accessed() {
+            DiskTree.Cache.Update(this);
+        }
+
+        public void Changed() {
+            State = NodeState.Changed;
+        }
+
+        public override void Dispose() {
+            DiskTree.Cache.Remove(this);
+
+            base.Dispose();
+        }
 
     }
 }

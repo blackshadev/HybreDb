@@ -56,10 +56,10 @@ namespace HybreDbTest {
             sw.Start();
             foreach (var n in Tree) {
                 var v = Tree[n.Key];
-                Assert.IsFalse(v != n, "Access failed");
+                Assert.IsFalse(v != n, "Accessed failed");
             }
             sw.Stop();
-            Trace.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Accessed took " + sw.ElapsedMilliseconds + "ms");
         }
 
         public void CheckRemoves() {
@@ -95,13 +95,24 @@ namespace HybreDbTest {
         [TestMethod] 
         public void TestRemoval() {
             var t = new Tree<Number, TestData>(5);
-            var nums = RandomNumbers.Take(100).ToArray();
+            var sw = new Stopwatch();
+            var nums = RandomNumbers.Take(1000).ToArray();
+
+            sw.Start();
             foreach (int i in nums)
                 t.Insert(i, new TestData { Key = i, Value = "Test_" + i } );
+            sw.Stop();
+            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
 
+
+            sw.Reset();
+            sw.Start();
             foreach (int i in nums) {
                 Assert.IsFalse(t[i].Key != i, "Tree is invalid");
             }
+            sw.Stop();
+            Trace.WriteLine("Check took " + sw.ElapsedMilliseconds + "ms");
+
 
             for(var i = 0; i < nums.Length; i++) {
                 t.Remove(nums[i]);

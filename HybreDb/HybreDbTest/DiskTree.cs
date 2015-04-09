@@ -83,12 +83,11 @@ namespace HybreDbTest {
 
             sw.Reset();
             sw.Start();
-            CheckAccess(t, numbers);
+            CheckIterate(t, numbers);
             sw.Stop();
-            Trace.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
-
-
+            Trace.WriteLine("Iterate took " + sw.ElapsedMilliseconds + "ms");
         }
+
 
         public static void CheckAccess(DiskTree<Number, TestData> t, Number[] nums) {
 

@@ -18,6 +18,7 @@ namespace HybreDb.BPlusTree {
         public int Count { get { return Data.Count; } }
 
         public INode<TKey, TValue> First { get { return this; } }
+        public LeafNode<TKey, TValue> FirstLeaf { get { return this; } } 
 
         public NodeTypes Type { get { return NodeTypes.Leaf; } }
 
@@ -43,12 +44,15 @@ namespace HybreDb.BPlusTree {
         #region Tree operations
         public virtual RemoveResult Remove(TKey k) {
             Data.Remove(k);
+            Changed();
 
             return RemoveResult.None;
         }
 
         public virtual INode<TKey, TValue> Insert(TKey key, TValue data) {
             Data.Add(key, data);
+            Changed();
+
             if (Data.Count == Capacity)
                 return Split();
             return null;
@@ -67,6 +71,9 @@ namespace HybreDb.BPlusTree {
             
             Next = node;
 
+            Changed();
+            node.Changed();
+            
             return node;
         }
 
@@ -97,12 +104,15 @@ namespace HybreDb.BPlusTree {
             _n.Data.AddBegin(Data);
             
             Dispose();
+
+            Changed();
+            _n.Changed();
             
             return true;
         }
         #endregion
 
-        public void Dispose() {
+        public virtual void Dispose() {
             if (Next != null) Next.Prev = Prev;
             if (Prev != null) Prev.Next = Next;
 
@@ -110,6 +120,8 @@ namespace HybreDb.BPlusTree {
             Next = null;
         }
 
+        public void Accessed() { }
+        public void Changed() { }
 
         public void Serialize(BinaryWriter wrtr) {
             throw new NotImplementedException();
