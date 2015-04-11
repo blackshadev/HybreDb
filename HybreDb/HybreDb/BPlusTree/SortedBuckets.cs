@@ -71,8 +71,8 @@ namespace HybreDb.BPlusTree {
                 throw new ArgumentException("Dictionary is full");
 
             int idx = Index(key);
-            if (idx > -1) throw new ArgumentException("Key with the same key already exists");
-            idx = ~idx;
+            //if (idx > -1) throw new ArgumentException("Key with the same key already exists");
+            //idx = ~idx;
 
 
 
@@ -127,13 +127,19 @@ namespace HybreDb.BPlusTree {
         }
 
         public int Index(TKey k) {
-            return Array.BinarySearch(_keys, 0, Count, k);
+            //return Array.BinarySearch(_keys, 0, Count, k);
+            int i = 0;
+            for (; i < Count; i++) {
+                if (k.CompareTo(_keys[i]) < 1)
+                    return i;
+            }
+            return i;
         }
 
         /// <returns>The index of the key which is the given key or at first bigger than the key</returns>
         public int NearestIndex(TKey k) {
             int idx = Index(k);
-            return idx > -1 ? idx : ~idx < Count ? ~idx : Count - 1;
+            return idx < Count ? idx : Count - 1;
         }
 
         /// <summary>
