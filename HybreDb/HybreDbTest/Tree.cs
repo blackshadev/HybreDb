@@ -47,16 +47,32 @@ namespace HybreDbTest {
 
             CheckTree();
             CheckAccess();
+            MeasureRandomAccess(1000000);
             //CheckRemoves();
             CheckTree();
+        }
+
+        private void MeasureRandomAccess(int n) {
+            var rnd = new Random();
+            var sw = new Stopwatch();
+            sw.Start();
+
+            for (var i = 0; i < n; i++) {
+                int iX = rnd.Next(0, N);
+                var num = RandomNumbers[iX];
+                Assert.IsFalse(num != Tree[num].Key, "failed");
+            }
+
+            sw.Stop();
+            Trace.WriteLine("Random access of " + n + " elements took " + sw.ElapsedMilliseconds + "ms");
         }
 
         public void CheckAccess() {
             var sw = new Stopwatch();
             sw.Start();
-            foreach (var n in Tree) {
-                var v = Tree[n.Key];
-                Assert.IsFalse(v != n, "Accessed failed");
+            foreach (var n in RandomNumbers) {
+                var v = Tree[n];
+                Assert.IsFalse(v.Key != n, "Accessed failed");
             }
             sw.Stop();
             Trace.WriteLine("Accessed took " + sw.ElapsedMilliseconds + "ms");
