@@ -142,7 +142,12 @@ namespace HybreDb.BPlusTree {
             //var offs = rdr.ReadInt64();
             _buckets = new SortedBuckets<TKey, TValue>(rdr,
                 _rdr => { var v = new TKey(); v.Deserialize(_rdr); return v; },
-                _rdr => { var v = new TValue(); v.Deserialize(_rdr); return v; }
+                _rdr => {
+                    var v = new TValue(); 
+                    DiskTree.DataRead(v);
+                    v.Deserialize(_rdr);  
+                    return v;
+                }
             );
             //if (offs > -1) {
             //    Next = DiskTree.CreateLeafNode(offs);
@@ -158,9 +163,7 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write((byte)Type);
-            wrtr.Write(FileOffset);
-            
-            
+            wrtr.Write(FileOffset);   
         }
 
         /// <summary>

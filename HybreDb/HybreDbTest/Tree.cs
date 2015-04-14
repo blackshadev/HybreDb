@@ -11,6 +11,7 @@ using HybreDb.BPlusTree.DataTypes;
 namespace HybreDbTest {
     [TestClass]
     public class TreeTest {
+        
         private Tree<Number, TestData> Tree; 
         private int N = 10000;
         private List<Number> RandomNumbers; 

@@ -16,8 +16,15 @@ namespace HybreDb.BPlusTree {
     /// <typeparam name="TValue"></typeparam>
     public class DiskTree<TKey, TValue> : Tree<TKey, TValue>, ITreeSerializable, IEnumerable<TValue>
         where TKey : IComparable, ITreeSerializable, new()
-        where TValue : ITreeSerializable, new()
+        where TValue : ITreeSerializable, new() 
     {
+
+        public delegate void NodeDataRead(TValue v);
+
+        /// <summary>
+        /// Called before a data item is serialized
+        /// </summary>
+        public event NodeDataRead OnDataRead;
 
         /// <summary>
         /// FilName of the file to which all data of this tree is written
@@ -133,6 +140,14 @@ namespace HybreDb.BPlusTree {
         public void Dispose() {
             Stream.Dispose();
             Root.Dispose();
+        }
+
+        /// <summary>
+        /// Helper function to invoke the event
+        /// </summary>
+        /// <param name="v"></param>
+        internal void DataRead(TValue v) {
+            if (OnDataRead != null) OnDataRead(v);
         }
     }
 }

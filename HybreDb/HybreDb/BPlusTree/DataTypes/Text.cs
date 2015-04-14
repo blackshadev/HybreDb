@@ -35,5 +35,9 @@ namespace HybreDb.BPlusTree.DataTypes {
         public static implicit operator string(Text t) {
             return t.Data;
         }
+
+        public override string ToString() {
+            return Data;
+        }
     }
 }
