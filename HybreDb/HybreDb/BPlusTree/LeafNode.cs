@@ -53,6 +53,11 @@ namespace HybreDb.BPlusTree {
             return RemoveResult.None;
         }
 
+        public virtual LeafNode<TKey, TValue> GetLeaf(TKey k) {
+            Accessed();
+            return this;
+        }
+
         public virtual INode<TKey, TValue> Insert(TKey key, TValue data) {
             Buckets.Add(key, data);
             Changed();
@@ -63,9 +68,10 @@ namespace HybreDb.BPlusTree {
         }
 
 
-        public virtual TValue Get(TKey key) {
-            return Buckets.TryGetValue(key);
+        public virtual bool TryGet(TKey key, out TValue val) {
+            return Buckets.TryGetValue(key, out val);
         }
+
         #endregion
 
         #region Split/Merge

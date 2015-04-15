@@ -64,14 +64,24 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Gets a value with given key
         /// </summary>
-        public virtual TValue Get(TKey key) {
+        public virtual bool TryGet(TKey key, out TValue val) {
             var n = Buckets.ValueAt(Buckets.NearestIndex(key));
-            var v = n.Get(key);
+            var found = n.TryGet(key, out val);
             
+            n.Accessed();
+
+            return found;
+        }
+
+        public virtual LeafNode<TKey, TValue> GetLeaf(TKey k) {
+            var n = Buckets.ValueAt(Buckets.NearestIndex(k));
+            var v = n.GetLeaf(k);
+
             n.Accessed();
 
             return v;
         }
+
 
         /// <summary>
         /// Inserts data with given key

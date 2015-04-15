@@ -60,7 +60,12 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         /// <param name="k">Key to lookup</param>
         /// <returns>Data item bound to given key</returns>
-        TValue Get(TKey k);
+        bool TryGet(TKey k, out TValue v);
+
+        /// <summary>
+        /// Returns the leaf responsable for given key
+        /// </summary>
+        LeafNode<TKey, TValue> GetLeaf(TKey k);
 
         /// <summary>
         /// Inserts given data with given key in the tree

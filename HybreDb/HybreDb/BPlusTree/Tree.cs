@@ -44,8 +44,6 @@ namespace HybreDb.BPlusTree {
                 Next = next
             };
         }
-
-
         #endregion
 
         /// <summary>
@@ -72,9 +70,24 @@ namespace HybreDb.BPlusTree {
             Root.Accessed();
         }
 
+        public TValue Get(TKey k) {
+            TValue v;
+            Root.TryGet(k, out v);
+            return v;
+        }
+
+        public TValue GetOrInsert(TKey k, TValue v) {
+            TValue _v;
+            var f = Root.TryGet(k, out _v);
+
+            if (f) return _v;
+            
+            Root.Insert(k, v);
+            return v;
+        }
 
         public TValue this[TKey k] {
-            get { return Root.Get(k); }
+            get { return Get(k); }
             //set { Root.Insert(k.GetHashCode(), value); }
         }
 
@@ -83,10 +96,7 @@ namespace HybreDb.BPlusTree {
 
             if ((t == RemoveResult.Merged || t == RemoveResult.Removed) && Root.Count == 1)
                 Root = Root.First;
-            
-
         }
-
 
         protected INode<TKey, TValue> bulkInsert(KeyValuePair<TKey, TValue>[] sorted) {
             var nodes = new List<KeyValuePair<TKey, INode<TKey, TValue>>>();

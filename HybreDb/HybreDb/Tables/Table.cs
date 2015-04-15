@@ -25,6 +25,7 @@ namespace HybreDb.Tables {
 
         public DataColumn[] Columns;
         public DiskTree<Number, DataRow> Rows;
+        public Dictionary<string, IndexTree> Indexes; 
 
         protected FileStream Stream;
 

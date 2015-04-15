@@ -10,7 +10,7 @@ using HybreDb.Storage;
 namespace HybreDb.Tables {
     public class DataColumn : ITreeSerializable {
         public Type Type {
-            get { return Tables.DataType.GetType(DataType); }
+            get { return DataType.GetSystemType(); }
         }
 
         public DataType.Types DataType;

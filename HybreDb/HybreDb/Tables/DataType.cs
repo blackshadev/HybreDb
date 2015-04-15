@@ -14,7 +14,7 @@ namespace HybreDb.Tables {
             DateTime = 2
         };
 
-        public static IDataType CreateType(Types t) {
+        public static IDataType CreateType(this Types t) {
             switch (t) {
                 case Types.Number: return new Number();
                 case Types.Text: return new Text();
@@ -24,7 +24,7 @@ namespace HybreDb.Tables {
             }
         }
 
-        public static IDataType CreateType(Types t, BinaryReader rdr) {
+        public static IDataType CreateType(this Types t, BinaryReader rdr) {
             switch (t) {
                 case Types.Number: return new Number(rdr);
                 case Types.Text: return new Text(rdr);
@@ -34,7 +34,7 @@ namespace HybreDb.Tables {
             }
         }
 
-        public static IDataType CreateType(Types t, object d) {
+        public static IDataType CreateType(this Types t, object d) {
             switch (t) {
                 case Types.Number: return new Number((int)d);
                 case Types.Text: return new Text((string)d);
@@ -44,7 +44,7 @@ namespace HybreDb.Tables {
             }
         }
 
-        public static Type GetType(Types t) {
+        public static Type GetSystemType(this Types t) {
             switch (t) {
                 case Types.Number: return typeof(Number);
                 case Types.Text  : return typeof(Text);

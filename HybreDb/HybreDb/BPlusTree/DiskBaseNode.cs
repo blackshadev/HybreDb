@@ -54,13 +54,14 @@ namespace HybreDb.BPlusTree {
         }
 
         #region Tree operations
-        public override TValue Get(TKey key) {
+        public override bool TryGet(TKey key, out TValue val) {
             Read();
 
             State = NodeState.Changed;
 
-            return base.Get(key);
+            return base.TryGet(key, out val);
         }
+
         public override INode<TKey, TValue> Insert(TKey key, TValue data) {
             Read();
 
@@ -68,6 +69,7 @@ namespace HybreDb.BPlusTree {
 
             return base.Insert(key, data);
         }
+
         public override RemoveResult Remove(TKey k) {
             Read();
 
@@ -76,6 +78,11 @@ namespace HybreDb.BPlusTree {
             return base.Remove(k);
         }
 
+        public override LeafNode<TKey, TValue> GetLeaf(TKey k) {
+            Read();
+
+            return base.GetLeaf(k);
+        }
         #endregion
 
         /// <summary>

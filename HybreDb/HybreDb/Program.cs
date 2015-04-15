@@ -50,6 +50,18 @@ namespace HybreDb {
             //foreach (var v in t)
             //    Console.WriteLine(v);
 
+            TestData _d;
+            Console.WriteLine("\nTry Insert:");
+            _d = t.GetOrInsert(new Text("Test_5"), new TestData { Key = 5, Value = "newTest_5" });
+            Console.WriteLine(_d.Value);
+            _d = t.GetOrInsert(new Text("Test_10"), new TestData { Key = 10, Value = "newTest_10" });
+            Console.WriteLine(_d.Value);
+
+            Console.WriteLine("\nAfter Try Insert");
+            foreach (var v in t)
+                Console.WriteLine(v);
+            
+
             Console.ReadKey();
         }
     }

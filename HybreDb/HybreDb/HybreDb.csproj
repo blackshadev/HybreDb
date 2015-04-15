@@ -50,6 +50,7 @@
     <Compile Include="BPlusTree\DataTypes\DateTime.cs" />
     <Compile Include="BPlusTree\DataTypes\IDataType.cs" />
     <Compile Include="BPlusTree\DataTypes\Number.cs" />
+    <Compile Include="BPlusTree\DataTypes\Numbers.cs" />
     <Compile Include="BPlusTree\DataTypes\Text.cs" />
     <Compile Include="BPlusTree\DiskBaseNode.cs" />
     <Compile Include="BPlusTree\DiskLeafNode.cs" />
@@ -68,6 +69,7 @@
     <Compile Include="Tables\DataColumn.cs" />
     <Compile Include="Tables\DataRow.cs" />
     <Compile Include="Tables\DataType.cs" />
+    <Compile Include="Tables\IndexTree.cs" />
     <Compile Include="Tables\Table.cs" />
     <Compile Include="Test\TestData.cs" />
   </ItemGroup>
