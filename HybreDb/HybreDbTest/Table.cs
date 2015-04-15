@@ -20,9 +20,9 @@ namespace HybreDbTest {
 
 
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = DataType.Types.Text },
-                new DataColumn { Name = "Age", DataType = DataType.Types.Number },
-                new DataColumn { Name = "Inserted", DataType = DataType.Types.DateTime }
+                new DataColumn("Name", DataType.Types.Text, true),
+                new DataColumn("Age", DataType.Types.Number),
+                new DataColumn("Inserted", DataType.Types.DateTime)
 
             };
             var tab = new HybreDb.Tables.Table("Test", cols);
@@ -58,7 +58,6 @@ namespace HybreDbTest {
             
             Trace.WriteLine("After Read");
             Trace.WriteLine(tab.ToString());
-
         }
 
         [TestMethod] 

@@ -107,7 +107,7 @@ namespace HybreDb.BPlusTree {
 
         public bool TryGetValue(TKey key, out TValue result) {
             var idx = Index(key);
-            var found = idx > -1 && _keys[idx].CompareTo(key) == 0;
+            var found = idx > -1 && _keys[idx] != null && _keys[idx].CompareTo(key) == 0;
             result = found ? _values[idx] : default(TValue);
             return found;
         }
