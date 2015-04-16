@@ -219,13 +219,8 @@ namespace HybreDb.BPlusTree {
             if(_buckets != null) _buckets.Dispose();
         }
 
-        public virtual void BeginAccess() {
-            throw new NotImplementedException();
-        }
-
-        public virtual void EndAccess(bool isChanged=false) {
-            throw new NotImplementedException();
-        }
+        public virtual void BeginAccess() { }
+        public virtual void EndAccess(bool isChanged = false) { }
 
         public void Serialize(BinaryWriter wrtr) {
             throw new NotImplementedException();
@@ -235,10 +230,8 @@ namespace HybreDb.BPlusTree {
             throw new NotImplementedException();
         }
 
-        public virtual IEnumerator<TValue> GetEnumerator() {
-            var e = Buckets.Values.SelectMany(n => n).GetEnumerator();
-
-            return e;
+        public virtual IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
+            return Buckets.Values.SelectMany(n => n).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

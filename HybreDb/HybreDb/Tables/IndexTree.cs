@@ -12,11 +12,12 @@ using HybreDb.Storage;
 namespace HybreDb.Tables {
 
     public interface IndexTree : IDisposable {
-        Numbers Condition(object d);
         void Add(object d, Number n);
 
         void Commit();
         void Read();
+
+        Numbers Find(object k);
     }
 
     /// <summary>
@@ -36,8 +37,14 @@ namespace HybreDb.Tables {
         }
    
 
-        public Numbers Condition(object d) {
-            throw new NotImplementedException();
+        public Numbers Find(object d) {
+            if(d.GetType() != typeof(TKey))
+                throw new ArgumentException("Data with wrong type given. Expected `" + typeof(TKey).Name + "` got `" + d.GetType().Name + "`");
+            return Find((TKey) d);
+        }
+
+        public Numbers Find(TKey d) {
+            return Tree.Get(d);
         }
 
         public static bool UpdHandler<TKey, TValue>(LeafNode<TKey, TValue> n, TKey k, TValue v) 

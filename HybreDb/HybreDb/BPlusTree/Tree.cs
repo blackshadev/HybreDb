@@ -4,7 +4,7 @@ using System.Linq;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
-    public class Tree<TKey, TValue> : IEnumerable<TValue> , IDisposable
+    public class Tree<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable
         where TKey : ITreeSerializable, IComparable
         where TValue : ITreeSerializable
     {
@@ -140,7 +140,8 @@ namespace HybreDb.BPlusTree {
             return nodes[0].Value;
         }
 
-        public IEnumerator<TValue> GetEnumerator() {
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
             return Root.GetEnumerator();
         }
 

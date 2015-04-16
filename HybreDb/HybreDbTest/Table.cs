@@ -34,7 +34,7 @@ namespace HybreDbTest {
             });
             tab.Insert(new IDataType[] {
                 new Text("Wouter"),
-                new Number(21),
+                new Number(22),
                 new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
             });
             tab.Insert(new IDataType[] {
@@ -58,6 +58,10 @@ namespace HybreDbTest {
             
             Trace.WriteLine("After Read");
             Trace.WriteLine(tab.ToString());
+
+            var numsName = tab.Columns[0].Find(new Text("Tessa"));
+            var numsAge = tab.Columns[1].Find(new Number(22));
+
         }
 
         [TestMethod] 
@@ -92,7 +96,11 @@ namespace HybreDbTest {
             Time("Count", () => { i = tab.Rows.Count(); });
             
             Assert.IsFalse(i != n, "Missing records");
+
+            
+
         }
+
 
         private static IDataType[][] GenerateDataset(int N) {
             var rnd = new Random();

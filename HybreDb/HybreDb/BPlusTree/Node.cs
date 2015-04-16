@@ -21,7 +21,7 @@ namespace HybreDb.BPlusTree {
     /// Node interface for all nodes in BPlusTree
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public interface INode<TKey, TValue> : IDisposable, ITreeSerializable, IEnumerable<TValue> 
+    public interface INode<TKey, TValue> : IDisposable, ITreeSerializable, IEnumerable<KeyValuePair<TKey, TValue>> 
         where TKey : IComparable, ITreeSerializable
         where TValue : ITreeSerializable 
     {

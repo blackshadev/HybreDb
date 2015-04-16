@@ -131,18 +131,13 @@ namespace HybreDb.BPlusTree {
         public void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();
         }
-        public virtual void BeginAccess() {
-            throw new NotImplementedException();
-        }
 
-        public virtual void EndAccess(bool isChanged = false) {
-            throw new NotImplementedException();
-        }
+        public virtual void BeginAccess() { }
+        public virtual void EndAccess(bool isChanged = false) { }
 
 
-        public virtual IEnumerator<TValue> GetEnumerator() {
-            var e = Buckets.Values.GetEnumerator();
-            return e;
+        public virtual IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
+            return Buckets.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

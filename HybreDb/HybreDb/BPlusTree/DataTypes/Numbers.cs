@@ -22,6 +22,10 @@ namespace HybreDb.BPlusTree.DataTypes {
             Nums.Add(n);
         }
 
+        public void Add(Numbers n) {
+            Nums.UnionWith(n.Nums);
+        }
+
         public void Remove(Number n) {
             Nums.Remove(n);
         }

@@ -14,7 +14,7 @@ namespace HybreDb.BPlusTree {
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class DiskTree<TKey, TValue> : Tree<TKey, TValue>, ITreeSerializable, IEnumerable<TValue>
+    public class DiskTree<TKey, TValue> : Tree<TKey, TValue>, ITreeSerializable
         where TKey : IComparable, ITreeSerializable, new()
         where TValue : ITreeSerializable, new() 
     {
@@ -118,14 +118,6 @@ namespace HybreDb.BPlusTree {
             wrtr.Write(FileOffset);
         }
 
-        public IEnumerator<TValue> GetEnumerator() {
-            
-            return Root.GetEnumerator();
-        }
-
-        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
 
         public void Deserialize(BinaryReader rdr) {
             rdr.BaseStream.Seek(-8, SeekOrigin.End);

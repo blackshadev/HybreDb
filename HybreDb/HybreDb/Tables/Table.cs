@@ -150,7 +150,7 @@ namespace HybreDb.Tables {
             sb.Append('\n');
 
             foreach (var r in Rows) {
-                foreach (var c in r.Data)
+                foreach (var c in r.Value.Data)
                     sb.Append(c).Append(';');
                 sb.Append('\n');
             }

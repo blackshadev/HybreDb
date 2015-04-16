@@ -52,6 +52,34 @@ namespace HybreDb.Tables {
             if (HasIndex) Index.Commit();
         }
 
+        public bool CheckType(object o) {
+            return DataType.GetSystemType() == o.GetType();
+        }
+
+        public Numbers Find(object obj) {
+            if (!CheckType(obj)) {
+                throw new ArgumentException("Invalid data type. Expected `" + DataType.GetSystemType().Name + "` got `" +
+                                            obj.GetType().Name + "`");
+            }
+
+            return HasIndex ? FindIndexed(obj) : FindIterate(obj);
+        }
+
+        protected Numbers FindIndexed(object obj) {
+            return Index.Find(obj);
+        }
+
+        protected Numbers FindIterate(object obj) {
+            var nums = new Numbers();
+
+            foreach (var kvp in Table.Rows) {
+                if(kvp.Value.Data[1].CompareTo(obj) == 0)
+                    nums.Add(kvp.Key);
+            }
+
+            return nums;
+        }
+
         public void Dispose() {
             if(HasIndex) Index.Dispose();
         }

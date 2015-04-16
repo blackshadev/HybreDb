@@ -235,7 +235,7 @@ namespace HybreDb.BPlusTree {
             base.Dispose();
         }
 
-        public override IEnumerator<TValue> GetEnumerator() {
+        public override IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
             BeginAccess();
             var r = base.GetEnumerator();
             EndAccess();
