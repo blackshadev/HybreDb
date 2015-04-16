@@ -15,7 +15,7 @@ namespace HybreDb.BPlusTree {
     {
 
         protected SortedBuckets<TKey, TValue> _buckets; 
-        public SortedBuckets<TKey, TValue> Buckets { 
+        public virtual SortedBuckets<TKey, TValue> Buckets { 
             get { return _buckets; }
         }
 
@@ -48,23 +48,24 @@ namespace HybreDb.BPlusTree {
         #region Tree operations
         public virtual RemoveResult Remove(TKey k) {
             Buckets.Remove(k);
-            Changed();
-
+            
             return RemoveResult.None;
         }
 
         public virtual LeafNode<TKey, TValue> GetLeaf(TKey k) {
-            Accessed();
             return this;
+        }
+
+        public virtual bool Update(TKey k, NodeUpdateHandler<TKey, TValue> h) {
+            TValue v;
+            Buckets.TryGetValue(k, out v);
+            return h(this, k, v);
         }
 
         public virtual INode<TKey, TValue> Insert(TKey key, TValue data) {
             Buckets.Add(key, data);
-            Changed();
-
-            if (Buckets.Count == Capacity)
-                return Split();
-            return null;
+           
+            return Buckets.Count == Capacity ? Split() : null;
         }
 
 
@@ -75,19 +76,16 @@ namespace HybreDb.BPlusTree {
         #endregion
 
         #region Split/Merge
-        public INode<TKey, TValue> Split() {
+        public virtual INode<TKey, TValue> Split() {
             var node = Tree.CreateLeafNode(this, Next);
             node._buckets = Buckets.SliceEnd(Capacity / 2);
             
             Next = node;
 
-            Changed();
-            node.Changed();
-            
             return node;
         }
 
-        public bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
+        public virtual bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
             var l = left as LeafNode<TKey, TValue>;
             var r = right as LeafNode<TKey, TValue>;
 
@@ -106,16 +104,13 @@ namespace HybreDb.BPlusTree {
             return true;
         }
 
-        public bool Merge(INode<TKey, TValue> n) {
+        public virtual bool Merge(INode<TKey, TValue> n) {
             if (!(n is LeafNode<TKey, TValue>)) return false;
             var _n = (LeafNode<TKey, TValue>)n;
 
             _n.Buckets.AddBegin(Buckets);
             
             Dispose();
-
-            Changed();
-            _n.Changed();
             
             return true;
         }
@@ -129,9 +124,6 @@ namespace HybreDb.BPlusTree {
             Next = null;
         }
 
-        public void Accessed() { }
-        public void Changed() { }
-
         public void Serialize(BinaryWriter wrtr) {
             throw new NotImplementedException();
         }
@@ -139,11 +131,17 @@ namespace HybreDb.BPlusTree {
         public void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();
         }
+        public virtual void BeginAccess() {
+            throw new NotImplementedException();
+        }
+
+        public virtual void EndAccess(bool isChanged = false) {
+            throw new NotImplementedException();
+        }
 
 
         public virtual IEnumerator<TValue> GetEnumerator() {
             var e = Buckets.Values.GetEnumerator();
-            Accessed();
             return e;
         }
 

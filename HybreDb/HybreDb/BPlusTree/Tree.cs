@@ -57,9 +57,11 @@ namespace HybreDb.BPlusTree {
             n.InsertNode(r);
             n.InsertNode(l);
 
-            n.Changed();
-            
             return n;
+        }
+
+        public bool Update(TKey k, NodeUpdateHandler<TKey, TValue> h) {
+            return Root.Update(k, h);
         }
 
         public void Insert(TKey k, TValue val) {
@@ -67,7 +69,6 @@ namespace HybreDb.BPlusTree {
 
             if (n != null)
                 Root = NewRootNode(Root, n);
-            Root.Accessed();
         }
 
         public TValue Get(TKey k) {

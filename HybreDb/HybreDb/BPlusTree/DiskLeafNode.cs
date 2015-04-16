@@ -21,10 +21,12 @@ namespace HybreDb.BPlusTree {
         where TValue : ITreeSerializable, new()
     {
         public static int Total = 0;
+
+        protected int accesses = 0;
+        public bool IsBusy { get { return accesses > 0; } }
         
-        public SortedBuckets<TKey, TValue> Buckets {
+        public override SortedBuckets<TKey, TValue> Buckets {
             get {
-                Read();
                 return _buckets;
             }
         }
@@ -32,7 +34,9 @@ namespace HybreDb.BPlusTree {
         public long FileOffset { get; private set; }
         public NodeState State { get; private set; }
 
-        public INode<TKey, TValue> First { get { Read(); return this; } } 
+        protected NodeState OldState;
+
+        public INode<TKey, TValue> First { get { return this; } } 
 
         public DiskTree<TKey, TValue> DiskTree { get; private set; }
 
@@ -53,31 +57,79 @@ namespace HybreDb.BPlusTree {
 
         #region Tree operations
         public override bool TryGet(TKey key, out TValue val) {
-            Read();
-            return base.TryGet(key, out val);
+            BeginAccess();
+            var r = base.TryGet(key, out val);
+            EndAccess();
+            return r;
         }
-        public override INode<TKey, TValue> Insert(TKey key, TValue data) {
-            Read();
 
-            State = NodeState.Changed;
-            return base.Insert(key, data);
+        public override bool Update(TKey k, NodeUpdateHandler<TKey, TValue> h) {
+
+            BeginAccess();
+            var r = base.Update(k, h);
+            EndAccess(r);
+            return r;
+        }
+
+
+        public override INode<TKey, TValue> Insert(TKey key, TValue data) {
+
+            BeginAccess();
+            var r = base.Insert(key, data);
+            EndAccess(true);
+            return r;
         }
 
         public override RemoveResult Remove(TKey k) {
-            Read();
 
-            State = NodeState.Changed;
-            return base.Remove(k);
+            BeginAccess();
+            var r = base.Remove(k);
+            EndAccess(true);
+            return r;
         }
 
         public override LeafNode<TKey, TValue> GetLeaf(TKey k) {
-            Read();
-            return base.GetLeaf(k);
+
+            BeginAccess();
+            var r = base.GetLeaf(k);
+            EndAccess();
+            return r;
+        }
+        
+        #endregion
+
+        #region Split/Merge
+        public override INode<TKey, TValue> Split() {
+            BeginAccess();
+            var n = base.Split();
+            EndAccess(true);
+
+            return n;
+        }
+
+        public bool Merge(INode<TKey, TValue> n) {
+            BeginAccess();
+            n.BeginAccess();
+            var r = base.Merge(n);
+            n.EndAccess(r);
+            EndAccess(r);
+            return r;
+        }
+
+        public bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r) {
+            BeginAccess();
+            l.BeginAccess();
+            r.BeginAccess();
+            var n = base.Borrow(l, r);
+            r.EndAccess(n);
+            l.EndAccess(n);
+            EndAccess(n);
+            return n;
         }
 
         #endregion
 
-        /// <summary>
+        #region Reading/Writing/// <summary>
         /// Free all resources hold bu this node
         /// </summary>
         public void Free() {
@@ -86,8 +138,8 @@ namespace HybreDb.BPlusTree {
             State = NodeState.OnDisk;
         }
 
-        #region Reading/Writing
         public void Write() {
+            if (State != NodeState.Changed || IsBusy) return;
             DiskTree.Stream.Seek(0, SeekOrigin.End);
             Write(new BinaryWriter(DiskTree.Stream));
         }
@@ -96,22 +148,16 @@ namespace HybreDb.BPlusTree {
         /// Writes the data from the node to the given stream.
         /// </summary>
         public void Write(BinaryWriter wrtr) {
-            if (State != NodeState.Changed) return;
+            if (State != NodeState.Changed || IsBusy) return;
 
-            var next = ((DiskLeafNode<TKey, TValue>)Next);
-            var prev = ((DiskLeafNode<TKey, TValue>)Prev);
-
-
-            if (next != null)
-                next.Write(wrtr);
-
+            DiskTree.OpenNodes--;
 
             FileOffset = wrtr.BaseStream.Position;
             //if (Next != null)
             //    wrtr.Write(next.FileOffset);
             //else
             //    wrtr.Write(-1L);
-            Buckets.Serialize(wrtr);
+            _buckets.Serialize(wrtr);
             
 
             Free();
@@ -140,6 +186,8 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public void Read() {
             if (State != NodeState.OnDisk) return;
+
+            DiskTree.OpenNodes++;
 
             var rdr = new BinaryReader(DiskTree.Stream);
             rdr.BaseStream.Seek(FileOffset, SeekOrigin.Begin);
@@ -186,6 +234,21 @@ namespace HybreDb.BPlusTree {
             DiskTree.Cache.Update(this);
         }
 
+        public override void BeginAccess() {
+            Read();
+            accesses++;
+
+            DiskTree.BusyNodes++;
+        }
+
+        public override void EndAccess(bool isChanged = false) {
+            if (isChanged) Changed();
+            accesses--;
+            DiskTree.BusyNodes--;
+
+            DiskTree.Cache.Update(this);
+        }
+
         public void Changed() {
             State = NodeState.Changed;
         }
@@ -197,8 +260,11 @@ namespace HybreDb.BPlusTree {
         }
 
         public override IEnumerator<TValue> GetEnumerator() {
-            Read();
-            return base.GetEnumerator();
+            BeginAccess();
+            var r =  base.GetEnumerator();
+            EndAccess();
+            
+            return r;
         }
 
     }

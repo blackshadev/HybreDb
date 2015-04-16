@@ -29,8 +29,10 @@ namespace HybreDb.Tables {
         }
 
         public void CreateIndex() {
-            if(HasIndex)
-                Index = new IndexTree(Table.Name + Name, DataType);
+            if (!HasIndex) return;
+
+            var t = typeof (IndexTree<>).MakeGenericType(new[] {DataType.GetSystemType()});
+            Index = (IndexTree)Activator.CreateInstance(t, new object[] { Table.Name + "_" + Name });
         }
 
         public void Serialize(System.IO.BinaryWriter wrtr) {

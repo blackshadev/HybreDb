@@ -26,7 +26,7 @@ namespace HybreDb.Tables {
 
             Data = new IDataType[rdr.ReadInt32()];
             for(var i = 0; i < Data.Length; i++) {
-                Data[i] = DataType.CreateType(Table.Columns[i].DataType, rdr);
+                Data[i] = Table.Columns[i].DataType.CreateType(rdr);
             }
         }
     }

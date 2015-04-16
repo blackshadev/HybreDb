@@ -13,7 +13,7 @@ namespace HybreDbTest {
     public class DiskTree {
 
         public const int N = 10000;
-        public const int BucketSize = 64;
+        public const int BucketSize = 8;
         public const int CacheSize = 8;
 
         public Stopwatch sw = new Stopwatch();

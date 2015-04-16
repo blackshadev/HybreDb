@@ -15,8 +15,8 @@ namespace HybreDb.BPlusTree {
     {
 
         protected SortedBuckets<TKey, INode<TKey, TValue>> _buckets;
-        public SortedBuckets<TKey, INode<TKey, TValue>> Buckets {
-            get { return _buckets; }
+        public virtual SortedBuckets<TKey, INode<TKey, TValue>> Buckets {
+            get { return _buckets;  }
         }
 
         public int Count { get { return Buckets.Count; } }
@@ -67,8 +67,6 @@ namespace HybreDb.BPlusTree {
         public virtual bool TryGet(TKey key, out TValue val) {
             var n = Buckets.ValueAt(Buckets.NearestIndex(key));
             var found = n.TryGet(key, out val);
-            
-            n.Accessed();
 
             return found;
         }
@@ -77,9 +75,16 @@ namespace HybreDb.BPlusTree {
             var n = Buckets.ValueAt(Buckets.NearestIndex(k));
             var v = n.GetLeaf(k);
 
-            n.Accessed();
-
             return v;
+        }
+
+
+        public virtual bool Update(TKey k, NodeUpdateHandler<TKey, TValue> h) {
+            var idx = Buckets.NearestIndex(k);
+            var n = Buckets.ValueAt(idx);
+            var c = n.Update(k, h); 
+            
+            return c;
         }
 
 
@@ -95,9 +100,12 @@ namespace HybreDb.BPlusTree {
             // Always update the index, faster than branching
             Buckets.Set(idx, n.HighestKey, n);
 
-            var res = _n != null ? InsertNode(_n) : null;
+            if (_n == null) return null;
 
-            n.Accessed();
+
+            _n.BeginAccess();
+            var res = InsertNode(_n);
+            _n.EndAccess();
 
             return res;
         }
@@ -131,7 +139,6 @@ namespace HybreDb.BPlusTree {
             if (node.Count >= node.Capacity / 4) {
                 Buckets.Set(idx, node.HighestKey, node);
                 
-                node.Accessed();
                 return RemoveResult.None;
             }
 
@@ -143,7 +150,6 @@ namespace HybreDb.BPlusTree {
                 Buckets.Set(idx, node.HighestKey, node);
                 if(l != null) Buckets.Set(idx - 1, l.HighestKey, l);
 
-                node.Accessed();
                 return RemoveResult.Borrowed;
             }
 
@@ -157,7 +163,6 @@ namespace HybreDb.BPlusTree {
 
             // Cannot borrow but deleting the leafnode without neighbours will result in a broken tree
             if (node is LeafNode<TKey, TValue> && node.Count == 0 && l == null && r == null) {
-                node.Accessed();
                 return RemoveResult.Merged;
             }
 
@@ -168,36 +173,29 @@ namespace HybreDb.BPlusTree {
                 return RemoveResult.Removed;
             }
 
-            node.Accessed();
             return RemoveResult.None;
         }
         #endregion
 
         #region Split/Merge
-        public INode<TKey, TValue> Split() {
+        public virtual INode<TKey, TValue> Split() {
             var n = Tree.CreateBaseNode();
             n._buckets = Buckets.SliceEnd(Capacity / 2);
-
-            Changed();
-            n.Changed();
 
             return n;
         }
 
-        public bool Merge(INode<TKey, TValue> n) {
+        public virtual bool Merge(INode<TKey, TValue> n) {
             if (!(n is BaseNode<TKey, TValue>)) return false;
 
             var _n = (BaseNode<TKey, TValue>)n;
             
             _n.Buckets.AddBegin(Buckets);
 
-            Changed();
-            _n.Changed();
-
             return true;
         }
 
-        public bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
+        public virtual bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
             var l = left as BaseNode<TKey, TValue>;
             var r = right as BaseNode<TKey, TValue>;
 
@@ -206,8 +204,6 @@ namespace HybreDb.BPlusTree {
                 s = l.Buckets.SliceEnd(l.Buckets.Count - Capacity / 4);
                 Buckets.AddBegin(s);
                 
-                l.Changed();
-                Changed();
                 return true;
             }
             if (r == null || r.Count - 1 - r.Capacity / 4 <= Capacity / 4) return false;
@@ -215,20 +211,21 @@ namespace HybreDb.BPlusTree {
             s = r.Buckets.SliceBegin(Capacity / 4);
             Buckets.AddEnd(s);
 
-            r.Changed();
-            Changed();
             return true;
         }
         #endregion
 
-        public void Accessed() { }
-
-        public void Changed() {}
-
         public virtual void Dispose() {
-            if(Buckets != null) Buckets.Dispose();
+            if(_buckets != null) _buckets.Dispose();
         }
 
+        public virtual void BeginAccess() {
+            throw new NotImplementedException();
+        }
+
+        public virtual void EndAccess(bool isChanged=false) {
+            throw new NotImplementedException();
+        }
 
         public void Serialize(BinaryWriter wrtr) {
             throw new NotImplementedException();
@@ -240,7 +237,7 @@ namespace HybreDb.BPlusTree {
 
         public virtual IEnumerator<TValue> GetEnumerator() {
             var e = Buckets.Values.SelectMany(n => n).GetEnumerator();
-            Accessed();
+
             return e;
         }
 

@@ -6,14 +6,27 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
+    
+    /// <summary>
+    /// Used to update a data item of a leafnode
+    /// </summary>
+    /// <param name="node">Node which should hold given key</param>
+    /// <param name="value">Value bound to given key, null if value is not present</param>
+    /// <returns>Whenever the node has been changed or not</returns>
+    public delegate bool NodeUpdateHandler<TKey, TValue>(LeafNode<TKey, TValue> node, TKey k, TValue value)
+        where TKey : IComparable, ITreeSerializable
+        where TValue : ITreeSerializable;
+
     /// <summary>
     /// Node interface for all nodes in BPlusTree
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
     public interface INode<TKey, TValue> : IDisposable, ITreeSerializable, IEnumerable<TValue> 
         where TKey : IComparable, ITreeSerializable
-        where TValue : ITreeSerializable
+        where TValue : ITreeSerializable 
     {
+
+        
         
         /// <summary>
         /// Current items in node
@@ -62,10 +75,19 @@ namespace HybreDb.BPlusTree {
         /// <returns>Data item bound to given key</returns>
         bool TryGet(TKey k, out TValue v);
 
+
         /// <summary>
         /// Returns the leaf responsable for given key
         /// </summary>
         LeafNode<TKey, TValue> GetLeaf(TKey k);
+
+        /// <summary>
+        /// Updates a given node
+        /// </summary>
+        /// <param name="k">Key value of the item to update</param>
+        /// <param name="h">Handler which updates given item and node, returns true if node has been changed</param>
+        /// <returns>returns true if node has been changed</returns>
+        bool Update(TKey k, NodeUpdateHandler<TKey, TValue> h);
 
         /// <summary>
         /// Inserts given data with given key in the tree
@@ -103,15 +125,9 @@ namespace HybreDb.BPlusTree {
         /// <returns>Whenever enough items could be borrowed. When false is returned, nothing was done.</returns>
         bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r);
 
-        /// <summary>
-        /// Function used to control the LRU cache
-        /// </summary>
-        void Accessed();
+        void BeginAccess();
+        void EndAccess(bool isChanged=false);
 
-        /// <summary>
-        /// Function used to control the state of nodes.
-        /// </summary>
-        void Changed();
     }
 
     /// <summary>
@@ -123,6 +139,7 @@ namespace HybreDb.BPlusTree {
         Merged,
         Removed
     };
+
 
     public enum NodeTypes {
         Base,

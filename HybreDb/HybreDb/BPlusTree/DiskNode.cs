@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -13,6 +14,8 @@ namespace HybreDb.BPlusTree {
         where TKey : IComparable, ITreeSerializable, new()
         where TValue : ITreeSerializable, new() 
     {
+
+        bool IsBusy { get; }
         /// <summary>
         /// Offset of the node within the file.
         /// </summary>
@@ -40,10 +43,9 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         void Write();
 
-        /// <summary>
-        /// Reads the node from disk based on the FileOffset
-        /// </summary>
-        //void Read(Stream Stream);
+
+        void Read();
+
     }
 
     public enum NodeState {
@@ -52,12 +54,12 @@ namespace HybreDb.BPlusTree {
         Changed
     }
 
-    public static class DiskNode<TKey, TValue> 
+    public static class DiskNode<TKey, TValue>
         where TKey : IComparable, ITreeSerializable, new()
-        where TValue : ITreeSerializable, new()
-    {
+        where TValue : ITreeSerializable, new() {
+
         public static INode<TKey, TValue> Create(DiskTree<TKey, TValue> tree, BinaryReader rdr) {
-            var t = (NodeTypes)rdr.ReadByte();
+            var t = (NodeTypes) rdr.ReadByte();
             var offs = rdr.ReadInt64();
             switch (t) {
                 case NodeTypes.Leaf:

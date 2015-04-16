@@ -62,24 +62,24 @@ namespace HybreDbTest {
 
         [TestMethod] 
         public void Bench() {
-            const int n = 10000;
+            const int n = 100000;
 
             var set = GenerateDataset(n);
             
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = DataType.Types.Text },
+                new DataColumn { Name = "Name", DataType = DataType.Types.Text, HasIndex = true},
                 new DataColumn { Name = "Age", DataType = DataType.Types.Number },
                 new DataColumn { Name = "Inserted", DataType = DataType.Types.DateTime }
             };
 
             var tab = new HybreDb.Tables.Table("Bench", cols);
-
+            
+            int i = 0;
             Time("Insert " + n + " records", () => { 
-                foreach (var d in set) 
-                    tab.Insert(d);
+                for(i = 0; i < n; i++)
+                    tab.Insert(set[i]);
             });
 
-            int i = 0;
 
             Time("Count", () => { i = tab.Rows.Count(); });
             Assert.IsFalse(i != n, "Missing records");
@@ -94,7 +94,7 @@ namespace HybreDbTest {
             Assert.IsFalse(i != n, "Missing records");
         }
 
-        private static IEnumerable<IDataType[]> GenerateDataset(int N) {
+        private static IDataType[][] GenerateDataset(int N) {
             var rnd = new Random();
             var o = new IDataType[N][];
 
