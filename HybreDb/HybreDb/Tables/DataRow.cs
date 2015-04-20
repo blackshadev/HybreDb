@@ -8,10 +8,27 @@ using HybreDb.Storage;
 using HybreDb.BPlusTree.DataTypes;
 
 namespace HybreDb.Tables {
+
+    /// <summary>
+    /// A DataRow within the database
+    /// </summary>
     public class DataRow : ITreeSerializable {
+        /// <summary>
+        /// Table holding this DataRow
+        /// </summary>
         public Table Table;
-        public IDataType[] Data;
+        
+        /// <summary>
+        /// Unique index of the row.
+        /// </summary>
+        /// <remarks>Unique within the table</remarks>
         public Number Index;
+        
+        /// <summary>
+        /// Data within this DataRow.
+        /// </summary>
+        public IDataType[] Data;
+
 
         public void Serialize(BinaryWriter wrtr) {
             Index.Serialize(wrtr);

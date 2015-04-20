@@ -28,6 +28,11 @@ namespace HybreDb.Tables {
 
         protected FileStream Stream;
 
+        /// <summary>
+        /// Creates a new table base on the given DataColumns
+        /// </summary>
+        /// <param name="name">Table name</param>
+        /// <param name="c">Columns</param>
         public Table(string name, DataColumn[] c) {
             Name = name;
             Columns = new DataColumns(this, c);
@@ -38,10 +43,14 @@ namespace HybreDb.Tables {
             Stream = new FileStream(Name + ".table.bin", FileMode.Create);
             Counter = 0;
 
-            Init();
             Write();
         }
 
+
+        /// <summary>
+        /// Creates a existing Table by reading it in from file.
+        /// </summary>
+        /// <param name="name"></param>
         public Table(string name) {
             Name = name;
             Stream = new FileStream(Name + ".table.bin", FileMode.OpenOrCreate);
@@ -52,22 +61,19 @@ namespace HybreDb.Tables {
             Read();
         }
 
-        protected void Init() {
-            foreach (var _c in Columns) {
-                _c.Table = this;
-                _c.CreateIndex();
-            }
-
-        }
-
+        /// <summary>
+        /// Inserts given ordered data in the table.
+        /// </summary>
+        /// <param name="data">Data to insert where each index corresponts to the datacolumn</param>
         public void Insert(IDataType[] data) {
 
+            // Check data types
             if(data.Length != Columns.Length) throw new ArgumentException("Data columns do not match table columns");
-
             for (var i = 0; i < data.Length; i++) {
                 if(data[i].GetType() != Columns[i].Type)
                     throw new ArgumentException("Type mismatch between given data and table. Column " + i + " should be of type " + Columns[i].DataType);
             }
+
 
             var r = new DataRow {
                 Table = this,
@@ -77,10 +83,9 @@ namespace HybreDb.Tables {
 
             Rows.Insert(r.Index, r);
 
-            foreach ( var c in Columns.IndexColumns) {
+            // Insert Indexes
+            foreach ( var c in Columns.IndexColumns)
                     c.Value.Index.Add(r.Data[c.Key], r.Index);
-            }
-
         }
 
         /// <summary>
@@ -118,6 +123,10 @@ namespace HybreDb.Tables {
             Counter = rdr.ReadInt32();
         }
 
+        /// <summary>
+        /// Commits all changes in the table to File. 
+        /// These changes in the index tree and changes in the counter.
+        /// </summary>
         public void Commit() {
             Rows.Write();
 
@@ -129,6 +138,37 @@ namespace HybreDb.Tables {
             wrtr.Write(Counter);
         }
 
+        /// <summary>
+        /// Gets a DataColumn by name
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public DataColumn this[string name] {
+            get { return Columns[name]; }
+        }
+
+        /// <summary>
+        /// Gets data given Numbers as indexes in Rows
+        /// </summary>
+        /// <param name="nums">Numbers in the table</param>
+        public IEnumerable<DataRow> GetData(Numbers nums) {
+            return nums.Select(n => Rows.Get(n));
+        }
+
+        /// <summary>
+        /// Given a condition on a column, find the numbers of row indices which satisfy the given condition.
+        /// </summary>
+        /// <param name="Condition">Keyvaluepair with the column name as key and the value which need to match as value</param>
+        /// <returns>Datarows which satisfies the condition</returns>
+        public IEnumerable<DataRow> Find(KeyValuePair<string, object> Condition) {
+            var n = Columns[Condition.Key].Match(Condition.Value);
+            return GetData(n);
+        }
+
+
+        /// <summary>
+        /// A string representation which the first row as the column names and after that each entry is a row with data.
+        /// </summary>
         public override string ToString() {
             var sb = new StringBuilder();
 
@@ -146,19 +186,9 @@ namespace HybreDb.Tables {
             return sb.ToString();
         }
 
-        public DataColumn this[string name] {
-            get { return Columns[name]; }
-        }
-
-        public IEnumerable<DataRow> GetData(Numbers nums) {
-            return nums.Select(n => Rows.Get(n));
-        }
-
-        public IEnumerable<DataRow> Find(KeyValuePair<string, object> Condition) {
-            var n = Columns[Condition.Key].Find(Condition.Value);
-            return GetData(n);
-        }
-
+        /// <summary>
+        ///  Disposes all resources held by the table.
+        /// </summary>
         public void Dispose() {
             Stream.Dispose();
             Rows.Dispose();
