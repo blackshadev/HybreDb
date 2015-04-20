@@ -23,14 +23,14 @@ namespace HybreDb.Tables {
         /// </summary>
         protected long FileHeaderOffset;
 
-        public DataColumn[] Columns;
+        public DataColumns Columns;
         public DiskTree<Number, DataRow> Rows; 
 
         protected FileStream Stream;
 
         public Table(string name, DataColumn[] c) {
             Name = name;
-            Columns = c;
+            Columns = new DataColumns(this, c);
 
             Rows = new DiskTree<Number, DataRow>(name + ".idx.bin", BucketSize, CacheSize);
             Rows.OnDataRead += v => { v.Table = this; };
@@ -77,9 +77,8 @@ namespace HybreDb.Tables {
 
             Rows.Insert(r.Index, r);
 
-            for (var i = 0; i < Columns.Length; i++) {
-                if(Columns[i].Index != null)
-                    Columns[i].Index.Add(r.Data[i], r.Index);
+            foreach ( var c in Columns.IndexColumns) {
+                    c.Value.Index.Add(r.Data[c.Key], r.Index);
             }
 
         }
@@ -111,18 +110,7 @@ namespace HybreDb.Tables {
             Stream.Position = 0;
             var rdr = new BinaryReader(Stream);
 
-            var c = rdr.ReadInt32();
-            Columns = new DataColumn[c];
-
-            for (var i = 0; i < c; i++) {
-                var _c = Columns[i] = new DataColumn{ Table = this };
-                _c.Deserialize(rdr);
-
-                if (_c.HasIndex) {
-                    _c.CreateIndex();
-                    _c.Index.Read();
-                }
-            }
+            Columns = new DataColumns(this, rdr);
 
             FileHeaderOffset = Stream.Position;
 
@@ -156,6 +144,19 @@ namespace HybreDb.Tables {
             }
 
             return sb.ToString();
+        }
+
+        public DataColumn this[string name] {
+            get { return Columns[name]; }
+        }
+
+        public IEnumerable<DataRow> GetData(Numbers nums) {
+            return nums.Select(n => Rows.Get(n));
+        }
+
+        public IEnumerable<DataRow> Find(KeyValuePair<string, object> Condition) {
+            var n = Columns[Condition.Key].Find(Condition.Value);
+            return GetData(n);
         }
 
         public void Dispose() {

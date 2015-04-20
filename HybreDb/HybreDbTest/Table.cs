@@ -21,7 +21,8 @@ namespace HybreDbTest {
 
             var cols = new[] {
                 new DataColumn("Name", DataType.Types.Text, true),
-                new DataColumn("Age", DataType.Types.Number),
+                new DataColumn("Age", DataType.Types.Number, true),
+                new DataColumn("Unindexed_Age", DataType.Types.Number),
                 new DataColumn("Inserted", DataType.Types.DateTime)
 
             };
@@ -30,20 +31,24 @@ namespace HybreDbTest {
             tab.Insert(new IDataType[] {
                 new Text("Vincent"),
                 new Number(22),
+                new Number(22),
                 new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
             });
             tab.Insert(new IDataType[] {
                 new Text("Wouter"),
+                new Number(22),
                 new Number(22),
                 new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
             });
             tab.Insert(new IDataType[] {
                 new Text("Tessa"),
                 new Number(20),
+                new Number(20),
                 new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
             });
             tab.Insert(new IDataType[] {
                 new Text("Tessa"),
+                new Number(26),
                 new Number(26),
                 new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
             });
@@ -59,9 +64,11 @@ namespace HybreDbTest {
             Trace.WriteLine("After Read");
             Trace.WriteLine(tab.ToString());
 
-            var numsName = tab.Columns[0].Find(new Text("Tessa"));
-            var numsAge = tab.Columns[1].Find(new Number(22));
-
+            Trace.WriteLine("\nTessa lookup");
+            Trace.WriteLine(String.Join("\n", tab.Find(new KeyValuePair<string, object>("Name", new Text("Tessa"))).Select(n => n.ToString())));
+            
+            Trace.WriteLine("\n 22 lookup");
+            Trace.WriteLine(String.Join("\n", tab.Find(new KeyValuePair<string, object>("Age", new Number(22))).Select(n => n.ToString())));
         }
 
         [TestMethod] 
@@ -71,8 +78,9 @@ namespace HybreDbTest {
             var set = GenerateDataset(n);
             
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = DataType.Types.Text, HasIndex = true},
-                new DataColumn { Name = "Age", DataType = DataType.Types.Number },
+                new DataColumn { Name = "Name", DataType = DataType.Types.Text, HasIndex = true },
+                new DataColumn { Name = "Age", DataType = DataType.Types.Number, HasIndex = true },
+                new DataColumn { Name = "UnIndexed_Age", DataType = DataType.Types.Number },
                 new DataColumn { Name = "Inserted", DataType = DataType.Types.DateTime }
             };
 
@@ -94,11 +102,21 @@ namespace HybreDbTest {
             Time("\nRead in", () => { tab = new HybreDb.Tables.Table("Bench"); });
             
             Time("Count", () => { i = tab.Rows.Count(); });
-            
+
+            Time("Count", () => { i = tab.Rows.Count(); });
+
+            Time("Index Age", () => {
+                var rows = tab.Find(new KeyValuePair<string, object>("Age", new Number(90)));
+                Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
+            });
+
+            Console.WriteLine("\n");
+            Time("Unindexed Age", () => {
+                var rows = tab.Find(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
+                Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
+            });
+
             Assert.IsFalse(i != n, "Missing records");
-
-            
-
         }
 
 
@@ -108,9 +126,11 @@ namespace HybreDbTest {
 
 
             for (var i = 0; i < N; i++) {
+                var a = new Number(rnd.Next(0, 100));
                 o[i] = new IDataType[] {
                     new Text(RandomString(rnd.Next(0, 25), rnd)),
-                    new Number(rnd.Next()),
+                    a,
+                    a,
                     new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now), 
                 };
             }

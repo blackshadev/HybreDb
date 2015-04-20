@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree.DataTypes {
-    public class Numbers : ITreeSerializable {
+    public class Numbers : ITreeSerializable, IEnumerable<Number> {
         public HashSet<Number> Nums;
 
         public Numbers(BinaryReader rdr) : this() {
@@ -46,5 +47,12 @@ namespace HybreDb.BPlusTree.DataTypes {
         }
 
 
+        public IEnumerator<Number> GetEnumerator() {
+            return Nums.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
     }
 }

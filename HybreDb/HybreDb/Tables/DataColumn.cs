@@ -1,6 +1,7 @@
 ﻿using System;   
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,6 +23,11 @@ namespace HybreDb.Tables {
 
         public DataColumn() {}
 
+        public DataColumn(Table t, BinaryReader rdr) {
+            Table = t;
+            Deserialize(rdr);
+        }
+
         public DataColumn(string name, DataType.Types t, bool idx = false) {
             Name = name;
             DataType = t;
@@ -35,13 +41,13 @@ namespace HybreDb.Tables {
             Index = (IndexTree)Activator.CreateInstance(t, new object[] { Table.Name + "_" + Name });
         }
 
-        public void Serialize(System.IO.BinaryWriter wrtr) {
+        public void Serialize(BinaryWriter wrtr) {
             wrtr.Write((byte)DataType);
             wrtr.Write(Name);
             wrtr.Write(HasIndex);
         }
 
-        public void Deserialize(System.IO.BinaryReader rdr) {
+        public void Deserialize(BinaryReader rdr) {
             DataType = (DataType.Types) rdr.ReadByte();
             Name = rdr.ReadString();
 

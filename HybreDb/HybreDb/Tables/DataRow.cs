@@ -29,5 +29,16 @@ namespace HybreDb.Tables {
                 Data[i] = Table.Columns[i].DataType.CreateType(rdr);
             }
         }
+
+        public override string ToString() {
+
+            var sb = new StringBuilder();
+            for (var i = 0; i < Data.Length; i++)
+                sb.Append(Table.Columns[i].Name).Append(": ").Append(Data[i]).Append(", ");
+
+            sb.Length -= 2;
+
+            return sb.ToString();
+        }
     }
 }

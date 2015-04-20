@@ -80,7 +80,7 @@ namespace HybreDb {
                 new DataColumn { Name = "Inserted", DataType = Tables.DataType.Types.DateTime }
             };
 
-            var tab = new HybreDb.Tables.Table("Test2", cols);
+            var tab = new Table("Test2", cols);
 
             int i = 0;
             Time("Insert " + n + " records", () => {
@@ -102,6 +102,7 @@ namespace HybreDb {
 
             if(i != n)
                 throw new Exception("Missing records");
+
         }
 
         static void Main(string[] args) {
