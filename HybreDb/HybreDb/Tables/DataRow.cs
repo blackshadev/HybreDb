@@ -41,20 +41,26 @@ namespace HybreDb.Tables {
             Data = d;
         }
 
-        public void Delete() {
-            Table.Remove(Index);
-        }
-
+        /// <summary>
+        /// Accesses the data within the row by index
+        /// </summary>
+        /// <param name="i">Index of the data object</param>
         public IDataType this[int i] {
             get { return Data[i]; }
             internal set { Data[i] = value; }
         }
 
+        /// <summary>
+        /// Accesses the data by column name
+        /// </summary>
+        /// <param name="colName">Column name</param>
+        /// <returns>Data beloning in that column</returns>
         public IDataType this[string colName] {
             get { return this[Table.Columns.IndexOf(colName)]; }
             internal set { this[Table.Columns.IndexOf(colName)] = value; }
         }
 
+        #region Serialisation
         public void Serialize(BinaryWriter wrtr) {
             Index.Serialize(wrtr);
 
@@ -71,12 +77,13 @@ namespace HybreDb.Tables {
                 Data[i] = Table.Columns[i].DataType.CreateType(rdr);
             }
         }
+        #endregion
 
 
-        public IEnumerator<IDataType> GetEnumerator() {
-            return ((IEnumerable<IDataType>) Data).GetEnumerator();
-        }
-
+        /// <summary>
+        /// Simple string representation for debug purpouses
+        /// </summary>
+        /// <returns></returns>
         public override string ToString() {
 
             var sb = new StringBuilder();
@@ -86,6 +93,10 @@ namespace HybreDb.Tables {
             sb.Length -= 2;
 
             return sb.ToString();
+        }
+
+        public IEnumerator<IDataType> GetEnumerator() {
+            return ((IEnumerable<IDataType>)Data).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {

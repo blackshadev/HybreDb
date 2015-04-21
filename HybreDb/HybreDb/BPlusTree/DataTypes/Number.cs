@@ -35,10 +35,16 @@ namespace HybreDb.BPlusTree.DataTypes {
             return n.Data;
         }
 
+        /// <summary>
+        /// HashCode implementation used for Numbers hashset
+        /// </summary>
         public override int GetHashCode() {
             return Data.GetHashCode();
         }
 
+        /// <summary>
+        /// Equals implementation used for Numbers hashset
+        /// </summary>
         public override bool Equals(object obj) {
             var n = obj as Number;
             return n != null && n.Data == Data;

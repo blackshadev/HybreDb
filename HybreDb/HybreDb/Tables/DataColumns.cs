@@ -29,6 +29,7 @@ namespace HybreDb.Tables {
             }
         }
 
+
         public DataColumns(Table t) { Table = t; }
 
         /// <summary>
@@ -80,6 +81,7 @@ namespace HybreDb.Tables {
             get { return Columns[x]; }
         }
 
+        #region Serialisation
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Columns.Length);
 
@@ -106,6 +108,7 @@ namespace HybreDb.Tables {
             }
 
         }
+        #endregion
 
         public IEnumerator<DataColumn> GetEnumerator() {
             return ((IEnumerable<DataColumn>)Columns).GetEnumerator();

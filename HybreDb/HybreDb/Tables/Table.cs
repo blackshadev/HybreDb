@@ -192,6 +192,12 @@ namespace HybreDb.Tables {
            
         }
 
+        /// <summary>
+        /// Updates the data in a column from a given row
+        /// </summary>
+        /// <param name="idx">Row data to update</param>
+        /// <param name="colName">Column name of the column within the row to uodate</param>
+        /// <param name="data">New value</param>
         public void Update(Number idx, string colName, IDataType data) {
             var colIdx = Columns.IndexOf(colName);
             var col = Columns[colIdx];
@@ -202,7 +208,7 @@ namespace HybreDb.Tables {
                     + data.GetType().Name + "`");
 
             object oldData = null;
-            var r = Rows.Update(idx, (l, k, v) => {
+            Rows.Update(idx, (l, k, v) => {
                 if (v == null) return false;
 
                 oldData = v[colIdx];
