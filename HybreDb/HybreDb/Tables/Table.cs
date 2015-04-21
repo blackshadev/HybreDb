@@ -165,6 +165,36 @@ namespace HybreDb.Tables {
             return GetData(n);
         }
 
+        public void Remove(Number idx) {
+            DataRow r = null;
+            var changed = Rows.Update(idx, (l, k, v) => {
+                if (v == null) return false;
+
+                r = v;
+
+                // make sure node is big enough
+                if (l.Count >= l.Capacity/4) {
+
+                    l.Buckets.Remove(k);
+
+                    return true;
+                }
+
+                return false;
+
+            });
+
+            // Not found
+            if (r == null)
+                throw new ArgumentException("Key value not found");
+            
+            // Perform manual remove
+            if(!changed) Rows.Remove(idx);
+
+            foreach (var kvp in Columns.IndexColumns) {
+                kvp.Value.Index.Remove(r.Data[kvp.Key], idx);
+            }
+        }
 
         /// <summary>
         /// A string representation which the first row as the column names and after that each entry is a row with data.

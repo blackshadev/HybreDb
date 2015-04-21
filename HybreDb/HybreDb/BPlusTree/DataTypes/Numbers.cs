@@ -11,6 +11,10 @@ namespace HybreDb.BPlusTree.DataTypes {
     public class Numbers : ITreeSerializable, IEnumerable<Number> {
         public HashSet<Number> Nums;
 
+        public int Count {
+            get { return Nums.Count; }
+        }
+
         public Numbers(BinaryReader rdr) : this() {
             Deserialize(rdr);
         }
@@ -45,7 +49,6 @@ namespace HybreDb.BPlusTree.DataTypes {
                 Nums.Add(new Number(rdr));
 
         }
-
 
         public IEnumerator<Number> GetEnumerator() {
             return Nums.GetEnumerator();

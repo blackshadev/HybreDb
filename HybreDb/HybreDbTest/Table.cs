@@ -65,10 +65,26 @@ namespace HybreDbTest {
             Trace.WriteLine(tab.ToString());
 
             Trace.WriteLine("\nTessa lookup");
-            Trace.WriteLine(String.Join("\n", tab.Find(new KeyValuePair<string, object>("Name", new Text("Tessa"))).Select(n => n.ToString())));
+            var tessas = tab.Find(new KeyValuePair<string, object>("Name", new Text("Tessa")));
+
+            Trace.WriteLine(String.Join("\n", tessas.Select(n => n.ToString())));
             
             Trace.WriteLine("\n 22 lookup");
             Trace.WriteLine(String.Join("\n", tab.Find(new KeyValuePair<string, object>("Age", new Number(22))).Select(n => n.ToString())));
+
+            foreach (var r in tessas.ToArray())
+                tab.Remove(r.Index);
+
+            Trace.WriteLine("\nAfter Delete");
+            Trace.WriteLine(tab.ToString());
+
+            tab.Commit();
+            tab.Dispose();
+
+            tab = new HybreDb.Tables.Table("Test");
+            Trace.WriteLine("\nAfter Read");
+            Trace.WriteLine(tab.ToString());
+
         }
 
         [TestMethod] 

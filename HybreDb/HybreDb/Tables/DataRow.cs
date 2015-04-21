@@ -29,6 +29,9 @@ namespace HybreDb.Tables {
         /// </summary>
         public IDataType[] Data;
 
+        public void Delete() {
+            Table.Remove(Index);
+        }
 
         public void Serialize(BinaryWriter wrtr) {
             Index.Serialize(wrtr);

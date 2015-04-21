@@ -4,6 +4,7 @@ using System.Linq;
 using HybreDb.BPlusTree;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
+using Newtonsoft.Json.Bson;
 
 namespace HybreDb.Tables {
     
@@ -12,6 +13,8 @@ namespace HybreDb.Tables {
     /// </summary>
     public interface IIndexTree : IDisposable {
         void Add(object d, Number n);
+
+        void Remove(object d, Number n);
 
         void Commit();
         void Read();
@@ -88,6 +91,27 @@ namespace HybreDb.Tables {
         /// </summary>
         public void Add(object d, Number n) {
             Add((TKey)d, n);
+        }
+
+        public void Remove(TKey d, Number num) {
+
+            var empty = false;
+            var c = Tree.Update(d, (l, k, v) => {
+                if (v == null) return false;
+
+                v.Remove(num);
+
+                empty = v.Count == 0;
+
+                return true;
+            });
+            
+
+            if(empty) Tree.Remove(d);
+        }
+
+        public void Remove(object d, Number n) {
+            Remove((TKey)d, n);
         }
 
         /// <summary>

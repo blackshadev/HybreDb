@@ -35,6 +35,15 @@ namespace HybreDb.BPlusTree.DataTypes {
             return n.Data;
         }
 
+        public override int GetHashCode() {
+            return Data.GetHashCode();
+        }
+
+        public override bool Equals(object obj) {
+            var n = obj as Number;
+            return n != null && n.Data == Data;
+        }
+
         public override string ToString() {
             return Data.ToString();
         }

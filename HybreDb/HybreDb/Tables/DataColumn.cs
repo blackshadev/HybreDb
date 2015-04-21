@@ -147,6 +147,5 @@ namespace HybreDb.Tables {
         public void Dispose() {
             if(HasIndex) Index.Dispose();
         }
-
     }
 }
