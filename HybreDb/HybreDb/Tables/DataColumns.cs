@@ -122,5 +122,9 @@ namespace HybreDb.Tables {
             foreach (var c in Columns)
                 c.Dispose();
         }
+
+        public int IndexOf(string colName) {
+            return ByName[colName];
+        }
     }
 }

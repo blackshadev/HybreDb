@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -12,7 +13,7 @@ namespace HybreDb.Tables {
     /// <summary>
     /// A DataRow within the database
     /// </summary>
-    public class DataRow : ITreeSerializable {
+    public class DataRow : ITreeSerializable, IEnumerable<IDataType> {
         /// <summary>
         /// Table holding this DataRow
         /// </summary>
@@ -27,10 +28,31 @@ namespace HybreDb.Tables {
         /// <summary>
         /// Data within this DataRow.
         /// </summary>
-        public IDataType[] Data;
+        protected IDataType[] Data;
+
+        public DataRow() {}
+
+        public DataRow(Table t, Number idx) {
+            Table = t;
+            Index = idx;
+        }
+
+        public DataRow(Table t, Number idx, IDataType[] d) : this(t, idx) {
+            Data = d;
+        }
 
         public void Delete() {
             Table.Remove(Index);
+        }
+
+        public IDataType this[int i] {
+            get { return Data[i]; }
+            internal set { Data[i] = value; }
+        }
+
+        public IDataType this[string colName] {
+            get { return this[Table.Columns.IndexOf(colName)]; }
+            internal set { this[Table.Columns.IndexOf(colName)] = value; }
         }
 
         public void Serialize(BinaryWriter wrtr) {
@@ -50,6 +72,11 @@ namespace HybreDb.Tables {
             }
         }
 
+
+        public IEnumerator<IDataType> GetEnumerator() {
+            return ((IEnumerable<IDataType>) Data).GetEnumerator();
+        }
+
         public override string ToString() {
 
             var sb = new StringBuilder();
@@ -59,6 +86,10 @@ namespace HybreDb.Tables {
             sb.Length -= 2;
 
             return sb.ToString();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
     }
 }

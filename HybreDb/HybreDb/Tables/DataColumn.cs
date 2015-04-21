@@ -17,6 +17,10 @@ namespace HybreDb.Tables {
             get { return DataType.GetSystemType(); }
         }
 
+        public int DataIndex {
+            get { return Table.Columns.IndexOf(Name); }
+        }
+
         /// <summary>
         /// Internal data type, used in serialization and creation
         /// </summary>
@@ -134,7 +138,7 @@ namespace HybreDb.Tables {
         protected Numbers MatchIterate(object obj) {
             var nums = new Numbers();
 
-            foreach (var kvp in Table.Rows.Where(kvp => kvp.Value.Data[1].CompareTo(obj) == 0)) {
+            foreach (var kvp in Table.Rows.Where(kvp => kvp.Value[DataIndex].CompareTo(obj) == 0)) {
                 nums.Add(kvp.Key);
             }
 

@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using HybreDb.BPlusTree;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
+using Newtonsoft.Json.Bson;
 
 namespace HybreDb.Tables {
     public class Table: IDisposable {
@@ -75,17 +76,13 @@ namespace HybreDb.Tables {
             }
 
 
-            var r = new DataRow {
-                Table = this,
-                Data = data,
-                Index = new Number(Counter++)
-            };
+            var r = new DataRow(this, Counter++, data);
 
             Rows.Insert(r.Index, r);
 
             // Insert Indexes
             foreach ( var c in Columns.IndexColumns)
-                    c.Value.Index.Add(r.Data[c.Key], r.Index);
+                    c.Value.Index.Add(r[c.Key], r.Index);
         }
 
         /// <summary>
@@ -137,14 +134,9 @@ namespace HybreDb.Tables {
             var wrtr = new BinaryWriter(Stream);
             wrtr.Write(Counter);
         }
-
-        /// <summary>
-        /// Gets a DataColumn by name
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public DataColumn this[string name] {
-            get { return Columns[name]; }
+        
+        public DataRow this[int idx] {
+            get { return Rows.Get(idx); }
         }
 
         /// <summary>
@@ -165,6 +157,10 @@ namespace HybreDb.Tables {
             return GetData(n);
         }
 
+        /// <summary>
+        /// Removes a row with given primary key
+        /// </summary>
+        /// <param name="idx">Primary key of the row to delete</param>
         public void Remove(Number idx) {
             DataRow r = null;
             var changed = Rows.Update(idx, (l, k, v) => {
@@ -191,10 +187,37 @@ namespace HybreDb.Tables {
             // Perform manual remove
             if(!changed) Rows.Remove(idx);
 
-            foreach (var kvp in Columns.IndexColumns) {
-                kvp.Value.Index.Remove(r.Data[kvp.Key], idx);
-            }
+            foreach (var kvp in Columns.IndexColumns)
+                kvp.Value.Index.Remove(r[kvp.Key], idx);
+           
         }
+
+        public void Update(Number idx, string colName, IDataType data) {
+            var colIdx = Columns.IndexOf(colName);
+            var col = Columns[colIdx];
+
+            if(!col.CheckType(data))
+                throw new ArgumentException("Invalid data type for column `"  + col.Name 
+                    + "`. Expected `" + col.DataType.GetSystemType().Name + "` got `" 
+                    + data.GetType().Name + "`");
+
+            object oldData = null;
+            var r = Rows.Update(idx, (l, k, v) => {
+                if (v == null) return false;
+
+                oldData = v[colIdx];
+                v[colIdx] = data;
+
+                return true;
+            });
+
+            if(oldData == null) 
+                throw new ArgumentException("Key value not found");
+
+            col.Index.Remove(oldData, idx);
+            col.Index.Add(data, idx);
+        }
+
 
         /// <summary>
         /// A string representation which the first row as the column names and after that each entry is a row with data.
@@ -208,7 +231,7 @@ namespace HybreDb.Tables {
             sb.Append('\n');
 
             foreach (var r in Rows) {
-                foreach (var c in r.Value.Data)
+                foreach (var c in r.Value)
                     sb.Append(c).Append(';');
                 sb.Append('\n');
             }

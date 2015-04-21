@@ -70,13 +70,20 @@ namespace HybreDbTest {
             Trace.WriteLine(String.Join("\n", tessas.Select(n => n.ToString())));
             
             Trace.WriteLine("\n 22 lookup");
-            Trace.WriteLine(String.Join("\n", tab.Find(new KeyValuePair<string, object>("Age", new Number(22))).Select(n => n.ToString())));
+            var tters = tab.Find(new KeyValuePair<string, object>("Age", new Number(22)));
+            Trace.WriteLine(String.Join("\n", tters.Select(n => n.ToString())));
 
             foreach (var r in tessas.ToArray())
                 tab.Remove(r.Index);
 
+            tab.Commit();
+
             Trace.WriteLine("\nAfter Delete");
             Trace.WriteLine(tab.ToString());
+
+            foreach (var r in tters.ToArray())
+                tab.Update(r.Index, "Age", new Number(23));
+            
 
             tab.Commit();
             tab.Dispose();
@@ -84,6 +91,10 @@ namespace HybreDbTest {
             tab = new HybreDb.Tables.Table("Test");
             Trace.WriteLine("\nAfter Read");
             Trace.WriteLine(tab.ToString());
+
+            Trace.WriteLine("\n 23 lookup");
+            var dters = tab.Find(new KeyValuePair<string, object>("Age", new Number(23)));
+            Trace.WriteLine(String.Join("\n", dters.Select(n => n.ToString())));
 
         }
 
