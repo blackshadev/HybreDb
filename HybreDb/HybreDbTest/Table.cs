@@ -14,6 +14,7 @@ namespace HybreDbTest {
     public class Table {
 
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
+        public static Database Db = new Database("UnitTest", true);
 
         [TestMethod]
         public void Create() {
@@ -26,7 +27,7 @@ namespace HybreDbTest {
                 new DataColumn("Inserted", DataType.Types.DateTime)
 
             };
-            var tab = new HybreDb.Tables.Table("Test", cols);
+            var tab = Db.NewTable("Test", cols);
 
             tab.Insert(new IDataType[] {
                 new Text("Vincent"),
@@ -59,7 +60,7 @@ namespace HybreDbTest {
             tab.Commit();
             tab.Dispose();
 
-            tab = new HybreDb.Tables.Table("Test");
+            tab = new HybreDb.Tables.Table(Db, "Test");
             
             Trace.WriteLine("After Read");
             Trace.WriteLine(tab.ToString());
@@ -88,7 +89,7 @@ namespace HybreDbTest {
             tab.Commit();
             tab.Dispose();
 
-            tab = new HybreDb.Tables.Table("Test");
+            tab = new HybreDb.Tables.Table(Db, "Test");
             Trace.WriteLine("\nAfter Read");
             Trace.WriteLine(tab.ToString());
 
@@ -111,7 +112,7 @@ namespace HybreDbTest {
                 new DataColumn { Name = "Inserted", DataType = DataType.Types.DateTime }
             };
 
-            var tab = new HybreDb.Tables.Table("Bench", cols);
+            var tab = Db.NewTable("Bench", cols);
             
             int i = 0;
             Time("Insert " + n + " records", () => { 
@@ -126,7 +127,7 @@ namespace HybreDbTest {
             Time("Commit", () => { tab.Commit(); });
             tab.Dispose();
 
-            Time("\nRead in", () => { tab = new HybreDb.Tables.Table("Bench"); });
+            Time("\nRead in", () => { tab = new HybreDb.Tables.Table(Db, "Bench"); });
             
             Time("Count", () => { i = tab.Rows.Count(); });
 

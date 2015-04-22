@@ -11,12 +11,14 @@ using HybreDb.Storage;
 using HybreDb.Tables;
 using HybreDb.Test;
 using HybreDb.BPlusTree.DataTypes;
+using DataType = HybreDb.Tables.DataType;
 
 namespace HybreDb {
     public class Program {
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
         public const int Seed = 1;
         
+
         static void Test1() {
 
             if(File.Exists("test.dat"))
@@ -73,14 +75,15 @@ namespace HybreDb {
             const int n = 100000;
 
             var set = GenerateDataset(n);
+            var db = new Database("Test2");
 
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = Tables.DataType.Types.Text, HasIndex = true},
-                new DataColumn { Name = "Age", DataType = Tables.DataType.Types.Number },
-                new DataColumn { Name = "Inserted", DataType = Tables.DataType.Types.DateTime }
+                new DataColumn { Name = "Name", DataType = DataType.Types.Text, HasIndex = true},
+                new DataColumn { Name = "Age", DataType = DataType.Types.Number },
+                new DataColumn { Name = "Inserted", DataType = DataType.Types.DateTime }
             };
 
-            var tab = new Table("Test2", cols);
+            var tab = db.NewTable("Test2", cols);
 
             int i = 0;
             Time("Insert " + n + " records", () => {
@@ -96,7 +99,7 @@ namespace HybreDb {
             Time("Commit", () => { tab.Commit(); });
             tab.Dispose();
 
-            Time("\nRead in", () => { tab = new Table("Test2"); });
+            Time("\nRead in", () => { tab = new Table(db, "Test2"); });
 
             Time("Count", () => { i = tab.Rows.Count(); });
 
@@ -105,8 +108,51 @@ namespace HybreDb {
 
         }
 
+        public static void Test3() {
+            var db = new Database("Tester");
+
+            if (db.Any()) {
+                Console.WriteLine(db["People"].ToString());
+
+                Console.ReadKey();
+                return;
+            }
+
+            db.NewTable("People", new [] {
+                new DataColumn("Name", DataType.Types.Text, true),
+                new DataColumn("Age", DataType.Types.Number, true),
+                new DataColumn("Inserted", DataType.Types.DateTime)
+            });
+
+            var tab = db["People"];
+            tab.Insert(new IDataType[] {
+                new Text("Vincent"),
+                new Number(22),
+                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+            });
+            tab.Insert(new IDataType[] {
+                new Text("Wouter"),
+                new Number(22),
+                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+            });
+            tab.Insert(new IDataType[] {
+                new Text("Tessa"),
+                new Number(20),
+                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+            });
+            tab.Insert(new IDataType[] {
+                new Text("Tessa"),
+                new Number(26),
+                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+            });
+            tab.Commit();
+
+            Console.ReadKey();
+        }
+
         static void Main(string[] args) {
-            Test2();
+            //Test2();
+            Test3();
         }
 
         private static IDataType[][] GenerateDataset(int N) {

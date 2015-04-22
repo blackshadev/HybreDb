@@ -59,7 +59,7 @@ namespace HybreDb.BPlusTree {
         public DiskTree(string filename, int bucketSize, int cacheSize) : base(bucketSize) {
             Filename = filename;
 
-            Stream = new FileStream(Filename, FileMode.OpenOrCreate);
+            Stream = DbFile.Open(Filename);
             CreateCache(cacheSize);
         }
 
@@ -99,6 +99,8 @@ namespace HybreDb.BPlusTree {
             ((IDiskNode<TKey, TValue>)Root).Write(bin);
 
             Serialize(bin);
+
+            Stream.Flush();
         }
 
         public void Read() {

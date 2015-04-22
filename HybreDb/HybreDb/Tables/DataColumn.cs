@@ -73,7 +73,7 @@ namespace HybreDb.Tables {
             if (!HasIndex) return;
 
             var t = typeof (IndexTree<>).MakeGenericType(new[] {DataType.GetSystemType()});
-            Index = (IIndexTree)Activator.CreateInstance(t, new object[] { Table.Name + "_" + Name });
+            Index = (IIndexTree)Activator.CreateInstance(t, new object[] { Table.Database.GetPath(Table.Name + "_" + Name) });
         }
 
         /// <summary>

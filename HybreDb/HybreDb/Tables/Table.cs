@@ -17,6 +17,8 @@ namespace HybreDb.Tables {
 
 
         public string Name { get; protected set; }
+
+        public Database Database { get; protected set; }
         protected int Counter;
 
         /// <summary>
@@ -34,14 +36,15 @@ namespace HybreDb.Tables {
         /// </summary>
         /// <param name="name">Table name</param>
         /// <param name="c">Columns</param>
-        public Table(string name, DataColumn[] c) {
+        public Table(Database db, string name, DataColumn[] c) {
+            Database = db;
             Name = name;
             Columns = new DataColumns(this, c);
 
-            Rows = new DiskTree<Number, DataRow>(name + ".idx.bin", BucketSize, CacheSize);
+            Rows = new DiskTree<Number, DataRow>(Database.GetPath(name) + ".idx.bin", BucketSize, CacheSize);
             Rows.OnDataRead += v => { v.Table = this; };
 
-            Stream = new FileStream(Name + ".table.bin", FileMode.Create);
+            Stream = DbFile.Open(Database.GetPath(Name) + ".table.bin" );
             Counter = 0;
 
             Write();
@@ -52,11 +55,12 @@ namespace HybreDb.Tables {
         /// Creates a existing Table by reading it in from file.
         /// </summary>
         /// <param name="name"></param>
-        public Table(string name) {
+        public Table(Database db, string name) {
+            Database = db;
             Name = name;
-            Stream = new FileStream(Name + ".table.bin", FileMode.OpenOrCreate);
+            Stream = DbFile.Open(Database.GetPath(name) + ".table.bin");
 
-            Rows = new DiskTree<Number, DataRow>(name + ".idx.bin", BucketSize, CacheSize);
+            Rows = new DiskTree<Number, DataRow>(Database.GetPath(name + ".idx.bin"), BucketSize, CacheSize);
             Rows.OnDataRead += v => { v.Table = this; };
 
             Read();
@@ -93,9 +97,8 @@ namespace HybreDb.Tables {
         protected void Write() {
             Stream.Position = 0;
             var wrtr = new BinaryWriter(Stream);
-            wrtr.Write(Columns.Length);
-            foreach (var c in Columns)
-                c.Serialize(wrtr);
+
+            Columns.Serialize(wrtr);
 
             FileHeaderOffset = Stream.Position;
 
@@ -133,6 +136,7 @@ namespace HybreDb.Tables {
             Stream.Position = FileHeaderOffset;
             var wrtr = new BinaryWriter(Stream);
             wrtr.Write(Counter);
+            Stream.Flush();
         }
         
         public DataRow this[int idx] {
