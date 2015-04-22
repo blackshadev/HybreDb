@@ -73,7 +73,6 @@ namespace HybreDb.BPlusTree {
 
 
         public override INode<TKey, TValue> Insert(TKey key, TValue data) {
-
             BeginAccess();
             var r = base.Insert(key, data);
             EndAccess(true);

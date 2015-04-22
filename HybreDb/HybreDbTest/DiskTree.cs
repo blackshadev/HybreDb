@@ -24,6 +24,8 @@ namespace HybreDbTest {
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
 
+            if(File.Exists("test.dat")) File.Delete("test.dat");
+
             var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize);
 
             sw.Start();

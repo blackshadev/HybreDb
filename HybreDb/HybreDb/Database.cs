@@ -10,19 +10,30 @@ using HybreDb.Storage;
 using HybreDb.Tables;
 
 namespace HybreDb {
+    /// <summary>
+    /// Database class containing the tables of a given database
+    /// </summary>
     public class Database : ITreeSerializable, IEnumerable<Table> {
+
+        /// <summary>
+        /// Name of the database, used as directory name
+        /// </summary>
         public string Name { get; protected set; }
 
         protected Dictionary<string, Table> Tables;
         protected Stream Stream;
 
-        public Database(string name, bool flush=false) {
+        /// <summary>
+        /// Constructor for a database
+        /// </summary>
+        /// <param name="name">Name of the database</param>
+        /// <param name="clean">Whenever or not to remove any old database with the same name</param>
+        public Database(string name, bool clean=false) {
             Name = name;
 
             var dir = GetPath("");
-            if (flush && Directory.Exists(dir))
+            if (clean && Directory.Exists(dir))
                 Directory.Delete(dir, true);
-
 
             Directory.CreateDirectory(dir);
 
@@ -40,6 +51,10 @@ namespace HybreDb {
             Write();
         }
 
+
+        /// <summary>
+        /// Reads in the data from a file
+        /// </summary>
         public void Read() {
             Stream.Seek(-8, SeekOrigin.End);
             var rdr = new BinaryReader(Stream);
@@ -47,6 +62,10 @@ namespace HybreDb {
             Deserialize(rdr);
         }
 
+
+        /// <summary>
+        /// Writes changes to a file. Does not commit the tables
+        /// </summary>
         public void Write() {
             Stream.Seek(0, SeekOrigin.End);
             
@@ -58,6 +77,12 @@ namespace HybreDb {
             wrtr.Write(start);
         }
 
+        /// <summary>
+        /// Adds and creates a new table within the database
+        /// </summary>
+        /// <param name="name">Table name</param>
+        /// <param name="cols">Column definitions</param>
+        /// <returns></returns>
         public Table NewTable(string name, DataColumn[] cols) {
             if(Tables.ContainsKey(name))
                 throw new ArgumentException("Table named `" + name + "` already exists in database `" + Name + "`");
@@ -69,7 +94,8 @@ namespace HybreDb {
             
             return t;
         }
-            
+
+        #region serialisation
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Name);
             wrtr.Write(Tables.Count);
@@ -90,19 +116,22 @@ namespace HybreDb {
             }
 
         }
+        #endregion
 
+
+        /// <summary>
+        /// Returns the path within the database ending on given fname
+        /// </summary>
+        /// <param name="fname">filename which is used at the end of the path</param>
         public string GetPath(string fname) {
-            return GetPath(new[] {Name, fname});
+            return GetPath(new[] { Name, fname });
         }
 
-        public static string DataFolder {
-            get { return ConfigurationManager.AppSettings["DataFolder"]; }
-        }
-
-        public static string GetPath(string[] inner) {
-            return Path.Combine(DataFolder, Path.Combine(inner));
-        }
-
+        /// <summary>
+        /// Named accessor for tables
+        /// </summary>
+        /// <param name="n">Table name</param>
+        /// <returns>Table with given name</returns>
         public Table this[string n] {
             get { return Tables[n]; }
         }
@@ -114,5 +143,22 @@ namespace HybreDb {
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
+
+        #region Statics
+        /// <summary>
+        /// Folder defined in the AppSettings, used to write data to
+        /// </summary>
+        public static string DataFolder {
+            get { return ConfigurationManager.AppSettings["DataFolder"]; }
+        }
+
+        /// <summary>
+        /// Combines the given path parts Allong with the DataFolder
+        /// </summary>
+        public static string GetPath(string[] inner) {
+            return Path.Combine(DataFolder, Path.Combine(inner));
+        }
+        #endregion
+        
     }
 }

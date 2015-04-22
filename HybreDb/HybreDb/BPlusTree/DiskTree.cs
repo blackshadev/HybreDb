@@ -48,31 +48,62 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public long FileOffset { get; private set; }
 
-        public LRUCache<IDiskNode<TKey, TValue>> Cache;
+        /// <summary>
+        /// Cache which contains the nodes
+        /// </summary>
+        public LRUCache<IDiskNode<TKey, TValue>> Cache { get; protected set; }
 
+        /// <summary>
+        /// Size of the cache, 
+        /// </summary>
+        public int CacheSize { get; protected set; }
+
+        /// <summary>
+        /// Reference to the root of the tree
+        /// </summary>
         public IDiskNode<TKey, TValue> DiskRoot {
             get { return (IDiskNode<TKey, TValue>) Root; } 
         }
 
         public FileStream Stream { get; protected set; }
 
-        public DiskTree(string filename, int bucketSize, int cacheSize) : base(bucketSize) {
+        /// <summary>
+        /// Creates a new Diskbased B+ tree. When file already exists it reads in the data from the file.
+        /// </summary>
+        /// <param name="filename">Filename to use for read and writing</param>
+        /// <param name="bucketSize">Size used in the buckets of the tree</param>
+        /// <param name="cacheSize">Size of the cash in nodes</param>
+        public DiskTree(string filename, int bucketSize=64, int cacheSize=64) : base(bucketSize) {
             Filename = filename;
+            CacheSize = cacheSize;
 
+            var exists = File.Exists(Filename);
             Stream = DbFile.Open(Filename);
-            CreateCache(cacheSize);
+
+            if (exists) Read();
+            CreateCache(CacheSize);
+
         }
 
+        /// <summary>
+        /// Creates the tree, bulk inserts the data and writes the data.
+        /// </summary>
+        /// <param name="filename"></param>
+        /// <param name="bucketSize"></param>
+        /// <param name="cacheSize"></param>
+        /// <param name="dat"></param>
         public DiskTree(string filename, int bucketSize, int cacheSize, KeyValuePair<TKey, TValue>[] dat) : base(bucketSize, dat) {
             Filename = filename;
 
-            Stream = new FileStream(Filename, FileMode.OpenOrCreate);
+            Stream = DbFile.Open(filename);
             CreateCache(cacheSize);
+        
+            Write();
         }
 
         protected void CreateCache(int s) {
             Cache = new LRUCache<IDiskNode<TKey, TValue>>(s);
-            Cache.OnOutDated += node => { node.Write(); };
+            Cache.OnOutDated += node => node.Write();
         }
 
         #region Creators overrides
@@ -93,6 +124,9 @@ namespace HybreDb.BPlusTree {
         }
         #endregion
 
+        /// <summary>
+        /// Writes the tree to file
+        /// </summary>
         public void Write() {
             Stream.Seek(0, SeekOrigin.End);
             var bin = new BinaryWriter(Stream);
@@ -103,17 +137,28 @@ namespace HybreDb.BPlusTree {
             Stream.Flush();
         }
 
+
+        /// <summary>
+        /// Reads in the tree
+        /// </summary>
         public void Read() {
             var rdr = new BinaryReader(Stream);
+            Stream.Seek(-8, SeekOrigin.End);
+            Stream.Position = rdr.ReadInt64();
             Deserialize(rdr);
         }
 
+        #region Serialisation
         public void Serialize(BinaryWriter wrtr) {
             PreviousRevision = FileOffset;
             FileOffset = Stream.Position;
 
+            wrtr.Write(BucketSize);
+            wrtr.Write(CacheSize);
+
             wrtr.Write(Revision++);
             wrtr.Write(PreviousRevision);
+            
 
             DiskRoot.Serialize(wrtr);
 
@@ -122,16 +167,18 @@ namespace HybreDb.BPlusTree {
 
 
         public void Deserialize(BinaryReader rdr) {
-            rdr.BaseStream.Seek(-8, SeekOrigin.End);
+            FileOffset = rdr.BaseStream.Position;
 
-            FileOffset = rdr.ReadInt64();
-            rdr.BaseStream.Seek(FileOffset, SeekOrigin.Begin);
+
+            BucketSize = rdr.ReadInt32();
+            CacheSize = rdr.ReadInt32();
 
             Revision = rdr.ReadUInt32();
             PreviousRevision = rdr.ReadInt64();
 
             Root = DiskNode<TKey, TValue>.Create(this, rdr);
         }
+        #endregion
 
         public void Dispose() {
             Stream.Dispose();
