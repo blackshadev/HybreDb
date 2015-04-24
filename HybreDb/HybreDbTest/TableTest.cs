@@ -6,12 +6,13 @@ using System.Runtime.Remoting.Messaging;
 using HybreDb;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables;
+using HybreDb.Tables.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using DataType = HybreDb.Tables.DataType;
+using DateTime = HybreDb.Tables.Types.DateTime;
 
 namespace HybreDbTest {
     [TestClass]
-    public class Table {
+    public class TableTest {
 
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
         public static Database Db = new Database("UnitTest", true);
@@ -20,47 +21,13 @@ namespace HybreDbTest {
         public void Create() {
 
 
-            var cols = new[] {
-                new DataColumn("Name", DataType.Types.Text, true),
-                new DataColumn("Age", DataType.Types.Number, true),
-                new DataColumn("Unindexed_Age", DataType.Types.Number),
-                new DataColumn("Inserted", DataType.Types.DateTime)
-
-            };
-            var tab = Db.NewTable("Test", cols);
-
-            tab.Insert(new IDataType[] {
-                new Text("Vincent"),
-                new Number(22),
-                new Number(22),
-                new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
-            });
-            tab.Insert(new IDataType[] {
-                new Text("Wouter"),
-                new Number(22),
-                new Number(22),
-                new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
-            });
-            tab.Insert(new IDataType[] {
-                new Text("Tessa"),
-                new Number(20),
-                new Number(20),
-                new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
-            });
-            tab.Insert(new IDataType[] {
-                new Text("Tessa"),
-                new Number(26),
-                new Number(26),
-                new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now)
-            });
+            var tab = DummyData.TestTable(Db, "Test");
+            DummyData.TestRows(tab);
 
             Trace.WriteLine("After insert");
             Trace.WriteLine(tab.ToString());
 
-            tab.Commit();
-            tab.Dispose();
-
-            tab = new HybreDb.Tables.Table(Db, "Test");
+            tab = Db.Reopen(tab);
             
             Trace.WriteLine("After Read");
             Trace.WriteLine(tab.ToString());
@@ -84,12 +51,10 @@ namespace HybreDbTest {
 
             foreach (var r in tters.ToArray())
                 tab.Update(r.Index, "Age", new Number(23));
-            
 
-            tab.Commit();
-            tab.Dispose();
 
-            tab = new HybreDb.Tables.Table(Db, "Test");
+            tab = Db.Reopen(tab);
+
             Trace.WriteLine("\nAfter Read");
             Trace.WriteLine(tab.ToString());
 
@@ -106,10 +71,10 @@ namespace HybreDbTest {
             var set = GenerateDataset(n);
             
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = DataType.Types.Text, HasIndex = true },
-                new DataColumn { Name = "Age", DataType = DataType.Types.Number, HasIndex = true },
-                new DataColumn { Name = "UnIndexed_Age", DataType = DataType.Types.Number },
-                new DataColumn { Name = "Inserted", DataType = DataType.Types.DateTime }
+                new DataColumn { Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true },
+                new DataColumn { Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true },
+                new DataColumn { Name = "UnIndexed_Age", DataType = DataTypes.Types.Number },
+                new DataColumn { Name = "Inserted", DataType = DataTypes.Types.DateTime }
             };
 
             var tab = Db.NewTable("Bench", cols);
@@ -125,9 +90,8 @@ namespace HybreDbTest {
             Assert.IsFalse(i != n, "Missing records");
             
             Time("Commit", () => { tab.Commit(); });
-            tab.Dispose();
 
-            Time("\nRead in", () => { tab = new HybreDb.Tables.Table(Db, "Bench"); });
+            Time("\nRead in", () => { tab = Db.Reopen(tab); });
             
             Time("Count", () => { i = tab.Rows.Count(); });
 
@@ -159,7 +123,7 @@ namespace HybreDbTest {
                     new Text(RandomString(rnd.Next(0, 25), rnd)),
                     a,
                     a,
-                    new HybreDb.BPlusTree.DataTypes.DateTime(System.DateTime.Now), 
+                    new DateTime(System.DateTime.Now), 
                 };
             }
 

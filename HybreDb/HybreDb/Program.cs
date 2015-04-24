@@ -9,9 +9,10 @@ using System.Threading.Tasks;
 using HybreDb.BPlusTree;
 using HybreDb.Storage;
 using HybreDb.Tables;
+using HybreDb.Tables.Types;
 using HybreDb.Test;
 using HybreDb.BPlusTree.DataTypes;
-using DataType = HybreDb.Tables.DataType;
+using DateTime = HybreDb.Tables.Types.DateTime;
 
 namespace HybreDb {
     public class Program {
@@ -78,9 +79,9 @@ namespace HybreDb {
             var db = new Database("Test2");
 
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = DataType.Types.Text, HasIndex = true},
-                new DataColumn { Name = "Age", DataType = DataType.Types.Number },
-                new DataColumn { Name = "Inserted", DataType = DataType.Types.DateTime }
+                new DataColumn { Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true},
+                new DataColumn { Name = "Age", DataType = DataTypes.Types.Number },
+                new DataColumn { Name = "Inserted", DataType = DataTypes.Types.DateTime }
             };
 
             var tab = db.NewTable("Test2", cols);
@@ -119,31 +120,31 @@ namespace HybreDb {
             }
 
             db.NewTable("People", new [] {
-                new DataColumn("Name", DataType.Types.Text, true),
-                new DataColumn("Age", DataType.Types.Number, true),
-                new DataColumn("Inserted", DataType.Types.DateTime)
+                new DataColumn("Name", DataTypes.Types.Text, true),
+                new DataColumn("Age", DataTypes.Types.Number, true),
+                new DataColumn("Inserted", DataTypes.Types.DateTime)
             });
 
             var tab = db["People"];
             tab.Insert(new IDataType[] {
                 new Text("Vincent"),
                 new Number(22),
-                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+                new DateTime(System.DateTime.Now)
             });
             tab.Insert(new IDataType[] {
                 new Text("Wouter"),
                 new Number(22),
-                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+                new DateTime(System.DateTime.Now)
             });
             tab.Insert(new IDataType[] {
                 new Text("Tessa"),
                 new Number(20),
-                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+                new DateTime(System.DateTime.Now)
             });
             tab.Insert(new IDataType[] {
                 new Text("Tessa"),
                 new Number(26),
-                new BPlusTree.DataTypes.DateTime(System.DateTime.Now)
+                new DateTime(System.DateTime.Now)
             });
             tab.Commit();
 
@@ -164,7 +165,7 @@ namespace HybreDb {
                 o[i] = new IDataType[] {
                     new Text(RandomString(rnd.Next(0, 25), rnd)),
                     new Number(rnd.Next()),
-                    new BPlusTree.DataTypes.DateTime(System.DateTime.Now), 
+                    new DateTime(System.DateTime.Now), 
                 };
             }
 

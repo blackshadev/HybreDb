@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Configuration;
+using HybreDb.Relational;
 using HybreDb.Storage;
 using HybreDb.Tables;
 
@@ -95,6 +96,25 @@ namespace HybreDb {
             return t;
         }
 
+        public Table Reopen(Table old) {
+            var n = old.Name;
+            old.Commit();
+            old.Dispose();
+
+            return new Table(this, n);
+        }
+
+        public Relation AddRelation(string srcTable, string srcCol, string destTable, string destCol) {
+
+            var src = Tables[srcTable];
+            var dest = Tables[destTable];
+
+            var r = src.Relations.Add(src.Columns[srcCol], dest.Columns[destCol]);
+            src.Write();
+            
+            return r;
+        }
+
         #region serialisation
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Name);
@@ -115,6 +135,8 @@ namespace HybreDb {
                 Tables.Add(name, new Table(this, name));
             }
 
+            foreach(var t in Tables.Values)
+                t.ReadRelations();
         }
         #endregion
 

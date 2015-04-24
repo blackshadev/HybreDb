@@ -54,10 +54,12 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="DiskTree.cs" />
-    <Compile Include="Tree.cs" />
+    <Compile Include="DiskTreeTest.cs" />
+    <Compile Include="TestData.cs" />
+    <Compile Include="TreeTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Table.cs" />
+    <Compile Include="TableTest.cs" />
+    <Compile Include="RelationsTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HybreDb\HybreDb.csproj">

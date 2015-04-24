@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
+using HybreDb.Tables;
 
 namespace HybreDb.Test {
     public class TestData : DataType {

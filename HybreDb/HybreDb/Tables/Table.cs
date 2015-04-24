@@ -7,8 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using HybreDb.BPlusTree;
 using HybreDb.BPlusTree.DataTypes;
-using HybreDb.Storage;
-using Newtonsoft.Json.Bson;
+using HybreDb.Relational;
+using HybreDb.Tables.Types;
 
 namespace HybreDb.Tables {
     public class Table: IDisposable {
@@ -22,12 +22,19 @@ namespace HybreDb.Tables {
         protected int Counter;
 
         /// <summary>
-        /// Offset within the file untill the non static data
+        /// Offset within the file the counter field
         /// </summary>
-        protected long FileHeaderOffset;
+        protected long CounterOffset;
+
+        /// <summary>
+        /// Offset within the file where the relations begins.
+        /// </summary>
+        protected long RelationsOffset;
 
         public DataColumns Columns;
-        public DiskTree<Number, DataRow> Rows; 
+        public DiskTree<Number, DataRow> Rows;
+
+        public Relations Relations;
 
         protected FileStream Stream;
 
@@ -40,6 +47,7 @@ namespace HybreDb.Tables {
             Database = db;
             Name = name;
             Columns = new DataColumns(this, c);
+            Relations = new Relations(this);
 
             Rows = new DiskTree<Number, DataRow>(Database.GetPath(name) + ".idx.bin", BucketSize, CacheSize);
             Rows.OnDataRead += v => { v.Table = this; };
@@ -59,6 +67,7 @@ namespace HybreDb.Tables {
             Database = db;
             Name = name;
             Stream = DbFile.Open(Database.GetPath(name) + ".table.bin");
+            Relations = new Relations(this);
 
             Rows = new DiskTree<Number, DataRow>(Database.GetPath(name + ".idx.bin"), BucketSize, CacheSize);
             Rows.OnDataRead += v => { v.Table = this; };
@@ -92,40 +101,61 @@ namespace HybreDb.Tables {
         /// <summary>
         /// Writes the table definition to file, 
         /// because table definitions won't change, overwrite the changeables with commit.
-        /// Also sets the FileHeaderOffset
+        /// Also sets the CounterOffset
         /// </summary>
-        protected void Write() {
-            Stream.Position = 0;
+        public void Write() {
+            Stream.Seek(0, SeekOrigin.End);
+            var start = Stream.Position;
+
             var wrtr = new BinaryWriter(Stream);
 
             Columns.Serialize(wrtr);
 
-            FileHeaderOffset = Stream.Position;
-
+            CounterOffset = Stream.Position;
+            
             Commit();
+
+            RelationsOffset = Stream.Position;
+
+            Relations.Serialize(wrtr);
+
+            wrtr.Write(start);
         }
 
         /// <summary>
         /// Reads in the table definition and changeable data,
-        /// Also sets the FileHeaderOffset
+        /// Also sets the CounterOffset
         /// </summary>
-        protected void Read() {
+        public void Read() {
             Rows.Read();
 
-            Stream.Position = 0;
+            Stream.Seek(-8, SeekOrigin.End);
             var rdr = new BinaryReader(Stream);
+            Stream.Position = rdr.ReadInt32();
 
             Columns = new DataColumns(this, rdr);
 
-            FileHeaderOffset = Stream.Position;
+            CounterOffset = Stream.Position;
 
             // read in dynamics
             Counter = rdr.ReadInt32();
+
+            RelationsOffset = Stream.Position;
+        }
+
+        /// <summary>
+        /// Used to read in relations after all tables have ben read.
+        /// </summary>
+        internal void ReadRelations() {
+            Stream.Position = RelationsOffset;
+
+            Relations.Deserialize(new BinaryReader(Stream));
         }
 
         /// <summary>
         /// Commits all changes in the table to File. 
         /// These changes in the index tree and changes in the counter.
+        /// Not the actual stucture of the table, use write for this purpose.
         /// </summary>
         public void Commit() {
             Rows.Write();
@@ -133,12 +163,17 @@ namespace HybreDb.Tables {
             foreach (var c in Columns)
                 c.Commit();
 
-            Stream.Position = FileHeaderOffset;
+            Stream.Position = CounterOffset;
             var wrtr = new BinaryWriter(Stream);
             wrtr.Write(Counter);
             Stream.Flush();
         }
         
+        /// <summary>
+        /// Gets a row by number/int
+        /// </summary>
+        /// <param name="idx">Primary key of that row</param>
+        /// <returns>Datarow beloning to given key</returns>
         public DataRow this[int idx] {
             get { return Rows.Get(idx); }
         }
@@ -258,5 +293,6 @@ namespace HybreDb.Tables {
             foreach (var c in Columns)
                 c.Dispose();
         }
+
     }
 }

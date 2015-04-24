@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HybreDb.Storage;
 
-namespace HybreDb.BPlusTree.DataTypes {
+namespace HybreDb.Tables.Types {
     public class Number : DataType {
         private int Data;
 

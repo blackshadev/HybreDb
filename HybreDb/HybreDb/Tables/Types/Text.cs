@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace HybreDb.BPlusTree.DataTypes {
+namespace HybreDb.Tables.Types {
     public class Text : DataType {
         private string Data;
 

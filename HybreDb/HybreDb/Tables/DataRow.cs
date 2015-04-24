@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.IO;
 using HybreDb.Storage;
 using HybreDb.BPlusTree.DataTypes;
+using HybreDb.Tables.Types;
 
 namespace HybreDb.Tables {
 

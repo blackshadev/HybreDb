@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
+using HybreDb.Tables.Types;
 
 namespace HybreDb.Tables {
     public class DataColumn : IByteSerializable, IDisposable {
@@ -24,7 +25,7 @@ namespace HybreDb.Tables {
         /// <summary>
         /// Internal data type, used in serialization and creation
         /// </summary>
-        public DataType.Types DataType;
+        public DataTypes.Types DataType;
         
         /// <summary>
         /// Name of the DataColumn
@@ -59,7 +60,7 @@ namespace HybreDb.Tables {
         /// <summary>
         /// Creates a definition of a DataColumn which is not yet bound to a table
         /// </summary>
-        public DataColumn(string name, DataType.Types type, bool idx = false) {
+        public DataColumn(string name, DataTypes.Types type, bool idx = false) {
             Name = name;
             DataType = type;
             HasIndex = idx;
@@ -67,7 +68,7 @@ namespace HybreDb.Tables {
 
 
         /// <summary>
-        /// Creates the index tree with given DataType as generic key type
+        /// Creates the index tree with given DataTypes as generic key type
         /// </summary>
         public void CreateIndex() {
             if (!HasIndex) return;
@@ -90,7 +91,7 @@ namespace HybreDb.Tables {
         /// Deserializes the DataColumn, this does not create the IndexTree, use CreateIndex() fot that.
         /// </summary>
         public void Deserialize(BinaryReader rdr) {
-            DataType = (DataType.Types) rdr.ReadByte();
+            DataType = (DataTypes.Types) rdr.ReadByte();
             Name = rdr.ReadString();
 
             HasIndex = rdr.ReadBoolean();

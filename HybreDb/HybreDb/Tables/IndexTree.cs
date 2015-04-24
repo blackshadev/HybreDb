@@ -4,6 +4,7 @@ using System.Linq;
 using HybreDb.BPlusTree;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
+using HybreDb.Tables.Types;
 using Newtonsoft.Json.Bson;
 
 namespace HybreDb.Tables {

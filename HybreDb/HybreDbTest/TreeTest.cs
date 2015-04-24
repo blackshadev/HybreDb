@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using HybreDb.BPlusTree;
+using HybreDb.Tables.Types;
 using HybreDb.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HybreDb.BPlusTree.DataTypes;

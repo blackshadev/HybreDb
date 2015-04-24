@@ -4,20 +4,21 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using HybreDb.BPlusTree;
+using HybreDb.Tables.Types;
 using HybreDb.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HybreDb.BPlusTree.DataTypes;
 
 namespace HybreDbTest {
     [TestClass]
-    public class DiskTree {
+    public class DiskTreeTest {
 
         public const int N = 10000;
         public const int BucketSize = 8;
         public const int CacheSize = 8;
 
         public Stopwatch sw = new Stopwatch();
-        public DiskTree Cache { get; private set; }
+        public DiskTreeTest Cache { get; private set; }
 
         [TestMethod]
         public void TestInserts() {
