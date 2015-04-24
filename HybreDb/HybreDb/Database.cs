@@ -96,6 +96,12 @@ namespace HybreDb {
             return t;
         }
 
+        /// <summary>
+        /// Reopens a table by commiting and disposing the old one
+        /// and creating a new instance
+        /// </summary>
+        /// <param name="old">Table to reopen</param>
+        /// <returns>New instance of the given table</returns>
         public Table Reopen(Table old) {
             var contains = Tables.Remove(old.Name);
 
@@ -113,7 +119,15 @@ namespace HybreDb {
             return Tables[n];
         }
 
-        public Relation AddRelation(string relName, string srcTable, string destTable, RelationAttribute[] attrs) {
+        /// <summary>
+        /// Adds a new relation between tables
+        /// </summary>
+        /// <param name="relName">Name of the new relation</param>
+        /// <param name="srcTable">Name of the source table</param>
+        /// <param name="destTable">Name of the destination table</param>
+        /// <param name="attrs">Attribute definitions of each relation</param>
+        /// <returns></returns>
+        public Relation NewRelation(string relName, string srcTable, string destTable, RelationAttribute[] attrs) {
 
             var src = Tables[srcTable];
             var r = src.Relations.Add(relName, src, Tables[destTable], attrs);

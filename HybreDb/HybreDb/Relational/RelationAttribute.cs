@@ -8,10 +8,24 @@ using HybreDb.Storage;
 using HybreDb.Tables;
 
 namespace HybreDb.Relational {
+    /// <summary>
+    /// Defines an attribute within a relation
+    /// </summary>
     public class RelationAttribute : IByteSerializable {
 
+        /// <summary>
+        /// Attribute name
+        /// </summary>
         public string Name;
+
+        /// <summary>
+        /// DataType of the attribute
+        /// </summary>
         public DataTypes.Types DataType;
+        
+        /// <summary>
+        /// Relation containing the attribute
+        /// </summary>
         public Relation Relation;
 
         protected RelationAttribute(Relation rel) {
@@ -30,6 +44,7 @@ namespace HybreDb.Relational {
             Deserialize(rdr);
         }
 
+        #region Serialization
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Name);
             wrtr.Write((byte)DataType);
@@ -39,5 +54,6 @@ namespace HybreDb.Relational {
             Name = rdr.ReadString();
             DataType = (DataTypes.Types) rdr.ReadByte();
         }
+        #endregion
     }
 }

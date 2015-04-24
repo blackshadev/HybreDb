@@ -11,6 +11,10 @@ using HybreDb.Tables.Types;
 
 
 namespace HybreDb.Relational {
+
+    /// <summary>
+    /// Holds multiple relations of a table
+    /// </summary>
     public class Relations : IByteSerializable, IEnumerable<Relation>, IDisposable {
 
         protected Table SourceTable;
@@ -24,6 +28,7 @@ namespace HybreDb.Relational {
             ByName = new Dictionary<string, Relation>();
         }
 
+        #region Serialization
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write(ByTable.Count);
 
@@ -41,12 +46,24 @@ namespace HybreDb.Relational {
                 ByTable.Add(rel.Source, rel.Name);
             }
         }
+        #endregion
 
+        /// <summary>
+        /// Gets a relation by name
+        /// </summary>
+        /// <param name="n">Name of the relation</param>
         public Relation this[string n] {
             get { return ByName[n]; }
         }
 
-
+        /// <summary>
+        /// Adds a new relation
+        /// </summary>
+        /// <param name="name">Name of the relation</param>
+        /// <param name="s">Source table, must match the current source table</param>
+        /// <param name="d">Destination table</param>
+        /// <param name="attrs">Attributes of the relation</param>
+        /// <returns></returns>
         public Relation Add(string name, Table s, Table d, RelationAttribute[] attrs) {
             if(ByName.ContainsKey(name))
                 throw new ArgumentException("Relation with the same name already exists on this table");

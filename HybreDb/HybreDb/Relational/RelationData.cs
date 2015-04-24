@@ -9,19 +9,29 @@ using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables;
 
 namespace HybreDb.Relational {
+    /// <summary>
+    /// Data within a relation, the actual types of the data are given in Relation.attributes
+    /// </summary>
+    /// <remarks>The Relation property is set before deserialisation by the OnDataRead event of the tree</remarks>
     public class RelationData : DataType {
+
+        /// <summary>
+        /// Relation holding the data
+        /// </summary>
         public Relation Relation;
 
+        /// <summary>
+        /// Actual data of the relation
+        /// </summary>
         protected IDataType[] Data;
 
         public RelationData() {}
 
-        public RelationData(IDataType[] d) {
-            Data = d;
-        }
+        public RelationData(IDataType[] d) { Data = d; }
 
         public RelationData(BinaryReader rdr) : base(rdr) {}
 
+        #region Serialization
         public override void Serialize(BinaryWriter b) {
             b.Write(Data.Length);
 
@@ -38,7 +48,11 @@ namespace HybreDb.Relational {
                 Data[i] = Relation.Attributes[i].DataType.CreateType(b);
 
         }
+        #endregion
 
+        /// <summary>
+        /// String representation of the data
+        /// </summary>
         public override string ToString() {
             var sb = new StringBuilder();
             for (var i = 0; i < Relation.Attributes.Count; i++) {

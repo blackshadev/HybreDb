@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.InteropServices;
 using HybreDb;
 using HybreDb.Relational;
@@ -9,26 +10,29 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace HybreDbTest {
     [TestClass]
     public class Relations {
-        Database Db = new Database("RelationTest", true);
+        Database Db = new Database("RelationTest", false);
 
         [TestMethod]
         public void Basic() {
+            Table t;
+            if (!Db.Any()) {
+                t = DummyData.TestTable(Db, "Test");
+                DummyData.TestRows(t);
 
-            var t = DummyData.TestTable(Db, "Test");
-            DummyData.TestRows(t);
+                var attrs = new[] {
+                    new RelationAttribute("From", DataTypes.Types.Text)
+                };
 
-            var attrs = new [] {
-                new RelationAttribute("From", DataTypes.Types.Text)     
-            };
+                Db.NewRelation("Knows", "Test", "Test", attrs);
 
-            Db.AddRelation("Knows", "Test", "Test", attrs);
+                t.Write();
 
-            t.Write();
+                DummyData.TestRelations(t);
 
-            DummyData.TestRelations(t);
+                t.Commit();
+            }
 
-            t.Commit();
-
+            t = Db["Test"];
             foreach (var rel in t.Relations["Knows"].Data) {
                 var str = String.Format("{0} -[{1}:{2}]-> {3}", rel.Item1["Name"], "Knows", rel.Item3, rel.Item2["Name"]);
                 Console.WriteLine(str);

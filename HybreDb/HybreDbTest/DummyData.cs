@@ -20,7 +20,6 @@ namespace HybreDbTest {
                 new DataColumn("Age", DataTypes.Types.Number, true),
                 new DataColumn("Unindexed_Age", DataTypes.Types.Number),
                 new DataColumn("Inserted", DataTypes.Types.DateTime)
-
             };
             return db.NewTable(n, cols);
 

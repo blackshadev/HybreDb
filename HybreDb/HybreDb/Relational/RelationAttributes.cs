@@ -8,6 +8,10 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.Relational {
+    /// <summary>
+    /// Contains multiple RelationAttributes
+    /// These can be accessed by name and index
+    /// </summary>
     public class RelationAttributes : IByteSerializable, IEnumerable<RelationAttribute> {
 
         protected Relation Relation;
@@ -36,10 +40,21 @@ namespace HybreDb.Relational {
             }
         }
 
+
+        /// <summary>
+        /// Gets an attribute by name
+        /// </summary>
+        /// <param name="n">Name of the attribute</param>
         public RelationAttribute this[string n] {
             get { return this[ByName[n]]; }
         }
 
+
+        /// <summary>
+        /// Gets an attribute by index
+        /// </summary>
+        /// <param name="n">Index of the attribute</param>
+        /// <remarks>Used in RelationData to map the actual data to thecorrect type</remarks>
         public RelationAttribute this[int n] {
             get { return Attributes[n]; }
         }

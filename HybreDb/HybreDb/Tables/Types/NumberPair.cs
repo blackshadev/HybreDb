@@ -6,6 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HybreDb.Tables.Types {
+    /// <summary>
+    /// Datatype containing two Numbers
+    /// </summary>
     public class NumberPair : DataType {
 
         public Number A { get; protected set; }
@@ -21,6 +24,7 @@ namespace HybreDb.Tables.Types {
             B = b;
         }
 
+        #region Serialisation
         public override void Serialize(BinaryWriter b) {
             A.Serialize(b);
             B.Serialize(b);
@@ -30,7 +34,11 @@ namespace HybreDb.Tables.Types {
             A = new Number(b);
             B = new Number(b);
         }
+        #endregion
 
+        /// <summary>
+        /// Compares two instances of NumberPairs, first compares on the first number, if that is equal use the second number.
+        /// </summary>
         public override int CompareTo(object obj) {
             var n = obj as NumberPair;
             

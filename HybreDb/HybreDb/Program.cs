@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HybreDb.BPlusTree;
+using HybreDb.Relational;
 using HybreDb.Storage;
 using HybreDb.Tables;
 using HybreDb.Tables.Types;
@@ -125,6 +126,10 @@ namespace HybreDb {
                 new DataColumn("Inserted", DataTypes.Types.DateTime)
             });
 
+            db.NewRelation("Knows", "People", "People", new [] {
+                new RelationAttribute("From", DataTypes.Types.Text) 
+            });
+
             var tab = db["People"];
             tab.Insert(new IDataType[] {
                 new Text("Vincent"),
@@ -147,6 +152,7 @@ namespace HybreDb {
                 new DateTime(System.DateTime.Now)
             });
             tab.Commit();
+
 
             Console.ReadKey();
         }

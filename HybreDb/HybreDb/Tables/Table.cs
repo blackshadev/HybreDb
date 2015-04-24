@@ -31,9 +31,19 @@ namespace HybreDb.Tables {
         /// </summary>
         protected long RelationsOffset;
 
+        /// <summary>
+        /// Column structure of the data contained in the table
+        /// </summary>
         public DataColumns Columns;
+        
+        /// <summary>
+        /// Actual data stored in a Disk based B+ Tree
+        /// </summary>
         public DiskTree<Number, DataRow> Rows;
 
+        /// <summary>
+        /// Relations to other tables
+        /// </summary>
         public Relations Relations;
 
         protected FileStream Stream;
