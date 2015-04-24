@@ -159,9 +159,12 @@ namespace HybreDb.Tables {
         /// </summary>
         public void Commit() {
             Rows.Write();
-
+            
             foreach (var c in Columns)
                 c.Commit();
+
+            foreach (var r in Relations)
+                r.Commit();
 
             Stream.Position = CounterOffset;
             var wrtr = new BinaryWriter(Stream);
@@ -169,6 +172,7 @@ namespace HybreDb.Tables {
             Stream.Flush();
         }
         
+
         /// <summary>
         /// Gets a row by number/int
         /// </summary>
@@ -290,8 +294,8 @@ namespace HybreDb.Tables {
         public void Dispose() {
             Stream.Dispose();
             Rows.Dispose();
-            foreach (var c in Columns)
-                c.Dispose();
+            Relations.Dispose();
+            Columns.Dispose();
         }
 
     }

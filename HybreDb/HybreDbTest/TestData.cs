@@ -50,5 +50,18 @@ namespace HybreDbTest {
                 new DateTime(System.DateTime.Now)
             });
         }
+
+        public static void TestRelations(Table tab) {
+
+            tab.Relations["Knows"].Add(0, 1, "UvA");
+            tab.Relations["Knows"].Add(0, 2, "Baken");
+            tab.Relations["Knows"].Add(0, 3, "Zus");
+
+            tab.Relations["Knows"].Add(1, 0, "Baken");
+            tab.Relations["Knows"].Add(1, 2, "UvA");
+            tab.Relations["Knows"].Add(2, 1, "UvA");
+            tab.Relations["Knows"].Add(2, 0, "UvA");
+
+        }
     }
 }

@@ -97,19 +97,26 @@ namespace HybreDb {
         }
 
         public Table Reopen(Table old) {
+            var contains = Tables.Remove(old.Name);
+
+            if(!contains)
+                throw new ArgumentException("Database doesnt contain given table");
+
             var n = old.Name;
             old.Commit();
             old.Dispose();
 
-            return new Table(this, n);
+            
+            Tables[n] = new Table(this, n);
+            Tables[n].ReadRelations();
+
+            return Tables[n];
         }
 
-        public Relation AddRelation(string srcTable, string srcCol, string destTable, string destCol) {
+        public Relation AddRelation(string relName, string srcTable, string destTable) {
 
             var src = Tables[srcTable];
-            var dest = Tables[destTable];
-
-            var r = src.Relations.Add(src.Columns[srcCol], dest.Columns[destCol]);
+            var r = src.Relations.Add(relName, src, Tables[destTable]);
             src.Write();
             
             return r;

@@ -51,6 +51,7 @@
     <Compile Include="Tables\Types\DateTime.cs" />
     <Compile Include="BPlusTree\IDataType.cs" />
     <Compile Include="Tables\Types\Number.cs" />
+    <Compile Include="Tables\Types\NumberPair.cs" />
     <Compile Include="Tables\Types\Numbers.cs" />
     <Compile Include="Tables\Types\Text.cs" />
     <Compile Include="BPlusTree\DiskBaseNode.cs" />
