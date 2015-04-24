@@ -48,11 +48,11 @@
   <ItemGroup>
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
-    <Compile Include="BPlusTree\DataTypes\DateTime.cs" />
-    <Compile Include="BPlusTree\DataTypes\IDataType.cs" />
-    <Compile Include="BPlusTree\DataTypes\Number.cs" />
-    <Compile Include="BPlusTree\DataTypes\Numbers.cs" />
-    <Compile Include="BPlusTree\DataTypes\Text.cs" />
+    <Compile Include="Tables\Types\DateTime.cs" />
+    <Compile Include="BPlusTree\IDataType.cs" />
+    <Compile Include="Tables\Types\Number.cs" />
+    <Compile Include="Tables\Types\Numbers.cs" />
+    <Compile Include="Tables\Types\Text.cs" />
     <Compile Include="BPlusTree\DiskBaseNode.cs" />
     <Compile Include="BPlusTree\DiskLeafNode.cs" />
     <Compile Include="BPlusTree\DiskNode.cs" />
@@ -66,15 +66,15 @@
     <Compile Include="DbFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Relations\Relation.cs" />
-    <Compile Include="Relations\Relations.cs" />
+    <Compile Include="Relational\Relation.cs" />
+    <Compile Include="Relational\Relations.cs" />
     <Compile Include="Storage\ByteSerializable.cs" />
     <Compile Include="Storage\Crc32.cs" />
     <Compile Include="Storage\Storage.cs" />
     <Compile Include="Tables\DataColumn.cs" />
     <Compile Include="Tables\DataColumns.cs" />
     <Compile Include="Tables\DataRow.cs" />
-    <Compile Include="Tables\DataType.cs" />
+    <Compile Include="Tables\Types\DataTypes.cs" />
     <Compile Include="Tables\IndexTree.cs" />
     <Compile Include="Tables\Table.cs" />
     <Compile Include="Test\TestData.cs" />
