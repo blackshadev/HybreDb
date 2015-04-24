@@ -66,6 +66,8 @@
     <Compile Include="DbFile.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Relations\Relation.cs" />
+    <Compile Include="Relations\Relations.cs" />
     <Compile Include="Storage\ByteSerializable.cs" />
     <Compile Include="Storage\Crc32.cs" />
     <Compile Include="Storage\Storage.cs" />
@@ -74,7 +76,6 @@
     <Compile Include="Tables\DataRow.cs" />
     <Compile Include="Tables\DataType.cs" />
     <Compile Include="Tables\IndexTree.cs" />
-    <Compile Include="Tables\Relation.cs" />
     <Compile Include="Tables\Table.cs" />
     <Compile Include="Test\TestData.cs" />
   </ItemGroup>

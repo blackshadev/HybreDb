@@ -9,7 +9,7 @@ using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
 
 namespace HybreDb.Tables {
-    public class DataColumn : ITreeSerializable, IDisposable {
+    public class DataColumn : IByteSerializable, IDisposable {
         /// <summary>
         /// System Type of the data in this column
         /// </summary>

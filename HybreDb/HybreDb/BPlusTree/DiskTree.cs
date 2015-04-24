@@ -14,9 +14,9 @@ namespace HybreDb.BPlusTree {
     /// </summary>
     /// <typeparam name="TKey"></typeparam>
     /// <typeparam name="TValue"></typeparam>
-    public class DiskTree<TKey, TValue> : Tree<TKey, TValue>, ITreeSerializable
-        where TKey : IComparable, ITreeSerializable, new()
-        where TValue : ITreeSerializable, new() 
+    public class DiskTree<TKey, TValue> : Tree<TKey, TValue>, IByteSerializable
+        where TKey : IComparable, IByteSerializable, new()
+        where TValue : IByteSerializable, new() 
     {
         public int OpenNodes = 0;
         public int BusyNodes = 0;

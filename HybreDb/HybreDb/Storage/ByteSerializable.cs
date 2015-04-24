@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace HybreDb.Storage {
-    public interface ITreeSerializable {
+    public interface IByteSerializable {
         void Serialize(BinaryWriter wrtr);
         void Deserialize(BinaryReader rdr);
 

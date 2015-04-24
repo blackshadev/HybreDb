@@ -11,8 +11,8 @@ using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
     public interface IDiskNode<TKey, TValue> : INode<TKey, TValue>
-        where TKey : IComparable, ITreeSerializable, new()
-        where TValue : ITreeSerializable, new() 
+        where TKey : IComparable, IByteSerializable, new()
+        where TValue : IByteSerializable, new() 
     {
 
         bool IsBusy { get; }
@@ -55,8 +55,8 @@ namespace HybreDb.BPlusTree {
     }
 
     public static class DiskNode<TKey, TValue>
-        where TKey : IComparable, ITreeSerializable, new()
-        where TValue : ITreeSerializable, new() {
+        where TKey : IComparable, IByteSerializable, new()
+        where TValue : IByteSerializable, new() {
 
         public static INode<TKey, TValue> Create(DiskTree<TKey, TValue> tree, BinaryReader rdr) {
             var t = (NodeTypes) rdr.ReadByte();

@@ -3,7 +3,7 @@ using System.IO;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree.DataTypes {
-    public interface IDataType : IComparable, ITreeSerializable { }
+    public interface IDataType : IComparable, IByteSerializable { }
 
     /// <summary>
     /// Abstract class for useable datatypes within the tree.

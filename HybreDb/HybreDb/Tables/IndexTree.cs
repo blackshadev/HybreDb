@@ -26,7 +26,7 @@ namespace HybreDb.Tables {
     /// Wrapper which holds a DiskTree for a specified type
     /// </summary>
     public class IndexTree<TKey> : IIndexTree
-        where TKey : IComparable, ITreeSerializable, new()
+        where TKey : IComparable, IByteSerializable, new()
     {
         /// <summary>
         /// Name of the index tree, used as filename of the index tree

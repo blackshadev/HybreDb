@@ -10,8 +10,8 @@ using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
     public class BaseNode<TKey, TValue> : INode<TKey, TValue>
-        where TKey : IComparable, ITreeSerializable
-        where TValue : ITreeSerializable
+        where TKey : IComparable, IByteSerializable
+        where TValue : IByteSerializable
     {
 
         protected SortedBuckets<TKey, INode<TKey, TValue>> _buckets;

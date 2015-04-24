@@ -12,9 +12,9 @@ using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
 
-    public class SortedBuckets<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable, ITreeSerializable
-        where TKey : IComparable, ITreeSerializable
-        where TValue : ITreeSerializable
+    public class SortedBuckets<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable, IByteSerializable
+        where TKey : IComparable, IByteSerializable
+        where TValue : IByteSerializable
     {
 
         protected TKey[] _keys;

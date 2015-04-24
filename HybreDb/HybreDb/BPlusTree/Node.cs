@@ -14,16 +14,16 @@ namespace HybreDb.BPlusTree {
     /// <param name="value">Value bound to given key, null if value is not present</param>
     /// <returns>Whenever the node has been changed or not</returns>
     public delegate bool NodeUpdateHandler<TKey, TValue>(LeafNode<TKey, TValue> node, TKey k, TValue value)
-        where TKey : IComparable, ITreeSerializable
-        where TValue : ITreeSerializable;
+        where TKey : IComparable, IByteSerializable
+        where TValue : IByteSerializable;
 
     /// <summary>
     /// Node interface for all nodes in BPlusTree
     /// </summary>
     /// <typeparam name="TValue"></typeparam>
-    public interface INode<TKey, TValue> : IDisposable, ITreeSerializable, IEnumerable<KeyValuePair<TKey, TValue>> 
-        where TKey : IComparable, ITreeSerializable
-        where TValue : ITreeSerializable 
+    public interface INode<TKey, TValue> : IDisposable, IByteSerializable, IEnumerable<KeyValuePair<TKey, TValue>> 
+        where TKey : IComparable, IByteSerializable
+        where TValue : IByteSerializable 
     {
 
         

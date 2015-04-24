@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree.DataTypes {
-    public class Numbers : ITreeSerializable, IEnumerable<Number> {
+    public class Numbers : IByteSerializable, IEnumerable<Number> {
         public HashSet<Number> Nums;
 
         public int Count {

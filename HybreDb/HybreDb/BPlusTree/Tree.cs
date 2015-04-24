@@ -5,8 +5,8 @@ using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
     public class Tree<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable
-        where TKey : ITreeSerializable, IComparable
-        where TValue : ITreeSerializable
+        where TKey : IByteSerializable, IComparable
+        where TValue : IByteSerializable
     {
 
         public int BucketSize { get; protected set; }

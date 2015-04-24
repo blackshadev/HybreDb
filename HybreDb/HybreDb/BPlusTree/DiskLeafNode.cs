@@ -17,8 +17,8 @@ namespace HybreDb.BPlusTree {
     /// <typeparam name="TKey">Key type</typeparam>
     /// <typeparam name="TKey">Value type</typeparam>
     public class DiskLeafNode<TKey, TValue> : LeafNode<TKey, TValue>, IDiskNode<TKey, TValue>
-        where TKey : ITreeSerializable, IComparable, new()
-        where TValue : ITreeSerializable, new()
+        where TKey : IByteSerializable, IComparable, new()
+        where TValue : IByteSerializable, new()
     {
         public static int Total = 0;
 

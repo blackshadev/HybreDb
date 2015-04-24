@@ -10,8 +10,8 @@ using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
     class DiskBaseNode<TKey, TValue> : BaseNode<TKey, TValue>, IDiskNode<TKey, TValue>
-        where TKey : ITreeSerializable, IComparable, new()
-        where TValue : ITreeSerializable, new() 
+        where TKey : IByteSerializable, IComparable, new()
+        where TValue : IByteSerializable, new() 
     {
         protected int accesses = 0;
         public bool IsBusy { get {return accesses > 0; }  }

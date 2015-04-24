@@ -13,7 +13,7 @@ namespace HybreDb.Tables {
     /// <summary>
     /// A DataRow within the database
     /// </summary>
-    public class DataRow : ITreeSerializable, IEnumerable<IDataType> {
+    public class DataRow : IByteSerializable, IEnumerable<IDataType> {
         /// <summary>
         /// Table holding this DataRow
         /// </summary>

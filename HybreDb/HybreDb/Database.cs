@@ -13,7 +13,7 @@ namespace HybreDb {
     /// <summary>
     /// Database class containing the tables of a given database
     /// </summary>
-    public class Database : ITreeSerializable, IEnumerable<Table> {
+    public class Database : IByteSerializable, IEnumerable<Table> {
 
         /// <summary>
         /// Name of the database, used as directory name

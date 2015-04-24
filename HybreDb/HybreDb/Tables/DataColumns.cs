@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using HybreDb.Storage;
 
 namespace HybreDb.Tables {
-    public class DataColumns : IEnumerable<DataColumn>, ITreeSerializable, IDisposable {
+    public class DataColumns : IEnumerable<DataColumn>, IByteSerializable, IDisposable {
 
         public int Length {
             get { return Columns.Length; }
