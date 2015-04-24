@@ -11,7 +11,7 @@ using HybreDb.BPlusTree;
 using HybreDb.Storage;
 using HybreDb.Tables;
 using HybreDb.Tables.Types;
-using TDataType = HybreDb.Tables.Types.Text;
+using TDataType = HybreDb.Relational.RelationData;
 
 namespace HybreDb.Relational {
     public class Relation : IByteSerializable, IEnumerable<KeyValuePair<NumberPair, TDataType>>, IDisposable {
@@ -22,14 +22,16 @@ namespace HybreDb.Relational {
         public Table Source;
         public Table Destination;
 
+        public RelationAttributes Attributes { get; protected set; }
         public DiskTree<NumberPair, TDataType> Rows; 
+        
 
 
         protected Relation(Database db) {
             Database = db;
         }
 
-        public Relation(string name, Table src, Table dest) {
+        public Relation(string name, Table src, Table dest, RelationAttribute[] attrs) {
             if(src.Database != dest.Database)
                 throw new ArgumentException("Tables are not of the same database");
             
@@ -38,13 +40,24 @@ namespace HybreDb.Relational {
 
             Source = src;
             Destination = dest;
+            Attributes = new RelationAttributes(this, attrs);
 
-            Rows = new DiskTree<NumberPair, TDataType>(RelationNameFormat(this));
+            CreateTree();
             Commit();
         }
 
-        public Relation(Database db, BinaryReader rdr) :this(db) {
+
+        public Relation(Database db, BinaryReader rdr) : this(db) {
             Deserialize(rdr);
+
+            CreateTree();
+            Rows.Read();
+        }
+
+
+        private void CreateTree() {
+            Rows = new DiskTree<NumberPair, TDataType>(RelationNameFormat(this));
+            Rows.OnDataRead += v => { v.Relation = this; };
         }
 
 
@@ -73,15 +86,16 @@ namespace HybreDb.Relational {
 
             wrtr.Write(Destination.Name);
 
+            Attributes.Serialize(wrtr);
+
         }
 
         public void Deserialize(BinaryReader rdr) {
             Name = rdr.ReadString();
             Source = Database[rdr.ReadString()];
             Destination = Database[rdr.ReadString()];
+            Attributes = new RelationAttributes(this, rdr);
 
-            Rows = new DiskTree<NumberPair, Text>(RelationNameFormat(this));
-            Rows.Read();
         }
         #endregion
 
@@ -91,7 +105,7 @@ namespace HybreDb.Relational {
 
         public IEnumerable<Tuple<DataRow, DataRow, TDataType>> Data {
             get {
-                return this.Select(kvp => new Tuple<DataRow, DataRow, Text>(Source[kvp.Key.A], Destination[kvp.Key.B], kvp.Value));
+                return this.Select(kvp => new Tuple<DataRow, DataRow, TDataType>(Source[kvp.Key.A], Destination[kvp.Key.B], kvp.Value));
             }
         }
 

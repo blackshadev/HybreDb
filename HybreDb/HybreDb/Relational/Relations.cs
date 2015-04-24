@@ -47,11 +47,11 @@ namespace HybreDb.Relational {
         }
 
 
-        public Relation Add(string name, Table s, Table d) {
+        public Relation Add(string name, Table s, Table d, RelationAttribute[] attrs) {
             if(ByName.ContainsKey(name))
                 throw new ArgumentException("Relation with the same name already exists on this table");
 
-            var r = new Relation(name, s, d);
+            var r = new Relation(name, s, d, attrs);
 
             ByName.Add(name, r);
             ByTable.Add(d, name);

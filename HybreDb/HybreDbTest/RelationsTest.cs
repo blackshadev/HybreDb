@@ -2,6 +2,8 @@
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 using HybreDb;
+using HybreDb.Relational;
+using HybreDb.Tables;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace HybreDbTest {
@@ -15,7 +17,11 @@ namespace HybreDbTest {
             var t = DummyData.TestTable(Db, "Test");
             DummyData.TestRows(t);
 
-            Db.AddRelation("Knows", "Test", "Test");
+            var attrs = new [] {
+                new RelationAttribute("From", DataTypes.Types.Text)     
+            };
+
+            Db.AddRelation("Knows", "Test", "Test", attrs);
 
             t.Write();
 

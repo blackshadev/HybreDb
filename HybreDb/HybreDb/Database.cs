@@ -113,10 +113,10 @@ namespace HybreDb {
             return Tables[n];
         }
 
-        public Relation AddRelation(string relName, string srcTable, string destTable) {
+        public Relation AddRelation(string relName, string srcTable, string destTable, RelationAttribute[] attrs) {
 
             var src = Tables[srcTable];
-            var r = src.Relations.Add(relName, src, Tables[destTable]);
+            var r = src.Relations.Add(relName, src, Tables[destTable], attrs);
             src.Write();
             
             return r;
