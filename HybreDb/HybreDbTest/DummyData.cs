@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using HybreDb;
@@ -64,5 +65,60 @@ namespace HybreDbTest {
             tab.Relations["Knows"].Add(2, 0, new IDataType[] { new Text("UvA") } );
 
         }
+
+        public static IDataType[][] RandomDataset(int N) {
+            var rnd = new Random();
+            var o = new IDataType[N][];
+
+
+            for (var i = 0; i < N; i++) {
+                var a = new Number(rnd.Next(0, 100));
+                o[i] = new IDataType[] {
+                    new Text(RandomString(rnd.Next(0, 8), rnd)),
+                    a,
+                    a,
+                    new DateTime(System.DateTime.Now), 
+                };
+            }
+
+            return o;
+        }
+
+        public static Tuple<NumberPair, IDataType[]>[] RandomRelations(int dat_len, int N) {
+            var rnd = new Random();
+
+            var rels = new Tuple<NumberPair, IDataType[]>[N];
+            var hs = new HashSet<NumberPair>();
+            var iX = 0;
+
+            NumberPair num;
+            IDataType[] dat;
+            while (iX < N) {
+                num = new NumberPair(rnd.Next(0, dat_len), rnd.Next(0, dat_len));
+                
+                if (hs.Contains(num)) continue;
+
+                dat = new IDataType[] {
+                    new Text(RandomString(5, rnd)), 
+                };
+
+                hs.Add(num);
+                rels[iX++] = new Tuple<NumberPair, IDataType[]>(num, dat);
+            }
+
+            return rels;
+        }
+
+
+        public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
+        public static string RandomString(int n, Random r) {
+            var c = new char[n];
+
+            for (var i = 0; i < n; i++)
+                c[i] = Chars[r.Next(0, Chars.Length)];
+
+            return new string(c);
+        }
+
     }
 }

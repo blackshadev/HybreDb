@@ -29,6 +29,15 @@ namespace HybreDb.Tables.Types {
             B = b;
         }
 
+        public override int GetHashCode() {
+            return A.GetHashCode() ^ B.GetHashCode();
+        }
+
+        public override bool Equals(object obj) {
+            var n = obj as NumberPair;
+            return n.A == A && n.B == B;
+        }
+
         #region Serialisation
         public override void Serialize(BinaryWriter b) {
             A.Serialize(b);
