@@ -17,6 +17,11 @@ namespace HybreDb.Tables.Types {
 
         public NumberPair() { }
 
+        public NumberPair(Tuple<int, int> a) {
+            A = a.Item1;
+            A = a.Item2;
+        }
+
         public NumberPair(BinaryReader rdr) : base(rdr) { }
 
         public NumberPair(Number a, Number b) {

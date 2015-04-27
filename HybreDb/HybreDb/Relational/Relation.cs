@@ -8,6 +8,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using HybreDb.BPlusTree;
+using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
 using HybreDb.Tables;
 using HybreDb.Tables.Types;
@@ -21,7 +22,7 @@ namespace HybreDb.Relational {
     /// All Relations in HybreDb are directional. 
     /// Undirectional relations are just relations who insert and delete data for both directions
     /// </remarks>
-    public class Relation : IByteSerializable, IEnumerable<KeyValuePair<NumberPair, RelationData>>, IDisposable {
+    public class Relation : IByteSerializable, IEnumerable<KeyValuePair<NumberPair, DataRow>>, IDisposable {
         
         /// <summary>
         /// Name of the relation
@@ -39,13 +40,9 @@ namespace HybreDb.Relational {
         public Table Destination;
 
         /// <summary>
-        /// 
-        /// </summary>
-        public RelationAttributes Attributes { get; protected set; }
-        /// <summary>
         /// Data of the relations with as the key a NumberPair of the records forming the relation and the data additional data belonging to this relation
         /// </summary>
-        public DiskTree<NumberPair, RelationData> Rows;
+        public Table Table;
 
         private Database Database;
 
@@ -57,7 +54,7 @@ namespace HybreDb.Relational {
         /// <param name="src">Source table of the relation</param>
         /// <param name="dest">Destination table of the relation</param>
         /// <param name="attrs">Data attributes which each item in the relation holds</param>
-        public Relation(string name, Table src, Table dest, RelationAttribute[] attrs) {
+        public Relation(string name, Table src, Table dest, DataColumn[] attrs) {
             if(src.Database != dest.Database)
                 throw new ArgumentException("Tables are not of the same database");
             
@@ -66,9 +63,17 @@ namespace HybreDb.Relational {
 
             Source = src;
             Destination = dest;
-            Attributes = new RelationAttributes(this, attrs);
 
-            CreateTree();
+            var cols = new DataColumn[attrs.Length + 3];
+            Array.Copy(attrs, 0, cols, 3, attrs.Length);
+
+            cols[0] = new DataColumn(".rel", DataTypes.Types.NumberPair, true);
+            cols[1] = new DataColumn(".rel.src", DataTypes.Types.Number, true);
+            cols[2] = new DataColumn(".rel.dest", DataTypes.Types.Number, true);
+
+
+            Table = new Table(Database, Source.Name + "." + Name + "." + Destination.Name, cols);
+
             Commit();
         }
 
@@ -79,16 +84,9 @@ namespace HybreDb.Relational {
             Database = db;
             Deserialize(rdr);
 
-            CreateTree();
-            Rows.Read();
+            Table = new Table(Database, Source.Name + "." + Name + "." + Destination.Name);
+            Table.Read();
         }
-
-
-        private void CreateTree() {
-            Rows = new DiskTree<NumberPair, RelationData>(RelationNameFormat(this));
-            Rows.OnDataRead += v => { v.Relation = this; };
-        }
-
 
         /// <summary>
         /// Adds a new item to the relation.
@@ -96,10 +94,15 @@ namespace HybreDb.Relational {
         /// <param name="a">Primary key in the source table</param>
         /// <param name="b">Primary key in the destinayion table</param>
         /// <param name="dat">Data belonging to the relation, must match relation's attributes</param>
-        public void Add(Number a, Number b, RelationData dat) {
-            var nums = new NumberPair(a, b);
+        public void Add(Number a, Number b, IDataType[] dat) {
+            var d = new IDataType[dat.Length + 3];
+            Array.Copy(dat, 0, d, 3, dat.Length);
 
-            Rows.Insert(nums, dat);
+            d[0] = new NumberPair(a, b);
+            d[1] = a;
+            d[2] = b;
+
+            Table.Insert(d);
         }
 
         /// <summary>
@@ -107,16 +110,16 @@ namespace HybreDb.Relational {
         /// </summary>
         /// <param name="a">Primary key in the source table</param>
         /// <param name="b">Primary key in the destination table</param>
-        public RelationData Get(Number a, Number b) {
+        public DataRow Get(Number a, Number b) {
             var nums = new NumberPair(a, b);
 
-            return Rows.Get(nums);
+            return Table.Find(new KeyValuePair<string, object>(".rel", nums)).First();
         }
 
         /// <summary>
         /// Commit any changes in the B+ Tree
         /// </summary>
-        public void Commit() { Rows.Write(); }
+        public void Commit() { Table.Commit(); }
 
         #region Serialisation
         public void Serialize(BinaryWriter wrtr) {
@@ -125,16 +128,12 @@ namespace HybreDb.Relational {
             wrtr.Write(Source.Name);
 
             wrtr.Write(Destination.Name);
-
-            Attributes.Serialize(wrtr);
-
         }
 
         public void Deserialize(BinaryReader rdr) {
             Name = rdr.ReadString();
             Source = Database[rdr.ReadString()];
             Destination = Database[rdr.ReadString()];
-            Attributes = new RelationAttributes(this, rdr);
 
         }
         #endregion
@@ -146,14 +145,14 @@ namespace HybreDb.Relational {
         /// <summary>
         /// Iterates over the relations returning a tuple of the source row, destination row and the relation's data 
         /// </summary>
-        public IEnumerable<Tuple<DataRow, DataRow, RelationData>> Data {
+        public IEnumerable<Tuple<DataRow, DataRow, DataRow>> Data {
             get {
-                return this.Select(kvp => new Tuple<DataRow, DataRow, RelationData>(Source[kvp.Key.A], Destination[kvp.Key.B], kvp.Value));
+                return this.Select(kvp => new Tuple<DataRow, DataRow, DataRow>(Source[((Number)kvp.Value[1])], Destination[((Number)kvp.Value[2])], kvp.Value));
             }
         }
 
-        public IEnumerator<KeyValuePair<NumberPair, RelationData>> GetEnumerator() {
-            return Rows.GetEnumerator();
+        public IEnumerator<KeyValuePair<NumberPair, DataRow>> GetEnumerator() {
+            return Table.Rows.Select(rel => new KeyValuePair<NumberPair, DataRow>((NumberPair)rel.Value[0], rel.Value)).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator() {
@@ -161,8 +160,9 @@ namespace HybreDb.Relational {
         }
 
         public void Dispose() {
-            Rows.Dispose();
-            Rows = null;
+            
+            Table.Dispose();
+            Table = null;
             Source = null;
             Destination = null;
             Database = null;

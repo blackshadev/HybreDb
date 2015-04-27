@@ -10,7 +10,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace HybreDbTest {
     [TestClass]
     public class Relations {
-        Database Db = new Database("RelationTest", false);
+        Database Db = new Database("RelationTest", true);
 
         [TestMethod]
         public void Basic() {
@@ -20,7 +20,7 @@ namespace HybreDbTest {
                 DummyData.TestRows(t);
 
                 var attrs = new[] {
-                    new RelationAttribute("From", DataTypes.Types.Text)
+                    new DataColumn("From", DataTypes.Types.Text), 
                 };
 
                 Db.NewRelation("Knows", "Test", "Test", attrs);

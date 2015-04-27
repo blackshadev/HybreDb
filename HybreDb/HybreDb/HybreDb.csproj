@@ -48,9 +48,6 @@
   <ItemGroup>
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
-    <Compile Include="Relational\RelationAttribute.cs" />
-    <Compile Include="Relational\RelationAttributes.cs" />
-    <Compile Include="Relational\RelationData.cs" />
     <Compile Include="Tables\Types\DateTime.cs" />
     <Compile Include="BPlusTree\IDataType.cs" />
     <Compile Include="Tables\Types\Number.cs" />

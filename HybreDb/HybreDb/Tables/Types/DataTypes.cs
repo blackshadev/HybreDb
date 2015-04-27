@@ -45,7 +45,8 @@ namespace HybreDb.Tables {
         public enum Types {
             Number = 0,
             Text = 1,
-            DateTime = 2
+            DateTime = 2,
+            NumberPair = 3
         };
 
         /// <summary>
@@ -56,6 +57,7 @@ namespace HybreDb.Tables {
                 case Types.Number: return new Number();
                 case Types.Text: return new Text();
                 case Types.DateTime: return new DateTime();
+                case Types.NumberPair: return new NumberPair();
                 default:
                     return null;
             }
@@ -69,6 +71,7 @@ namespace HybreDb.Tables {
                 case Types.Number: return new Number(rdr);
                 case Types.Text: return new Text(rdr);
                 case Types.DateTime: return new DateTime(rdr);
+                case Types.NumberPair: return new NumberPair(rdr);
                 default:
                     return null;
             }
@@ -82,6 +85,7 @@ namespace HybreDb.Tables {
                 case Types.Number: return new Number((int)d);
                 case Types.Text: return new Text((string)d);
                 case Types.DateTime: return new DateTime((System.DateTime)d);
+                case Types.NumberPair: return new NumberPair((Tuple<int,int>)d);
                 default:
                     return null;
             }
@@ -95,6 +99,7 @@ namespace HybreDb.Tables {
                 case Types.Number: return typeof(Number);
                 case Types.Text  : return typeof(Text);
                 case Types.DateTime: return typeof(DateTime);
+                case Types.NumberPair: return typeof(NumberPair);
                 default: return null;
             }
         }

@@ -127,7 +127,7 @@ namespace HybreDb {
             });
 
             db.NewRelation("Knows", "People", "People", new [] {
-                new RelationAttribute("From", DataTypes.Types.Text) 
+                new DataColumn("From", DataTypes.Types.Text),  
             });
 
             var tab = db["People"];

@@ -64,7 +64,7 @@ namespace HybreDb.Relational {
         /// <param name="d">Destination table</param>
         /// <param name="attrs">Attributes of the relation</param>
         /// <returns></returns>
-        public Relation Add(string name, Table s, Table d, RelationAttribute[] attrs) {
+        public Relation Add(string name, Table s, Table d, DataColumn[] attrs) {
             if(ByName.ContainsKey(name))
                 throw new ArgumentException("Relation with the same name already exists on this table");
 

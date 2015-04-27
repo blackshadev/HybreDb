@@ -127,7 +127,7 @@ namespace HybreDb {
         /// <param name="destTable">Name of the destination table</param>
         /// <param name="attrs">Attribute definitions of each relation</param>
         /// <returns></returns>
-        public Relation NewRelation(string relName, string srcTable, string destTable, RelationAttribute[] attrs) {
+        public Relation NewRelation(string relName, string srcTable, string destTable, DataColumn[] attrs) {
 
             var src = Tables[srcTable];
             var r = src.Relations.Add(relName, src, Tables[destTable], attrs);
