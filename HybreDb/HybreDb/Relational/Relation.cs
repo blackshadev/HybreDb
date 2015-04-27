@@ -85,7 +85,6 @@ namespace HybreDb.Relational {
             Deserialize(rdr);
 
             Table = new Table(Database, Source.Name + "." + Name + "." + Destination.Name);
-            Table.Read();
         }
 
         /// <summary>
