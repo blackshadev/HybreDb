@@ -51,6 +51,12 @@ namespace HybreDbTest {
                 new Number(26),
                 new DateTime(System.DateTime.Now)
             });
+            tab.Insert(new IDataType[] {
+                new Text("Stefan"),
+                new Number(21),
+                new Number(21),
+                new DateTime(System.DateTime.Now)
+            });
         }
 
         public static void TestRelations(Table tab) {
@@ -58,11 +64,13 @@ namespace HybreDbTest {
             tab.Relations["Knows"].Add(0, 1, new IDataType[] { new Text("UvA") } );
             tab.Relations["Knows"].Add(0, 2, new IDataType[] { new Text("Baken") });
             tab.Relations["Knows"].Add(0, 3, new IDataType[] { new Text("Zus") } );
+            tab.Relations["Knows"].Add(0, 4, new IDataType[] { new Text("UvA") });
 
             tab.Relations["Knows"].Add(1, 0, new IDataType[] { new Text("Baken") });
             tab.Relations["Knows"].Add(1, 2, new IDataType[] { new Text("UvA") } );
             tab.Relations["Knows"].Add(2, 1, new IDataType[] { new Text("UvA") } );
             tab.Relations["Knows"].Add(2, 0, new IDataType[] { new Text("UvA") } );
+            tab.Relations["Knows"].Add(4, 0, new IDataType[] { new Text("UvA") });
 
         }
 

@@ -18,8 +18,6 @@ namespace HybreDb.BPlusTree {
         where TKey : IComparable, IByteSerializable, new()
         where TValue : IByteSerializable, new() 
     {
-        public int OpenNodes = 0;
-        public int BusyNodes = 0;
 
         public delegate void NodeDataRead(TValue v);
 

@@ -44,7 +44,7 @@ namespace HybreDb.BPlusTree {
         INode<TKey, TValue> First { get;  }
 
         /// <summary>
-        /// Gets the first elaf with recursion
+        /// Gets the first leaf with recursion
         /// </summary>
         LeafNode<TKey, TValue> FirstLeaf { get; } 
         
@@ -125,9 +125,19 @@ namespace HybreDb.BPlusTree {
         /// <returns>Whenever enough items could be borrowed. When false is returned, nothing was done.</returns>
         bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r);
 
-        void BeginAccess();
-        void EndAccess(bool isChanged=false);
 
+        /// <summary>
+        /// Starts an access, reads in the data and increments the access field
+        /// </summary>
+        /// <remarks>Begin- and EndAccess are implemented in the INode interface because methods like Split, Merge, Borrow need to use these</remarks>
+        void BeginAccess();
+
+        /// <summary>
+        /// Ends an access, decrement the access field and updates the node in the LRU cache
+        /// </summary>
+        /// <param name="isChanged">Set when the data of the node (or one of it's children) has been changed</param>
+        /// <remarks>Begin- and EndAccess are implemented in the INode interface because methods like Split, Merge, Borrow need to use these</remarks>
+        void EndAccess(bool isChanged = false);
     }
 
     /// <summary>

@@ -39,12 +39,15 @@ namespace HybreDb.BPlusTree {
         void Write(BinaryWriter wrtr);
 
         /// <summary>
-        /// Write the node to disk, set the FileOffset, uses Write(BinaryWriter)
+        /// Writes the node to disk, set the FileOffset, uses Write(BinaryWriter)
         /// </summary>
         void Write();
 
-
+        /// <summary>
+        /// Read the node in from disk, uses the FileOffset
+        /// </summary>
         void Read();
+
 
     }
 

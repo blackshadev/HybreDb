@@ -14,7 +14,7 @@ namespace HybreDb.BPlusTree {
         where TValue : IByteSerializable, new() 
     {
         protected int accesses = 0;
-        public bool IsBusy { get {return accesses > 0; }  }
+        public bool IsBusy { get { return accesses > 0; }  }
 
         public override SortedBuckets<TKey, INode<TKey, TValue>> Buckets {
             get { 
@@ -147,16 +147,14 @@ namespace HybreDb.BPlusTree {
 
 
         public void Write() {
-            if (State != NodeState.Changed || IsBusy) return;
+            if (IsBusy || State != NodeState.Changed) return;
+
             DiskTree.Stream.Seek(0, SeekOrigin.End);
             Write(new BinaryWriter(DiskTree.Stream));
         }
 
         public void Write(BinaryWriter wrtr) {
-            if (State != NodeState.Changed || IsBusy) return;
-
-
-            DiskTree.OpenNodes--;
+            if (IsBusy || State != NodeState.Changed) return;
 
             // First make sure all children are written to file
             foreach (var n in Buckets)
@@ -174,8 +172,6 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public void Read() {
             if (State != NodeState.OnDisk) return;
-
-            DiskTree.OpenNodes++;
 
             DiskTree.Stream.Position = FileOffset;
             var rdr = new BinaryReader(DiskTree.Stream);
@@ -214,13 +210,11 @@ namespace HybreDb.BPlusTree {
         public override void BeginAccess() {
             Read();
             accesses++;
-            DiskTree.BusyNodes++;
         }
 
         public override void EndAccess(bool isChanged = false) {
             if (isChanged) Changed();
             accesses--;
-            DiskTree.BusyNodes--;
 
             DiskTree.Cache.Update(this);
         }

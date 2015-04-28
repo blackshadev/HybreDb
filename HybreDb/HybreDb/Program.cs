@@ -28,7 +28,7 @@ namespace HybreDb {
 
             var t = new DiskTree<Text, TestData>("test.dat", 4, 2);
 
-            var nums = new int[] {0,1,2,3,4,5,6,7,8,9};
+            var nums = new [] {0,1,2,3,4,5,6,7,8,9};
             
 
             foreach(var i in nums)
@@ -58,9 +58,14 @@ namespace HybreDb {
             //foreach (var v in t)
             //    Console.WriteLine(v);
 
+
+
+            Console.ReadKey();
+            return;
+
             TestData _d;
             Console.WriteLine("\nTry Insert:");
-            _d = t.GetOrInsert(new Text("Test_5"), new TestData { Key = 5, Value = "newTest_5" });
+            ////_d = t.GetOrInsert(new Text("Test_5"), new TestData { Key = 5, Value = "newTest_5" });
             Console.WriteLine(_d.Value);
             _d = t.GetOrInsert(new Text("Test_10"), new TestData { Key = 10, Value = "newTest_10" });
             Console.WriteLine(_d.Value);
@@ -69,6 +74,8 @@ namespace HybreDb {
             foreach (var v in t)
                 Console.WriteLine(v);
             
+
+
 
             Console.ReadKey();
         }
@@ -158,8 +165,9 @@ namespace HybreDb {
         }
 
         static void Main(string[] args) {
+            Test1();
             //Test2();
-            Test3();
+            //Test3();
         }
 
         private static IDataType[][] GenerateDataset(int N) {

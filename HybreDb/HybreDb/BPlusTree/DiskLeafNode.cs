@@ -138,7 +138,8 @@ namespace HybreDb.BPlusTree {
         }
 
         public void Write() {
-            if (State != NodeState.Changed || IsBusy) return;
+            if (IsBusy || State != NodeState.Changed) return;
+
             DiskTree.Stream.Seek(0, SeekOrigin.End);
             Write(new BinaryWriter(DiskTree.Stream));
         }
@@ -147,22 +148,13 @@ namespace HybreDb.BPlusTree {
         /// Writes the data from the node to the given stream.
         /// </summary>
         public void Write(BinaryWriter wrtr) {
-            if (State != NodeState.Changed || IsBusy) return;
-
-            DiskTree.OpenNodes--;
-
+            if (IsBusy || State != NodeState.Changed) return;
+            
             FileOffset = wrtr.BaseStream.Position;
-            //if (Next != null)
-            //    wrtr.Write(next.FileOffset);
-            //else
-            //    wrtr.Write(-1L);
             _buckets.Serialize(wrtr);
             
 
             Free();
-
-            //if(prev != null) prev.UpdateNextFileOffset(wrtr);
-
         }
 
         /// <summary>
@@ -185,8 +177,6 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public void Read() {
             if (State != NodeState.OnDisk) return;
-
-            DiskTree.OpenNodes++;
 
             var rdr = new BinaryReader(DiskTree.Stream);
             rdr.BaseStream.Seek(FileOffset, SeekOrigin.Begin);
@@ -236,14 +226,11 @@ namespace HybreDb.BPlusTree {
         public override void BeginAccess() {
             Read();
             accesses++;
-
-            DiskTree.BusyNodes++;
         }
 
         public override void EndAccess(bool isChanged = false) {
             if (isChanged) Changed();
             accesses--;
-            DiskTree.BusyNodes--;
 
             DiskTree.Cache.Update(this);
         }
