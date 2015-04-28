@@ -61,6 +61,7 @@ namespace HybreDb.Tables {
             internal set { this[Table.Columns.IndexOf(colName)] = value; }
         }
 
+
         #region Serialisation
         public void Serialize(BinaryWriter wrtr) {
             Index.Serialize(wrtr);
@@ -103,5 +104,6 @@ namespace HybreDb.Tables {
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
         }
+
     }
 }

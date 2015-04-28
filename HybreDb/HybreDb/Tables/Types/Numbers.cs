@@ -19,6 +19,10 @@ namespace HybreDb.Tables.Types {
             Nums = new HashSet<Number>();
         }
 
+        public Numbers(IEnumerable<Number> nums) {
+            Nums = new HashSet<Number>(nums);
+        }
+
         public void Add(Number n) {
             Nums.Add(n);
         }
@@ -52,6 +56,12 @@ namespace HybreDb.Tables.Types {
 
         IEnumerator IEnumerable.GetEnumerator() {
             return GetEnumerator();
+        }
+
+        public Number[] AsArray() {
+            var arr = new Number[Nums.Count];
+            Nums.CopyTo(arr);
+            return arr;
         }
     }
 }

@@ -20,14 +20,14 @@ namespace HybreDb.Relational {
         protected Table SourceTable;
         protected Dictionary<Table, string> ByTable;
         protected Dictionary<string, Relation> ByName;
-        protected Dictionary<Table, string> ForeignRelations;
+        protected Dictionary<Table, Relation> ForeignRelations;
         
 
         public Relations(Table t) {
             SourceTable = t;
             ByTable = new Dictionary<Table, string>();
             ByName = new Dictionary<string, Relation>();
-            ForeignRelations = new Dictionary<Table, string>();
+            ForeignRelations = new Dictionary<Table, Relation>();
         }
 
         #region Serialization
@@ -52,7 +52,7 @@ namespace HybreDb.Relational {
         protected void AddRelation(Relation rel) {
             ByName.Add(rel.Name, rel);
             ByTable.Add(rel.Source, rel.Name);
-            SourceTable.Database[rel.Destination.Name].Relations.ForeignRelations.Add(SourceTable, rel.Name);
+            SourceTable.Database[rel.Destination.Name].Relations.ForeignRelations.Add(SourceTable, rel);
         }
 
         /// <summary>
@@ -80,6 +80,26 @@ namespace HybreDb.Relational {
             AddRelation(r);
             
             return r;
+        }
+
+        /// <summary>
+        /// Removes all relations with given number in the source table
+        /// </summary>
+        /// <param name="idx"></param>
+        public void RemoveItem(Number idx) {
+            
+            foreach (var r in this) {
+                var nums = r.Table.FindRows(new KeyValuePair<string, object>(".rel.src", idx));
+                if (nums == null) continue;
+                r.Table.RemoveAll(nums);
+            }
+
+            foreach (var r in ForeignRelations) {
+                var nums = r.Value.Table.FindRows(new KeyValuePair<string, object>(".rel.dest", idx));
+                if (nums == null) continue;
+                r.Value.Table.RemoveAll(nums);
+            }
+
         }
 
         public IEnumerator<Relation> GetEnumerator() {

@@ -201,13 +201,28 @@ namespace HybreDb.Tables {
         }
 
         /// <summary>
-        /// Given a condition on a column, find the numbers of row indices which satisfy the given condition.
+        /// Given a condition on a column, find the rows which satisfy the given condition.
         /// </summary>
-        /// <param name="Condition">Keyvaluepair with the column name as key and the value which need to match as value</param>
+        /// <param name="condition">Keyvaluepair with the column name as key and the value which need to match as value</param>
         /// <returns>Datarows which satisfies the condition</returns>
-        public IEnumerable<DataRow> Find(KeyValuePair<string, object> Condition) {
-            var n = Columns[Condition.Key].Match(Condition.Value);
+        public IEnumerable<DataRow> Find(KeyValuePair<string, object> condition) {
+            var n = FindRows(condition);
             return GetData(n);
+        }
+
+        /// <summary>
+        /// Given a condition on a column, find the primary keys of the rows that satisfy the given condition
+        /// </summary>
+        /// <param name="condition">Keyvaluepair with the column name as key and the value which need to match as value</param>
+        /// <returns>Datarows which satisfies the condition</returns>
+        public Numbers FindRows(KeyValuePair<string, object> condition) {
+            return Columns[condition.Key].Match(condition.Value);
+        }
+
+
+        public void RemoveAll(Numbers nums) {
+            var arr = nums.AsArray();
+            foreach(var k in arr) Remove(k);
         }
 
         /// <summary>
@@ -232,6 +247,8 @@ namespace HybreDb.Tables {
                 return false;
 
             });
+
+            Relations.RemoveItem(idx);
 
             // Not found
             if (r == null)
