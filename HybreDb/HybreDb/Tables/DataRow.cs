@@ -8,12 +8,14 @@ using System.IO;
 using HybreDb.Storage;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables.Types;
+using Newtonsoft.Json;
 
 namespace HybreDb.Tables {
 
     /// <summary>
     /// A DataRow within the database
     /// </summary>
+    [JsonConverter(typeof(DataRowSerializer))]
     public class DataRow : IByteSerializable, IEnumerable<IDataType> {
         /// <summary>
         /// Table holding this DataRow
@@ -30,6 +32,10 @@ namespace HybreDb.Tables {
         /// Data within this DataRow.
         /// </summary>
         protected IDataType[] Data;
+
+        public int Count {
+            get { return Data.Length; }
+        }
 
         public DataRow() {}
 

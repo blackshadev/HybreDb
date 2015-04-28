@@ -30,6 +30,11 @@ namespace HybreDb.Tables.Types {
             return Data.CompareTo(o.Data);
         }
 
+
+        public override object GetValue() {
+            return Data;
+        }
+
         public override string ToString() {
             return Data.ToString();
         }

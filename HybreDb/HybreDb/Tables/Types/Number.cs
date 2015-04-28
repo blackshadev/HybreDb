@@ -30,6 +30,10 @@ namespace HybreDb.Tables.Types {
             return n.Data;
         }
 
+        public override object GetValue() {
+            return Data;
+        }
+
         /// <summary>
         /// HashCode implementation used for Numbers hashset
         /// </summary>

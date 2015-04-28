@@ -9,26 +9,25 @@ using HybreDb.Storage;
 using HybreDb.Tables;
 
 namespace HybreDb.Test {
-    public class TestData : DataType {
+    public class TestData : IByteSerializable {
 
         public int Key;
         public string Value;
 
         public TestData() {}
-        public TestData(BinaryReader rdr) : base(rdr) {}
 
-        public override void Serialize(BinaryWriter wrtr) {
+        public TestData(BinaryReader rdr) {
+            Deserialize(rdr);
+        }
+
+        public void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Key);
             wrtr.Write(Value);
         }
 
-        public override void Deserialize(BinaryReader rdr) {
+        public void Deserialize(BinaryReader rdr) {
             Key = rdr.ReadInt32();
             Value = rdr.ReadString();
-        }
-
-        public override int CompareTo(object obj) {
-            return Key.CompareTo(((TestData) obj).Key);
         }
 
         public override string ToString() {

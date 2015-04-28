@@ -62,6 +62,10 @@ namespace HybreDb.Tables.Types {
             return a != 0 ? a : B.CompareTo(n.B);
         }
 
+        public override object GetValue() {
+            return new[] { A.GetValue(), B.GetValue() };
+        }
+
         public override string ToString() {
             return "(" + A + "," + B + ")";
         }

@@ -31,6 +31,8 @@ namespace HybreDb.Tables {
         public abstract void Deserialize(BinaryReader b);
 
         public abstract int CompareTo(object obj);
+
+        public abstract object GetValue();
     }
 
 

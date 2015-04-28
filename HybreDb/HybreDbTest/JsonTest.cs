@@ -2,6 +2,7 @@
 using HybreDb;
 using HybreDb.Actions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Newtonsoft.Json;
 
 namespace HybreDbTest {
 
@@ -31,8 +32,8 @@ namespace HybreDbTest {
                           "}";
             
             var act = HybreAction.Parse(strJson);
-            act.Execute(db);
-
+            var res = act.Execute(db);
+            var str = JsonConvert.SerializeObject(res);
         }
     }
 }

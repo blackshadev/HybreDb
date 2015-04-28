@@ -16,7 +16,7 @@ namespace HybreDb.Actions {
         [JsonProperty("condition")]
         public ActionCondition[] Condition;
 
-        public HybreResult Execute(Database db) {
+        public object Execute(Database db) {
             var t = db[TableName];
 
             var rows = new Numbers();
@@ -35,9 +35,7 @@ namespace HybreDb.Actions {
                     rows.Add(local_rows);
             }
 
-            var r = t.GetData(rows);
-
-            return null;
+            return t.GetData(rows);
         }
     }
 

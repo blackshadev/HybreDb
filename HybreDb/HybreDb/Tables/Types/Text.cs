@@ -36,6 +36,10 @@ namespace HybreDb.Tables.Types {
             return t.Data;
         }
 
+        public override object GetValue() {
+            return Data;
+        }
+
         public override string ToString() {
             return Data;
         }

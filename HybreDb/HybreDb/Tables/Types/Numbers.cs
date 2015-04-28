@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using HybreDb.Storage;
 
 namespace HybreDb.Tables.Types {
@@ -52,6 +53,10 @@ namespace HybreDb.Tables.Types {
             for (var i = 0; i < l; i++)
                 Nums.Add(new Number(rdr));
 
+        }
+
+        public object GetValue() {
+            return Nums.Select(e => e.GetValue()).ToArray();
         }
 
         public IEnumerator<Number> GetEnumerator() {

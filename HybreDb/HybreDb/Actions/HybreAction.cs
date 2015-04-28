@@ -8,7 +8,7 @@ using Newtonsoft.Json.Linq;
 
 namespace HybreDb.Actions {
     public interface IHybreAction {
-        HybreResult Execute(Database db);
+        object Execute(Database db);
     }
 
     public static class HybreAction {

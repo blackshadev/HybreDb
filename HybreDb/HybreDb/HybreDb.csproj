@@ -48,10 +48,10 @@
   <ItemGroup>
     <Compile Include="Actions\HybreAction.cs" />
     <Compile Include="Actions\HybreActionGet.cs" />
-    <Compile Include="Actions\HybreResult.cs" />
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
     <Compile Include="HybreDb.cs" />
+    <Compile Include="Tables\DataRowSerializer.cs" />
     <Compile Include="Tables\Types\DateTime.cs" />
     <Compile Include="BPlusTree\IDataType.cs" />
     <Compile Include="Tables\Types\Number.cs" />
