@@ -19,13 +19,15 @@ namespace HybreDb.Relational {
 
         protected Table SourceTable;
         protected Dictionary<Table, string> ByTable;
-        protected Dictionary<string, Relation> ByName; 
+        protected Dictionary<string, Relation> ByName;
+        protected Dictionary<Table, string> ForeignRelations;
         
 
         public Relations(Table t) {
             SourceTable = t;
             ByTable = new Dictionary<Table, string>();
             ByName = new Dictionary<string, Relation>();
+            ForeignRelations = new Dictionary<Table, string>();
         }
 
         #region Serialization
@@ -42,11 +44,16 @@ namespace HybreDb.Relational {
             for (var i = 0; i < c; i++) {
                 var rel = new Relation(SourceTable.Database, rdr);
 
-                ByName.Add(rel.Name, rel);
-                ByTable.Add(rel.Source, rel.Name);
+                AddRelation(rel);
             }
         }
         #endregion
+
+        protected void AddRelation(Relation rel) {
+            ByName.Add(rel.Name, rel);
+            ByTable.Add(rel.Source, rel.Name);
+            SourceTable.Database[rel.Destination.Name].Relations.ForeignRelations.Add(SourceTable, rel.Name);
+        }
 
         /// <summary>
         /// Gets a relation by name
@@ -70,8 +77,7 @@ namespace HybreDb.Relational {
 
             var r = new Relation(name, s, d, attrs);
 
-            ByName.Add(name, r);
-            ByTable.Add(d, name);
+            AddRelation(r);
             
             return r;
         }
