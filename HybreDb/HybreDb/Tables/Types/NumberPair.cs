@@ -61,5 +61,9 @@ namespace HybreDb.Tables.Types {
             var a = A.CompareTo(n.A);
             return a != 0 ? a : B.CompareTo(n.B);
         }
+
+        public override string ToString() {
+            return "(" + A + "," + B + ")";
+        }
     }
 }
