@@ -31,6 +31,10 @@ namespace HybreDb.Tables.Types {
             Nums.UnionWith(n.Nums);
         }
 
+        public void Intersect(Numbers n) {
+            Nums.IntersectWith(n.Nums);
+        }
+
         public void Remove(Number n) {
             Nums.Remove(n);
         }
