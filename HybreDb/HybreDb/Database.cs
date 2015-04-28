@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Configuration;
 using HybreDb.Relational;
@@ -15,6 +16,11 @@ namespace HybreDb {
     /// Database class containing the tables of a given database
     /// </summary>
     public class Database : IByteSerializable, IEnumerable<Table> {
+        /// <summary>
+        /// Regular expression used to validate user given identifiers
+        /// </summary>
+        public static readonly Regex ValidIdentifierRegex = new Regex("^[a-zA-Z0-9_]+$", RegexOptions.Compiled);
+
 
         /// <summary>
         /// Name of the database, used as directory name
@@ -85,8 +91,12 @@ namespace HybreDb {
         /// <param name="cols">Column definitions</param>
         /// <returns></returns>
         public Table NewTable(string name, DataColumn[] cols) {
+            CheckUserIdentifier(name);
             if(Tables.ContainsKey(name))
                 throw new ArgumentException("Table named `" + name + "` already exists in database `" + Name + "`");
+
+            foreach(var c in cols)
+                CheckUserIdentifier(c.Name);
 
             var t = new Table(this, name, cols);
             Tables.Add(t.Name, t);
@@ -128,6 +138,11 @@ namespace HybreDb {
         /// <param name="attrs">Attribute definitions of each relation</param>
         /// <returns></returns>
         public Relation NewRelation(string relName, string srcTable, string destTable, DataColumn[] attrs) {
+            CheckUserIdentifier(relName);
+
+
+            foreach (var c in attrs)
+                CheckUserIdentifier(c.Name);
 
             var src = Tables[srcTable];
             var r = src.Relations.Add(relName, src, Tables[destTable], attrs);
@@ -200,6 +215,11 @@ namespace HybreDb {
         /// </summary>
         public static string GetPath(string[] inner) {
             return Path.Combine(DataFolder, Path.Combine(inner));
+        }
+
+        public static void CheckUserIdentifier(string ident) {
+            if(!ValidIdentifierRegex.IsMatch(ident))
+                throw new ArgumentException("Illegal user identifier given `" + ident + "`. Only numeric, alphanumeric and underscore are allowed as characters.");
         }
         #endregion
         
