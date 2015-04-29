@@ -84,9 +84,9 @@ namespace HybreDb.Tables {
         /// </summary>
         public static IDataType CreateType(this Types t, object d) {
             switch (t) {
-                case Types.Number: return new Number((int)d);
+                case Types.Number: return new Number(Convert.ToInt32(d));
                 case Types.Text: return new Text((string)d);
-                case Types.DateTime: return new DateTime((System.DateTime)d);
+                case Types.DateTime: return new DateTime((string)d);
                 case Types.NumberPair: return new NumberPair((Tuple<int,int>)d);
                 default:
                     return null;

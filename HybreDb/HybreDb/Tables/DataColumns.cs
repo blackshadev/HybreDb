@@ -41,7 +41,7 @@ namespace HybreDb.Tables {
             Columns = cols;
 
             IndexedColumnsList = new List<int>(cols.Length);
-            ByName = new Dictionary<string, int>(cols.Length);
+            ByName = new Dictionary<string, int>(cols.Length, StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < cols.Length; i++) {
                 ByName.Add(cols[i].Name, i);
                 if (!cols[i].HasIndex) continue;
@@ -79,6 +79,15 @@ namespace HybreDb.Tables {
         /// <param name="x">Data index of the column</param>
         public DataColumn this[int x] {
             get { return Columns[x]; }
+        }
+
+        /// <summary>
+        /// Gets the index of a given column name
+        /// </summary>
+        /// <param name="name">Name of the column</param>
+        /// <returns>Ordinal index within data items</returns>
+        public int GetIndex(string name) {
+            return ByName[name];
         }
 
         #region Serialisation

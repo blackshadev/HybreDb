@@ -54,7 +54,7 @@ namespace HybreDb {
                 return;
             }
 
-            Tables = new Dictionary<string, Table>();
+            Tables = new Dictionary<string, Table>(StringComparer.OrdinalIgnoreCase);
             Write();
         }
 

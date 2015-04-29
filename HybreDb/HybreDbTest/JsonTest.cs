@@ -38,6 +38,20 @@ namespace HybreDbTest {
                                    "\"key\": 1" +
                                 "}" +
                           "}";
+            var strJson3 = "{ " +
+                              "\"method\": \"insert\", " +
+                              "\"params\": {" +
+                                   "\"table\": \"People\"," +
+                                   "\"data\": {" +
+                                        "\"Name\": \"Tester\"," +
+                                        "\"Age\": 22," +
+                                        "\"Unindexed_Age\": 22," +
+                                        "\"Inserted\": \"now\"" +
+                                    "}" +
+                                "}" +
+                          "}";
+
+
             
             var act = HybreAction.Parse(strJson1);
             object res = null;

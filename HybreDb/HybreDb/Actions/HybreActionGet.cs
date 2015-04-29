@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.Actions.Result;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
@@ -13,7 +14,7 @@ namespace HybreDb.Actions {
         [JsonProperty("key")]
         public int Key;
 
-        public object Execute(Database db) {
+        public HybreResult Execute(Database db) {
             return new HybreDataResult(db[TableName], new [] { db[TableName][Key] } );
         }
     }

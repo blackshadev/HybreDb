@@ -1,16 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using HybreDb.Tables;
 using Newtonsoft.Json;
 
-namespace HybreDb.Actions {
+namespace HybreDb.Actions.Result {
 
-    [JsonConverter(typeof(HybreResultJsonSerializer))]
-    public class HybreDataResult {
+    [JsonConverter(typeof(HybreDataResultJsonSerializer))]
+    public class HybreDataResult : HybreResult {
         public Table Table;
         public IEnumerable<DataRow> Rows;
 
@@ -20,7 +16,7 @@ namespace HybreDb.Actions {
         }
     }
 
-    public class HybreResultJsonSerializer : JsonConverter {
+    class HybreDataResultJsonSerializer : JsonConverter {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
             var res = value as HybreDataResult;
 
@@ -44,12 +40,20 @@ namespace HybreDb.Actions {
             writer.WriteStartArray();
 
             foreach (var r in res.Rows) {
+                writer.WriteStartObject();
+
+                writer.WritePropertyName("key");
+                writer.WriteValue(r.Index);
+
+                writer.WritePropertyName("data");
                 writer.WriteStartArray();
 
                 foreach(var dat in r)
                     writer.WriteValue(dat.GetValue());
 
                 writer.WriteEndArray();
+
+                writer.WriteEndObject();
             }
 
             writer.WriteEndArray();
@@ -61,7 +65,7 @@ namespace HybreDb.Actions {
         }
 
         public override bool CanConvert(Type objectType) {
-            return typeof (HybreResultJsonSerializer).IsAssignableFrom(objectType);
+            return typeof (HybreDataResultJsonSerializer).IsAssignableFrom(objectType);
         }
     }
 

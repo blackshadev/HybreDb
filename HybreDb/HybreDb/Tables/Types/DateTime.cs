@@ -12,6 +12,10 @@ namespace HybreDb.Tables.Types {
             Data = d;
         }
 
+        public DateTime(string dt) {
+            Data = dt.ToLower() == "now" ? System.DateTime.Now : System.DateTime.Parse(dt);
+        }
+
         public DateTime(BinaryReader rdr) : base(rdr) {}
 
         public override void Serialize(BinaryWriter b) {

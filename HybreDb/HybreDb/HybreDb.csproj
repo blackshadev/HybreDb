@@ -48,6 +48,11 @@
   <ItemGroup>
     <Compile Include="Actions\HybreAction.cs" />
     <Compile Include="Actions\HybreActionGet.cs" />
+    <Compile Include="Actions\HybreActionInsert.cs" />
+    <Compile Include="Actions\HybreActionMatch.cs" />
+    <Compile Include="Actions\Result\HybreDataResult.cs" />
+    <Compile Include="Actions\Result\HybreResult.cs" />
+    <Compile Include="Actions\Result\HybreUpdateResult.cs" />
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
     <Compile Include="HybreDb.cs" />

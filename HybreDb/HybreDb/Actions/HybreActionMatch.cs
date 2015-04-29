@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.Actions.Result;
 using HybreDb.Tables;
 using HybreDb.Tables.Types;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ namespace HybreDb.Actions {
         [JsonProperty("condition")]
         public ActionCondition[] Condition;
 
-        public object Execute(Database db) {
+        public HybreResult Execute(Database db) {
             var t = db[TableName];
 
             var rows = new Numbers();
