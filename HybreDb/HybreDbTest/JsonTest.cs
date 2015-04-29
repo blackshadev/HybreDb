@@ -14,6 +14,7 @@ namespace HybreDbTest {
             db = new Database("JsonTest", true);
             var t = DummyData.TestTable(db, "People");
             DummyData.TestRows(t);
+            t.Commit();
         }
 
         [TestMethod]
@@ -35,7 +36,7 @@ namespace HybreDbTest {
                               "\"method\": \"get\", " +
                               "\"params\": {" +
                                    "\"table\": \"People\"," +
-                                   "\"key\": 1" +
+                                   "\"key\": 0" +
                                 "}" +
                           "}";
             var strJson3 = "{ " +
@@ -50,12 +51,26 @@ namespace HybreDbTest {
                                     "}" +
                                 "}" +
                           "}";
+            var strJson4 = "{ " +
+                              "\"method\": \"update\", " +
+                              "\"params\": {" +
+                                   "\"table\": \"People\"," +
+                                   "\"key\": 0," +
+                                   "\"data\": {" +
+                                        "\"Name\": \"Vincent Hagen\"," +
+                                        "\"Inserted\": \"now\"" +
+                                    "}" +
+                                "}" +
+                          "}";
+
 
 
             
-            var act = HybreAction.Parse(strJson1);
+            var act = HybreAction.Parse(strJson4);
             object res = null;
-            Time("execution" ,() => res = act.Execute(db) );
+            Time("Execution" ,() => res = act.Execute(db) );
+            act = HybreAction.Parse(strJson2);
+            Time("Execution", () => res = act.Execute(db));
             var str = JsonConvert.SerializeObject(res, Formatting.Indented);
             Console.WriteLine(str);
         }

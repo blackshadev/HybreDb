@@ -48,7 +48,6 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         void Read();
 
-
     }
 
     public enum NodeState {

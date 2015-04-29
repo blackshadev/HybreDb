@@ -181,7 +181,20 @@ namespace HybreDb.Tables {
             wrtr.Write(Counter);
             Stream.Flush();
         }
-        
+
+        /// <summary>
+        /// Reverts to the previous committed state. This only reverts the data trees, not the structural data.
+        /// </summary>
+        public void Revert() {
+            Rows.Revert();
+
+            foreach (var c in Columns.IndexColumns)
+                c.Value.Index.Revert();
+
+            foreach (var r in Relations)
+                r.Table.Revert();
+
+        }
 
         /// <summary>
         /// Gets a row by number/int
@@ -219,7 +232,10 @@ namespace HybreDb.Tables {
             return Columns[condition.Key].Match(condition.Value);
         }
 
-
+        /// <summary>
+        /// Removes all given number indices
+        /// </summary>
+        /// <param name="nums">Numbers containing the keys to remove</param>
         public void RemoveAll(Numbers nums) {
             var arr = nums.AsArray();
             foreach(var k in arr) Remove(k);
@@ -290,9 +306,12 @@ namespace HybreDb.Tables {
             if(oldData == null) 
                 throw new ArgumentException("Key value not found");
 
-            col.Index.Remove(oldData, idx);
-            col.Index.Add(data, idx);
+            if (col.HasIndex) {
+                col.Index.Remove(oldData, idx);
+                col.Index.Add(data, idx);
+            }
         }
+
 
 
         /// <summary>

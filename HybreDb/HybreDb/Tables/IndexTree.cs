@@ -20,6 +20,8 @@ namespace HybreDb.Tables {
         void Commit();
         void Read();
 
+        void Revert();
+
         Numbers Match(object k);
     }
 
@@ -40,7 +42,11 @@ namespace HybreDb.Tables {
             Name = name;
             Tree = new DiskTree<TKey, Numbers>(name + ".idx.bin", Table.BucketSize, Table.CacheSize);
         }
-   
+
+        public void Revert() {
+            Tree.Revert();
+        }
+
         /// <summary>
         /// Give the numbers of indices matching the given object.
         /// </summary>

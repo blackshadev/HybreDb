@@ -146,6 +146,11 @@ namespace HybreDb.BPlusTree {
             Deserialize(rdr);
         }
 
+        public void Revert() {
+            Root.Dispose();
+            Read();
+        }
+
         #region Serialisation
         public void Serialize(BinaryWriter wrtr) {
             PreviousRevision = FileOffset;

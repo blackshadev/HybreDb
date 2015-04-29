@@ -4,15 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HybreDb.Actions.Result;
-using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
-    public class HybreActionInsert : IHybreAction {
+    public class HybreActionUpdate : IHybreAction {
 
         [JsonProperty("table")]
         public string TableName;
+
+        [JsonProperty("key")]
+        public int Key;
 
         [JsonProperty("data")]
         public Dictionary<string, object> Data;
@@ -20,11 +22,13 @@ namespace HybreDb.Actions {
         public HybreResult Execute(Database db) {
             var t = db[TableName];
 
-            var row = HybreAction.ParseData(t, Data);
+            foreach (var d in Data) {
+                var data = t.Columns[d.Key].DataType.CreateType(d.Value);
+                t.Update(Key, d.Key, data);
+            }
 
-            t.Insert(row);
-            t.Commit();
-            
+            t.Revert();
+
             return new HybreUpdateResult { Affected = 1 };
         }
     }

@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HybreDb.Actions.Result;
+using HybreDb.BPlusTree.DataTypes;
+using HybreDb.Tables;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -23,6 +25,19 @@ namespace HybreDb.Actions {
             var t = Type.GetType(cName);
             return (IHybreAction)o["params"].ToObject(t);
 
+        }
+
+        public static IDataType[] ParseData(Table t, Dictionary<string, object> data) {
+            if (t.Columns.Length != data.Count)
+                throw new ArgumentException("Invalid number of data given, expected " + t.Columns.Length + " got " + data.Count);
+
+            var row = new IDataType[t.Columns.Length];
+            foreach (var d in data) {
+                var iX = t.Columns.GetIndex(d.Key);
+                row[iX] = t.Columns[iX].DataType.CreateType(d.Value);
+            }
+
+            return row;
         }
     }
 
