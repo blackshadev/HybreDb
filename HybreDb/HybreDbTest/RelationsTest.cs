@@ -53,7 +53,7 @@ namespace HybreDbTest {
                 Console.WriteLine(str);
             }
 
-            var nums = t.FindRows(new KeyValuePair<string, object>("Name", new Text("Tessa")));
+            var nums = t.FindKeys(new KeyValuePair<string, object>("Name", new Text("Tessa")));
             t.RemoveAll(nums);
 
             Console.WriteLine("\nAfter remove `tessa`");

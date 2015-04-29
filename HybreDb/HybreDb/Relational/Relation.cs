@@ -112,7 +112,7 @@ namespace HybreDb.Relational {
         public DataRow Get(Number a, Number b) {
             var nums = new NumberPair(a, b);
 
-            return Table.Find(new KeyValuePair<string, object>(".rel", nums)).First();
+            return Table.FindRows(new KeyValuePair<string, object>(".rel", nums)).First();
         }
 
         /// <summary>

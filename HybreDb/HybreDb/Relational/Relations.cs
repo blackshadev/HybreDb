@@ -89,13 +89,13 @@ namespace HybreDb.Relational {
         public void RemoveItem(Number idx) {
             
             foreach (var r in this) {
-                var nums = r.Table.FindRows(new KeyValuePair<string, object>(".rel.src", idx));
+                var nums = r.Table.FindKeys(new KeyValuePair<string, object>(".rel.src", idx));
                 if (nums == null) continue;
                 r.Table.RemoveAll(nums);
             }
 
             foreach (var r in ForeignRelations) {
-                var nums = r.Value.Table.FindRows(new KeyValuePair<string, object>(".rel.dest", idx));
+                var nums = r.Value.Table.FindKeys(new KeyValuePair<string, object>(".rel.dest", idx));
                 if (nums == null) continue;
                 r.Value.Table.RemoveAll(nums);
             }

@@ -205,8 +205,8 @@ namespace HybreDb.Tables {
         /// </summary>
         /// <param name="condition">Keyvaluepair with the column name as key and the value which need to match as value</param>
         /// <returns>Datarows which satisfies the condition</returns>
-        public IEnumerable<DataRow> Find(KeyValuePair<string, object> condition) {
-            var n = FindRows(condition);
+        public IEnumerable<DataRow> FindRows(KeyValuePair<string, object> condition) {
+            var n = FindKeys(condition);
             return GetData(n);
         }
 
@@ -215,7 +215,7 @@ namespace HybreDb.Tables {
         /// </summary>
         /// <param name="condition">Keyvaluepair with the column name as key and the value which need to match as value</param>
         /// <returns>Datarows which satisfies the condition</returns>
-        public Numbers FindRows(KeyValuePair<string, object> condition) {
+        public Numbers FindKeys(KeyValuePair<string, object> condition) {
             return Columns[condition.Key].Match(condition.Value);
         }
 

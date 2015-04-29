@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using HybreDb;
 using HybreDb.Actions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -17,8 +18,8 @@ namespace HybreDbTest {
 
         [TestMethod]
         public void Creation() {
-            var strJson = "{ " +
-                              "\"method\": \"get\", " +
+            var strJson1 = "{ " +
+                              "\"method\": \"match\", " +
                               "\"params\": {" +
                                    "\"table\": \"People\"," +
                                    "\"condition\": [" +
@@ -30,10 +31,27 @@ namespace HybreDbTest {
                                   "]" +
                                 "}" +
                           "}";
+            var strJson2 = "{ " +
+                              "\"method\": \"get\", " +
+                              "\"params\": {" +
+                                   "\"table\": \"People\"," +
+                                   "\"key\": 1" +
+                                "}" +
+                          "}";
             
-            var act = HybreAction.Parse(strJson);
-            var res = act.Execute(db);
-            var str = JsonConvert.SerializeObject(res);
+            var act = HybreAction.Parse(strJson1);
+            object res = null;
+            Time("execution" ,() => res = act.Execute(db) );
+            var str = JsonConvert.SerializeObject(res, Formatting.Indented);
+            Console.WriteLine(str);
+        }
+
+        private static void Time(string tag, Action act) {
+            var sw = new Stopwatch();
+            sw.Start();
+            act();
+            sw.Stop();
+            Trace.WriteLine(tag + " took " + sw.ElapsedMilliseconds + "ms");
         }
     }
 }

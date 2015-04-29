@@ -33,12 +33,12 @@ namespace HybreDbTest {
             Trace.WriteLine(tab.ToString());
 
             Trace.WriteLine("\nTessa lookup");
-            var tessas = tab.Find(new KeyValuePair<string, object>("Name", new Text("Tessa")));
+            var tessas = tab.FindRows(new KeyValuePair<string, object>("Name", new Text("Tessa")));
 
             Trace.WriteLine(String.Join("\n", tessas.Select(n => n.ToString())));
             
             Trace.WriteLine("\n 22 lookup");
-            var tters = tab.Find(new KeyValuePair<string, object>("Age", new Number(22)));
+            var tters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(22)));
             Trace.WriteLine(String.Join("\n", tters.Select(n => n.ToString())));
 
             foreach (var r in tessas.ToArray())
@@ -59,7 +59,7 @@ namespace HybreDbTest {
             Trace.WriteLine(tab.ToString());
 
             Trace.WriteLine("\n 23 lookup");
-            var dters = tab.Find(new KeyValuePair<string, object>("Age", new Number(23)));
+            var dters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(23)));
             Trace.WriteLine(String.Join("\n", dters.Select(n => n.ToString())));
 
         }
@@ -98,13 +98,13 @@ namespace HybreDbTest {
             Time("Count", () => { i = tab.Rows.Count(); });
 
             Time("Index Age", () => {
-                var rows = tab.Find(new KeyValuePair<string, object>("Age", new Number(90)));
+                var rows = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(90)));
                 Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
             });
 
             Console.WriteLine("\n");
             Time("Unindexed Age", () => {
-                var rows = tab.Find(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
+                var rows = tab.FindRows(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
                 Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
             });
 
