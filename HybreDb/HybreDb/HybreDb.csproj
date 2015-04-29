@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\HybreAction.cs" />
+    <Compile Include="Actions\HybreActionDelete.cs" />
     <Compile Include="Actions\HybreActionGet.cs" />
     <Compile Include="Actions\HybreActionInsert.cs" />
     <Compile Include="Actions\HybreActionMatch.cs" />

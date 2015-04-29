@@ -63,16 +63,29 @@ namespace HybreDbTest {
                                 "}" +
                           "}";
 
+            var strJson5 = "{ " +
+                            "\"method\": \"delete\", " +
+                            "\"params\": {" +
+                                "\"table\": \"People\"," +
+                                "\"key\": 0" +
+                            "}" +
+                        "}";
 
+
+
+            Time("Initial Parse" , () => HybreAction.Parse(strJson4));
 
             IHybreAction act = null;
             string str = "";
-            Time("Parsing", () => act = HybreAction.Parse(strJson4));
+            Time("Parsing", () => act = HybreAction.Parse(strJson5));
             object res = null;
             Time("Execution", () => res = HybreAction.Execute(db, act));
-            act = HybreAction.Parse(strJson2);
-            Time("Execution", () => res = HybreAction.Execute(db, act));
-            Time("Serialisation", () => str = JsonConvert.SerializeObject(res, Formatting.Indented));
+            
+            //Time("\nParsing", () => act = HybreAction.Parse(strJson2));
+            //Time("Execution", () => res = HybreAction.Execute(db, act));
+            
+
+            Time("\nSerialisation", () => str = JsonConvert.SerializeObject(res, Formatting.Indented));
             Console.WriteLine(str);
         }
 
