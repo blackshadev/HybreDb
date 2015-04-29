@@ -21,6 +21,9 @@ namespace HybreDb.Actions.Result {
             var res = value as HybreDataResult;
 
             writer.WriteStartObject();
+            writer.WritePropertyName("elapsedTime");
+            writer.WriteValue(res.ElapsedTime);
+
             writer.WritePropertyName("columns");
 
             writer.WriteStartArray();

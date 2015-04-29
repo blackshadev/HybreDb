@@ -27,7 +27,7 @@ namespace HybreDb.Actions {
                 t.Update(Key, d.Key, data);
             }
 
-            t.Revert();
+            t.Commit();
 
             return new HybreUpdateResult { Affected = 1 };
         }

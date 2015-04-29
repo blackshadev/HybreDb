@@ -58,6 +58,13 @@ namespace HybreDb {
             Write();
         }
 
+        /// <summary>
+        /// Reverts all tables to their last commit
+        /// </summary>
+        public void Revert() {
+            foreach(var t in Tables.Values)
+                t.Revert();
+        }
 
         /// <summary>
         /// Reads in the data from a file

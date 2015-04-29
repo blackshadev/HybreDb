@@ -65,13 +65,14 @@ namespace HybreDbTest {
 
 
 
-            
-            var act = HybreAction.Parse(strJson4);
+            IHybreAction act = null;
+            string str = "";
+            Time("Parsing", () => act = HybreAction.Parse(strJson4));
             object res = null;
-            Time("Execution" ,() => res = act.Execute(db) );
+            Time("Execution", () => res = HybreAction.Execute(db, act));
             act = HybreAction.Parse(strJson2);
-            Time("Execution", () => res = act.Execute(db));
-            var str = JsonConvert.SerializeObject(res, Formatting.Indented);
+            Time("Execution", () => res = HybreAction.Execute(db, act));
+            Time("Serialisation", () => str = JsonConvert.SerializeObject(res, Formatting.Indented));
             Console.WriteLine(str);
         }
 

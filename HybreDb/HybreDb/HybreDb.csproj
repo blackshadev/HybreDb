@@ -52,6 +52,7 @@
     <Compile Include="Actions\HybreActionMatch.cs" />
     <Compile Include="Actions\HybreActionUpdate.cs" />
     <Compile Include="Actions\Result\HybreDataResult.cs" />
+    <Compile Include="Actions\Result\HybreError.cs" />
     <Compile Include="Actions\Result\HybreResult.cs" />
     <Compile Include="Actions\Result\HybreUpdateResult.cs" />
     <Compile Include="BPlusTree\BaseNode.cs" />
