@@ -9,6 +9,9 @@ using HybreDb.Tables;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
+    /// <summary>
+    /// Action which inserts given data into given table
+    /// </summary>
     public class HybreActionInsert : IHybreAction {
 
         [JsonProperty("table")]

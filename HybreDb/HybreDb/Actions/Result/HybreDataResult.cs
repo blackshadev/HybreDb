@@ -6,6 +6,9 @@ using Newtonsoft.Json;
 
 namespace HybreDb.Actions.Result {
 
+    /// <summary>
+    /// Wraps a dataset of a table as HybreResult
+    /// </summary>
     [JsonConverter(typeof(HybreDataResultJsonSerializer))]
     public class HybreDataResult : HybreResult {
         public Table Table;
@@ -17,6 +20,11 @@ namespace HybreDb.Actions.Result {
         }
     }
 
+    /// <summary>
+    /// Serializes the Dataset by first adding the columns (name and type) 
+    /// and than an object of rows where the key is the primary key of that row 
+    /// and the value the array of data items.
+    /// </summary>
     class HybreDataResultJsonSerializer : JsonConverter {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
             var res = value as HybreDataResult;
@@ -64,6 +72,9 @@ namespace HybreDb.Actions.Result {
 
         }
 
+        /// <summary>
+        /// Results are not ment to be interpret from json
+        /// </summary>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
             throw new NotImplementedException();
         }

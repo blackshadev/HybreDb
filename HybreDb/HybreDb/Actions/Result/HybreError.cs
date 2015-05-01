@@ -11,7 +11,6 @@ namespace HybreDb.Actions.Result {
 
         public Exception Error;
 
-
         public HybreError(Exception e) {
             Error = e;
         }

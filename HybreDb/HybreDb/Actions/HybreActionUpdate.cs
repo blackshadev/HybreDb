@@ -8,6 +8,9 @@ using HybreDb.Tables;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
+    /// <summary>
+    /// Action which updates the data of a given record
+    /// </summary>
     public class HybreActionUpdate : IHybreAction {
 
         [JsonProperty("table")]

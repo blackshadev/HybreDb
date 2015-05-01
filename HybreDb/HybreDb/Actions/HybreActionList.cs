@@ -7,6 +7,9 @@ using HybreDb.Actions.Result;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
+    /// <summary>
+    /// Action which lists the contents of a given table
+    /// </summary>
     public class HybreActionList : IHybreAction {
         [JsonProperty("table")]
         public string TableName;

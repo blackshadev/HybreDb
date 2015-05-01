@@ -9,6 +9,9 @@ using HybreDb.Tables.Types;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
+    /// <summary>
+    /// Action which finds records in a given table based on given conditions
+    /// </summary>
     public class HybreActionMatch : IHybreAction {
 
         [JsonProperty("table")]

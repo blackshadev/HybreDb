@@ -7,6 +7,9 @@ using HybreDb.Actions.Result;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
+    /// <summary>
+    /// Action which deletes a row with given key
+    /// </summary>
     public class HybreActionDelete : IHybreAction {
 
         [JsonProperty("table")]

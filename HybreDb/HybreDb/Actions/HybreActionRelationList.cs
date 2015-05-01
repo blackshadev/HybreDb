@@ -8,7 +8,11 @@ using HybreDb.Actions.Result;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
-    public class HybreActionRelationList :IHybreAction {
+    
+    /// <summary>
+    /// Action which lists a given relation
+    /// </summary>
+    public class HybreActionRelationList : IHybreAction {
 
         [JsonProperty("table")]
         public string TableName;
