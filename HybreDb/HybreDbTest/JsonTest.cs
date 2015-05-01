@@ -70,6 +70,12 @@ namespace HybreDbTest {
                                 "\"key\": 0" +
                             "}" +
                         "}";
+            var strJson6 = "{" +
+                           "\"method\": \"list\"," +
+                           "\"params\": {" +
+                                "\"table\": \"People\"" +
+                           "}" +
+                        "}";
 
 
 
@@ -77,7 +83,7 @@ namespace HybreDbTest {
 
             IHybreAction act = null;
             string str = "";
-            Time("Parsing", () => act = HybreAction.Parse(strJson5));
+            Time("Parsing", () => act = HybreAction.Parse(strJson6));
             object res = null;
             Time("Execution", () => res = HybreAction.Execute(db, act));
             

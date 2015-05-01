@@ -50,6 +50,7 @@
     <Compile Include="Actions\HybreActionDelete.cs" />
     <Compile Include="Actions\HybreActionGet.cs" />
     <Compile Include="Actions\HybreActionInsert.cs" />
+    <Compile Include="Actions\HybreActionList.cs" />
     <Compile Include="Actions\HybreActionMatch.cs" />
     <Compile Include="Actions\HybreActionUpdate.cs" />
     <Compile Include="Actions\Result\HybreDataResult.cs" />
