@@ -67,7 +67,7 @@ namespace HybreDb.Relational {
             var cols = new DataColumn[attrs.Length + 3];
             Array.Copy(attrs, 0, cols, 3, attrs.Length);
 
-            cols[0] = new DataColumn(".rel", DataTypes.Types.NumberPair, true);
+            cols[0] = new DataColumn(".rel", DataTypes.Types.NumberPair, true, true);
             cols[1] = new DataColumn(".rel.src", DataTypes.Types.Number, true);
             cols[2] = new DataColumn(".rel.dest", DataTypes.Types.Number, true);
 

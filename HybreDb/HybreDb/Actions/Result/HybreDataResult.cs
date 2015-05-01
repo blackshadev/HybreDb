@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using HybreDb.Tables;
 using Newtonsoft.Json;
 
@@ -28,7 +29,7 @@ namespace HybreDb.Actions.Result {
 
             writer.WriteStartArray();
 
-            foreach (var c in res.Table.Columns) {
+            foreach (var c in res.Table.Columns.Where(c => !c.Hidden)) {
                 writer.WriteStartObject();
                 writer.WritePropertyName("name");
                 writer.WriteValue(c.Name);
@@ -45,14 +46,14 @@ namespace HybreDb.Actions.Result {
             foreach (var r in res.Rows) {
                 writer.WriteStartObject();
 
-                writer.WritePropertyName("key");
-                writer.WriteValue(r.Index);
+                writer.WritePropertyName(r.Index.ToString());
 
-                writer.WritePropertyName("data");
                 writer.WriteStartArray();
 
-                foreach(var dat in r)
-                    writer.WriteValue(dat.GetValue());
+                for (var i = 0; i < res.Table.Columns.Length; i++) {
+                    if (res.Table.Columns[i].Hidden) continue;
+                    writer.WriteValue(r[i].GetValue());
+                }
 
                 writer.WriteEndArray();
 

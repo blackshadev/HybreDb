@@ -18,14 +18,14 @@ namespace HybreDb.Relational {
     public class Relations : IByteSerializable, IEnumerable<Relation>, IDisposable {
 
         protected Table SourceTable;
-        protected Dictionary<Table, string> ByTable;
+        protected Dictionary<Table, List<string>> ByTable;
         protected Dictionary<string, Relation> ByName;
         protected Dictionary<Table, Relation> ForeignRelations;
         
 
         public Relations(Table t) {
             SourceTable = t;
-            ByTable = new Dictionary<Table, string>();
+            ByTable = new Dictionary<Table, List<string>>();
             ByName = new Dictionary<string, Relation>();
             ForeignRelations = new Dictionary<Table, Relation>();
         }
@@ -51,7 +51,14 @@ namespace HybreDb.Relational {
 
         protected void AddRelation(Relation rel) {
             ByName.Add(rel.Name, rel);
-            ByTable.Add(rel.Source, rel.Name);
+
+            List<string> relNames;
+            var f = ByTable.TryGetValue(rel.Source, out relNames);
+            if (!f) 
+                relNames = ByTable[rel.Source] = new List<string>();
+            
+            relNames.Add(rel.Name);
+            
             SourceTable.Database[rel.Destination.Name].Relations.ForeignRelations.Add(SourceTable, rel);
         }
 

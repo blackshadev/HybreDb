@@ -2,6 +2,7 @@
 using System.Diagnostics;
 using HybreDb;
 using HybreDb.Actions;
+using HybreDb.Tables;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 
@@ -13,7 +14,13 @@ namespace HybreDbTest {
         public JsonTest() {
             db = new Database("JsonTest", true);
             var t = DummyData.TestTable(db, "People");
+            db.NewRelation("Knows", "People", "People", new[] {
+                new DataColumn("From", DataTypes.Types.Text) 
+            });
+            db.Write();
+
             DummyData.TestRows(t);
+            DummyData.TestRelations(t);
             t.Commit();
         }
 
@@ -76,6 +83,14 @@ namespace HybreDbTest {
                                 "\"table\": \"People\"" +
                            "}" +
                         "}";
+            var strJson7 = "{" +
+                           "\"method\": \"relationList\"," +
+                           "\"params\": {" +
+                                "\"table\": \"People\"," +
+                                "\"relation\": \"Knows\"" +
+                           "}" +
+                        "}";
+
 
 
 
@@ -83,7 +98,7 @@ namespace HybreDbTest {
 
             IHybreAction act = null;
             string str = "";
-            Time("Parsing", () => act = HybreAction.Parse(strJson6));
+            Time("Parsing", () => act = HybreAction.Parse(strJson7));
             object res = null;
             Time("Execution", () => res = HybreAction.Execute(db, act));
             

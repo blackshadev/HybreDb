@@ -36,6 +36,11 @@ namespace HybreDb.Tables {
         /// Whenever this column has an index associated with the data
         /// </summary>
         public bool HasIndex;
+
+        /// <summary>
+        /// Whenever the column is hidden to the user
+        /// </summary>
+        public bool Hidden;
         
         /// <summary>
         /// Index tree
@@ -60,10 +65,11 @@ namespace HybreDb.Tables {
         /// <summary>
         /// Creates a definition of a DataColumn which is not yet bound to a table
         /// </summary>
-        public DataColumn(string name, DataTypes.Types type, bool idx = false) {
+        public DataColumn(string name, DataTypes.Types type, bool idx = false, bool hidden = false) {
             Name = name;
             DataType = type;
             HasIndex = idx;
+            Hidden = hidden;
         }
 
 

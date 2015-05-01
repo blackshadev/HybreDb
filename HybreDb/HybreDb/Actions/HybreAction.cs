@@ -20,7 +20,7 @@ namespace HybreDb.Actions {
         public static IHybreAction Parse(string json) {
             var o = JObject.Parse(json);
             var m = (string)o["method"];
-            var cName = "HybreDb.Actions.HybreAction" + char.ToUpper(m[0]) + m.Substring(1).ToLower();
+            var cName = "HybreDb.Actions.HybreAction" + char.ToUpper(m[0]) + m.Substring(1);
             var t = Type.GetType(cName);
 
             return (IHybreAction) o["params"].ToObject(t);
