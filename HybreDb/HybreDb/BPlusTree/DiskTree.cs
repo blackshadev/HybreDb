@@ -113,8 +113,8 @@ namespace HybreDb.BPlusTree {
             return new DiskBaseNode<TKey, TValue>(this, pos);
         }
 
-        public override LeafNode<TKey, TValue> CreateLeafNode(LeafNode<TKey, TValue> prev = null, LeafNode<TKey, TValue> next = null) {
-            return new DiskLeafNode<TKey, TValue>(this) { Prev = prev, Next = next };
+        public override LeafNode<TKey, TValue> CreateLeafNode() {
+            return new DiskLeafNode<TKey, TValue>(this);
         }
 
         public virtual LeafNode<TKey, TValue> CreateLeafNode(long pos) {
@@ -183,7 +183,8 @@ namespace HybreDb.BPlusTree {
         }
         #endregion
 
-        public void Dispose() {
+
+        protected override void Dispose(bool disposing = false) {
             Stream.Dispose();
             Root.Dispose();
         }

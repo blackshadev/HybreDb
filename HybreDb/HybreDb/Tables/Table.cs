@@ -338,6 +338,11 @@ namespace HybreDb.Tables {
         ///  Disposes all resources held by the table.
         /// </summary>
         public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
             Stream.Dispose();
             Rows.Dispose();
             Relations.Dispose();

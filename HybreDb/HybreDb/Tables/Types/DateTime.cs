@@ -16,13 +16,20 @@ namespace HybreDb.Tables.Types {
             Data = dt.ToLower() == "now" ? System.DateTime.Now : System.DateTime.Parse(dt);
         }
 
-        public DateTime(BinaryReader rdr) : base(rdr) {}
+        public DateTime(BinaryReader rdr) {
+            Read(rdr);
+        }
 
         public override void Serialize(BinaryWriter b) {
             b.Write(Data.ToBinary());
         }
 
-        public override void Deserialize(BinaryReader b) {
+
+        public override void Deserialize(BinaryReader rdr) {
+            Read(rdr);
+        }
+
+        public void Read(BinaryReader b) {
             Data = System.DateTime.FromBinary(b.ReadInt64());
         }
 

@@ -14,6 +14,7 @@ using DateTime = HybreDb.Tables.Types.DateTime;
 
 namespace HybreDbTest {
     public static class DummyData {
+        public const int Seed = 42;
 
         public static Table TestTable(Database db, string n) {
             var cols = new[] {
@@ -75,7 +76,7 @@ namespace HybreDbTest {
         }
 
         public static IDataType[][] RandomDataset(int N) {
-            var rnd = new Random();
+            var rnd = new Random(Seed);
             var o = new IDataType[N][];
 
 
@@ -93,7 +94,7 @@ namespace HybreDbTest {
         }
 
         public static Tuple<NumberPair, IDataType[]>[] RandomRelations(int dat_len, int N) {
-            var rnd = new Random();
+            var rnd = new Random(Seed);
 
             var rels = new Tuple<NumberPair, IDataType[]>[N];
             var hs = new HashSet<NumberPair>();

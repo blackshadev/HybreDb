@@ -238,6 +238,11 @@ namespace HybreDb.BPlusTree {
         }
 
         public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
             _keys = null;
             _values = null;
             Count = 0;

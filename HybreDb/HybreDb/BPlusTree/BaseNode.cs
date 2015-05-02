@@ -215,8 +215,15 @@ namespace HybreDb.BPlusTree {
         }
         #endregion
 
-        public virtual void Dispose() {
-            if(_buckets != null) _buckets.Dispose();
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (_buckets != null) _buckets.Dispose();
+            _buckets = null;
+            _tree = null;
         }
 
         public virtual void BeginAccess() { }

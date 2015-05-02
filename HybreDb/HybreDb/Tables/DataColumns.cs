@@ -127,12 +127,16 @@ namespace HybreDb.Tables {
             return GetEnumerator();
         }
 
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Disposes all columns
         /// </summary>
-        public void Dispose() {
-            foreach (var c in Columns)
-                c.Dispose();
+        protected virtual void Dispose(bool disposing) {
+            foreach (var c in Columns) c.Dispose();
         }
 
         public int IndexOf(string colName) {

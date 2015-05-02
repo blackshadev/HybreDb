@@ -26,8 +26,6 @@ namespace HybreDb.BPlusTree {
         where TValue : IByteSerializable 
     {
 
-        
-        
         /// <summary>
         /// Current items in node
         /// </summary>

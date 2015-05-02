@@ -33,12 +33,6 @@ namespace HybreDb.BPlusTree {
         public TKey HighestKey { get { return Buckets.KeyAt(Buckets.Count - 1); } }
         public TKey LowestKey { get { return Buckets.KeyAt(0); } }
 
-        /// <summary>
-        /// Pointer to the next leaf node
-        /// </summary>
-        public LeafNode<TKey, TValue> Next;
-
-        public LeafNode<TKey, TValue> Prev;
 
         public LeafNode(Tree<TKey, TValue> t ) {
             _tree = t;
@@ -77,11 +71,9 @@ namespace HybreDb.BPlusTree {
 
         #region Split/Merge
         public virtual INode<TKey, TValue> Split() {
-            var node = Tree.CreateLeafNode(this, Next);
+            var node = Tree.CreateLeafNode();
             node._buckets = Buckets.SliceEnd(Capacity / 2);
             
-            Next = node;
-
             return node;
         }
 
@@ -116,12 +108,16 @@ namespace HybreDb.BPlusTree {
         }
         #endregion
 
-        public virtual void Dispose() {
-            if (Next != null) Next.Prev = Prev;
-            if (Prev != null) Prev.Next = Next;
 
-            if(Buckets != null) Buckets.Dispose();
-            Next = null;
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            if (_buckets != null) _buckets.Dispose();
+            _buckets = null;
+            _tree = null;
         }
 
         public void Serialize(BinaryWriter wrtr) {

@@ -12,13 +12,20 @@ namespace HybreDb.Tables.Types {
             Data = i;
         }
 
-        public Number(BinaryReader rdr) : base(rdr) {}
+        public Number(BinaryReader rdr) {
+            Read(rdr);
+        }
 
         public override void Serialize(BinaryWriter wrtr) {
             wrtr.Write(Data);
         }
 
+
         public override void Deserialize(BinaryReader rdr) {
+            Read(rdr);
+        }
+
+        public void Read(BinaryReader rdr) {
             Data = rdr.ReadInt32();
         }
 

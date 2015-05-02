@@ -167,8 +167,6 @@ namespace HybreDb.BPlusTree {
 
             wrtr.BaseStream.Position = FileOffset;
 
-            wrtr.Write( ((DiskLeafNode<TKey, TValue>)Next).FileOffset);
-
             wrtr.BaseStream.Position = offs;
         }
 
@@ -239,10 +237,11 @@ namespace HybreDb.BPlusTree {
             State = NodeState.Changed;
         }
 
-        public override void Dispose() {
+        protected override void Dispose(bool disposing) {
             DiskTree.Cache.Remove(this);
+            DiskTree = null;
 
-            base.Dispose();
+            base.Dispose(disposing);
         }
 
         public override IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {

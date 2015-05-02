@@ -158,8 +158,13 @@ namespace HybreDb.Relational {
             return GetEnumerator();
         }
 
+
         public void Dispose() {
-            
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
             Table.Dispose();
             Table = null;
             Source = null;

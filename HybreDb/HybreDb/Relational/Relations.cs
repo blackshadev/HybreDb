@@ -117,9 +117,14 @@ namespace HybreDb.Relational {
             return GetEnumerator();
         }
 
+
         public void Dispose() {
-            foreach (var r in this)
-                r.Dispose();
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
+            foreach (var r in this) r.Dispose();
         }
     }
 }

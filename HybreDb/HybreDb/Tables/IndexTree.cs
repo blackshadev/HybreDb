@@ -135,10 +135,15 @@ namespace HybreDb.Tables {
             Tree.Read();
         }
 
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Release all resources held by the tree
         /// </summary>
-        public void Dispose() {
+        protected virtual void Dispose(bool disposing) {
             Tree.Dispose();
         }
 

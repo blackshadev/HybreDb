@@ -152,11 +152,18 @@ namespace HybreDb.Tables {
             return nums;
         }
 
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
         /// Dispose all resources held by the DataColumn
         /// </summary>
-        public void Dispose() {
-            if(HasIndex) Index.Dispose();
+        protected virtual void Dispose(bool disposing) {
+            if (HasIndex) Index.Dispose();
         }
+
+        
     }
 }

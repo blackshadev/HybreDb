@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace HybreDb.Tables.Types {
     public class Text : DataType {
@@ -11,7 +12,7 @@ namespace HybreDb.Tables.Types {
             Data = d;
         }
 
-        public Text(BinaryReader rdr) : base(rdr) {}
+        public Text(BinaryReader rdr) { Read(rdr); }
 
         public override int CompareTo(object obj) {
             var o = obj as Text;
@@ -25,6 +26,10 @@ namespace HybreDb.Tables.Types {
         }
 
         public override void Deserialize(BinaryReader rdr) {
+            Read(rdr);
+        }
+
+        public void Read(BinaryReader rdr) {
             Data = rdr.ReadString();
         }
 

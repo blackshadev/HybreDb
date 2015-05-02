@@ -18,14 +18,6 @@ namespace HybreDb.Tables {
     /// </summary>
     public abstract class DataType : IDataType {
 
-        protected DataType() { }
-
-        /// <summary>
-        /// Constructor used to deserialize an object
-        /// </summary>
-        /// <param name="rdr"></param>
-        protected DataType(BinaryReader rdr) { Deserialize(rdr); }
-
         public abstract void Serialize(BinaryWriter b);
 
         public abstract void Deserialize(BinaryReader b);

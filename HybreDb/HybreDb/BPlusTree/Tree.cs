@@ -38,11 +38,8 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Creates a new leaf node bound to the tree
         /// </summary>
-        public virtual LeafNode<TKey, TValue> CreateLeafNode(LeafNode<TKey, TValue> prev = null, LeafNode<TKey, TValue> next = null) {
-            return new LeafNode<TKey, TValue>(this) {
-                Prev = prev,
-                Next = next
-            };
+        public virtual LeafNode<TKey, TValue> CreateLeafNode() {
+            return new LeafNode<TKey, TValue>(this);
         }
         #endregion
 
@@ -105,19 +102,16 @@ namespace HybreDb.BPlusTree {
 
             // creating leafnodes
             int l = 0;
-            LeafNode<TKey, TValue> prev = null;
             for (var i = 0; i < sorted.Length; i += BucketSize - 1) {
                 l = Math.Min(BucketSize - 1, sorted.Length - i);
 
                 var seg = new ArraySegment<KeyValuePair<TKey, TValue>>(sorted, i, l);
-                var leaf = CreateLeafNode(prev);
+                var leaf = CreateLeafNode();
                 leaf.Buckets.LoadSorted(seg);
                 
-                if (prev != null) prev.Next = leaf;
 
                 nodes.Add(new KeyValuePair<TKey, INode<TKey, TValue>>(leaf.HighestKey, leaf));
                 
-                prev = leaf;
             }
 
             // Create intermidiate nodes
@@ -149,7 +143,13 @@ namespace HybreDb.BPlusTree {
             return GetEnumerator();
         }
 
+
         public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing) {
             Root.Dispose();
             Root = null;
         }

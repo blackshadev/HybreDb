@@ -22,7 +22,9 @@ namespace HybreDb.Tables.Types {
             A = a.Item2;
         }
 
-        public NumberPair(BinaryReader rdr) : base(rdr) { }
+        public NumberPair(BinaryReader rdr) {
+            Read(rdr);
+        }
 
         public NumberPair(Number a, Number b) {
             A = a;
@@ -44,7 +46,12 @@ namespace HybreDb.Tables.Types {
             B.Serialize(b);
         }
 
-        public override void Deserialize(BinaryReader b) {
+
+        public override void Deserialize(BinaryReader rdr) {
+            Read(rdr);
+        }
+
+        public void Read(BinaryReader b) {
             A = new Number(b);
             B = new Number(b);
         }
