@@ -28,6 +28,7 @@ namespace HybreDbTest {
             if(File.Exists("test.dat")) File.Delete("test.dat");
 
             var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize);
+            t.Init();
 
             sw.Start();
             foreach(var n in numbers)
@@ -62,7 +63,8 @@ namespace HybreDbTest {
             var sw = new Stopwatch();
 
             sw.Start();
-            var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize, nums);
+            var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize);
+            t.Init(nums);
             sw.Stop();
             Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 

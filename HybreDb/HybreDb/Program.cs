@@ -27,6 +27,7 @@ namespace HybreDb {
                 File.Delete("test.dat");
 
             var t = new DiskTree<Text, TestData>("test.dat", 4, 2);
+            t.Init();
 
             var nums = new [] {0,1,2,3,4,5,6,7,8,9};
             

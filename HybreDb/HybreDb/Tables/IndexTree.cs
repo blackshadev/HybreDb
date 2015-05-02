@@ -17,10 +17,13 @@ namespace HybreDb.Tables {
 
         void Remove(object d, Number n);
 
+        void Init();
+
         void Commit();
         void Read();
 
         void Revert();
+
 
         Numbers Match(object k);
     }
@@ -119,6 +122,10 @@ namespace HybreDb.Tables {
 
         public void Remove(object d, Number n) {
             Remove((TKey)d, n);
+        }
+
+        public void Init() {
+            Tree.Init();
         }
 
         /// <summary>

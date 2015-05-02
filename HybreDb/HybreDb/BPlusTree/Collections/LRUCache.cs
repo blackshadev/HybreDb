@@ -7,9 +7,14 @@ using HybreDb.BPlusTree.Collections;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree.Collections {
+
+    public class LRUCacheEventArgs<T> : EventArgs {
+        public T Data;
+    }
+
     public class LRUCache<T> {
 
-        public delegate void OutDatedHandler(T dat);
+        public delegate void OutDatedHandler(object sender, LRUCacheEventArgs<T> e);
 
         public event OutDatedHandler OnOutDated;
 
@@ -57,7 +62,7 @@ namespace HybreDb.BPlusTree.Collections {
 
             if (l != null) {
                 Lookup.Remove(l.Data);
-                if (OnOutDated != null) OnOutDated(l.Data);
+                if (OnOutDated != null) OnOutDated(this, new LRUCacheEventArgs<T> {Data = l.Data});
                 Count--;
             }
 

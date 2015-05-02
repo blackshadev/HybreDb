@@ -9,6 +9,10 @@ using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {
 
+    public class NodeReadEventArgs<TValue> : EventArgs {
+        public TValue Data;
+    }
+
     /// <summary>
     /// BTree extension which can be written to file
     /// </summary>
@@ -19,7 +23,7 @@ namespace HybreDb.BPlusTree {
         where TValue : IByteSerializable, new() 
     {
 
-        public delegate void NodeDataRead(TValue v);
+        public delegate void NodeDataRead(object sender, NodeReadEventArgs<TValue> e);
 
         /// <summary>
         /// Called before a data item is serialized
@@ -80,28 +84,11 @@ namespace HybreDb.BPlusTree {
 
             if (exists) Read();
             CreateCache(CacheSize);
-
         }
 
-        /// <summary>
-        /// Creates the tree, bulk inserts the data and writes the data.
-        /// </summary>
-        /// <param name="filename"></param>
-        /// <param name="bucketSize"></param>
-        /// <param name="cacheSize"></param>
-        /// <param name="dat"></param>
-        public DiskTree(string filename, int bucketSize, int cacheSize, KeyValuePair<TKey, TValue>[] dat) : base(bucketSize, dat) {
-            Filename = filename;
-
-            Stream = DbFile.Open(filename);
-            CreateCache(cacheSize);
-        
-            Write();
-        }
-
-        protected void CreateCache(int s) {
-            Cache = new LRUCache<IDiskNode<TKey, TValue>>(s);
-            Cache.OnOutDated += node => node.Write();
+        protected void CreateCache(int size) {
+            Cache = new LRUCache<IDiskNode<TKey, TValue>>(size);
+            Cache.OnOutDated += (s, e) => e.Data.Write();
         }
 
         #region Creators overrides
@@ -194,7 +181,7 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         /// <param name="v"></param>
         internal void DataRead(TValue v) {
-            if (OnDataRead != null) OnDataRead(v);
+            if (OnDataRead != null) OnDataRead(this, new NodeReadEventArgs<TValue> {Data = v});
         }
     }
 }

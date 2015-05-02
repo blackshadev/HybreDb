@@ -60,10 +60,14 @@ namespace HybreDb.Tables {
             Relations = new Relations(this);
 
             Rows = new DiskTree<Number, DataRow>(Database.GetPath(name) + ".idx.bin", BucketSize, CacheSize);
-            Rows.OnDataRead += v => { v.Table = this; };
+            Rows.OnDataRead += (s, args) => { args.Data.Table = this; };
 
             Stream = DbFile.Open(Database.GetPath(Name) + ".table.bin" );
             Counter = 0;
+
+            Rows.Init();
+
+            foreach (var _c in Columns.IndexColumns) _c.Value.Index.Init();
 
             Write();
         }
@@ -80,7 +84,7 @@ namespace HybreDb.Tables {
             Relations = new Relations(this);
 
             Rows = new DiskTree<Number, DataRow>(Database.GetPath(name + ".idx.bin"), BucketSize, CacheSize);
-            Rows.OnDataRead += v => { v.Table = this; };
+            Rows.OnDataRead += (s, args) => { args.Data.Table = this; };
 
             Read();
         }

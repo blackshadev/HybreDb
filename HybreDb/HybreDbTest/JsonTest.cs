@@ -50,7 +50,7 @@ namespace HybreDbTest {
                               "\"method\": \"insert\", " +
                               "\"params\": {" +
                                    "\"table\": \"People\"," +
-                                   "\"data\": {" +
+                                   "\"Data\": {" +
                                         "\"Name\": \"Tester\"," +
                                         "\"Age\": 22," +
                                         "\"Unindexed_Age\": 22," +
@@ -63,7 +63,7 @@ namespace HybreDbTest {
                               "\"params\": {" +
                                    "\"table\": \"People\"," +
                                    "\"key\": 0," +
-                                   "\"data\": {" +
+                                   "\"Data\": {" +
                                         "\"Name\": \"Vincent Hagen\"," +
                                         "\"Inserted\": \"now\"" +
                                     "}" +

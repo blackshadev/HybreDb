@@ -149,7 +149,8 @@ namespace HybreDbTest {
 
             var sw = new Stopwatch();
             sw.Start();
-            var t = new Tree<Number, TestData>(50, nums);
+            var t = new Tree<Number, TestData>(50);
+            t.Init(nums);
             sw.Stop();
             Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 

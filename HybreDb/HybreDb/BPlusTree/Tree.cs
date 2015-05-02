@@ -14,18 +14,12 @@ namespace HybreDb.BPlusTree {
 
         public Tree() {
             BucketSize = 50;
-            Root = CreateLeafNode();
         }
 
         public Tree(int bucketSize) {
             BucketSize = bucketSize;
             if(BucketSize < 4) 
                 throw new ArgumentException("The minimal allowed bucketsize is 4");
-            Root = CreateLeafNode();
-        }
-
-        public Tree(int bucketSize, KeyValuePair<TKey, TValue>[] data) : this(bucketSize) {
-            Root = bulkInsert(data);
         }
 
 
@@ -94,6 +88,14 @@ namespace HybreDb.BPlusTree {
 
             if ((t == RemoveResult.Merged || t == RemoveResult.Removed) && Root.Count == 1)
                 Root = Root.First;
+        }
+
+        public void Init() {
+            Root = CreateLeafNode();
+        }
+
+        public void Init(KeyValuePair<TKey, TValue>[] sorted) {
+            Root = bulkInsert(sorted);
         }
 
         protected INode<TKey, TValue> bulkInsert(KeyValuePair<TKey, TValue>[] sorted) {
