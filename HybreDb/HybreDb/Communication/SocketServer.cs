@@ -10,8 +10,6 @@ using System.Threading.Tasks;
 namespace HybreDb.Communication {
 
     public class ClientState {
-        public const int BufferSize = 1024;
-
         public SocketServer Server;
 
         /// <summary>
@@ -19,31 +17,36 @@ namespace HybreDb.Communication {
         /// </summary>
         public Socket Socket = null;
 
-        public byte[] Buffer = new byte[BufferSize];
+        public int DataLength;
+        protected int DataOffset;
 
-        public StringBuilder Data = new StringBuilder();
-
+        public byte[] Buffer;
+        
         public ClientState(SocketServer s, Socket cSocket) {
             Server = s;
             Socket = cSocket;
 
-            Socket.BeginReceive(Buffer, 0, BufferSize, SocketFlags.None, ReadCallback, this);
+            Buffer = new byte[4];
+            Socket.BeginReceive(Buffer, 0, 4, SocketFlags.None, ReadLengthCallback, null);
+        }
+
+        public void ReadLengthCallback(IAsyncResult ar) {
+
+            DataLength = BitConverter.ToInt32(Buffer, 0);
+            Buffer = new byte[DataLength];
+
+            Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
         }
         
-        public static void ReadCallback(IAsyncResult ar) {
+        public void ReadCallback(IAsyncResult ar) {
 
-            var state = (ClientState) ar.AsyncState;
-
-            var bytesRead = state.Socket.EndReceive(ar);
-
-            if (bytesRead > 0) {
-                state.Data.Append(Encoding.Unicode.GetString(state.Buffer, 0, bytesRead));
-
-                state.Socket.BeginReceive(state.Buffer, 0, BufferSize, 0, ReadCallback, state);
-            } else
-                state.Server.ClientDataReceived(state);
+            DataOffset += Socket.EndReceive(ar);
             
-
+            if (DataOffset < DataLength)
+                Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
+            else
+                Server.ClientDataReceived(this);
+            
         }
     }
 
@@ -68,7 +71,7 @@ namespace HybreDb.Communication {
             Accepted = new ManualResetEvent(false);
         }
 
-        public void Start() {
+        public virtual void Start() {
             Server.Bind(new IPEndPoint(IPAddress.Any, Port));
             Server.Listen(10);
 
@@ -84,7 +87,10 @@ namespace HybreDb.Communication {
         }
 
         public void ClientDataReceived(ClientState s) {
-            OnDataReceived(s, new ClientDataReceivedEvent { State = s, Message = s.Data.ToString() });
+            OnDataReceived(s, new ClientDataReceivedEvent {
+                State = s, 
+                Message = Encoding.Unicode.GetString(s.Buffer)
+            });
         }
 
         public static void AcceptCallback(IAsyncResult ar) {
@@ -98,7 +104,7 @@ namespace HybreDb.Communication {
             var state = new ClientState(s, cSocket);
         }
 
-        public void Stop() {
+        public virtual void Stop() {
             IsRunning = false;
             Accepted.Set();
         }

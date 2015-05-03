@@ -62,6 +62,7 @@
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
     <Compile Include="Communication\SocketServer.cs" />
+    <Compile Include="Communication\ThreadedSocketServer.cs" />
     <Compile Include="HybreDb.cs" />
     <Compile Include="Tables\DataRowSerializer.cs" />
     <Compile Include="Tables\Types\DateTime.cs" />
