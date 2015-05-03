@@ -61,6 +61,7 @@
     <Compile Include="TableTest.cs" />
     <Compile Include="RelationsTest.cs" />
     <Compile Include="JsonTest.cs" />
+    <Compile Include="SocketServerTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\HybreDb\HybreDb.csproj">

@@ -61,6 +61,7 @@
     <Compile Include="Actions\Result\HybreUpdateResult.cs" />
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
+    <Compile Include="Communication\SocketServer.cs" />
     <Compile Include="HybreDb.cs" />
     <Compile Include="Tables\DataRowSerializer.cs" />
     <Compile Include="Tables\Types\DateTime.cs" />
@@ -99,6 +100,7 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
