@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace HybreDb.Tables.Types {
     public class DateTime : DataType {
@@ -33,6 +34,8 @@ namespace HybreDb.Tables.Types {
             Data = System.DateTime.FromBinary(b.ReadInt64());
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int CompareTo(object obj) {
             var o = obj as DateTime;
 

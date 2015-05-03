@@ -12,8 +12,12 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 namespace HybreDbTest {
     [TestClass]
     public class Relations {
-        public const int N   = 100000;
-        public const int N_R = 100000;
+        public const int N   = 110000;
+        public const int N_R = 110000;
+
+        public const int SampleSize = 100000;
+        public const int SampleSize_R = 100000;
+
 
         Database Db = new Database("RelationTest", true);
         Database DbB = new Database("RelationBench", true);
@@ -79,9 +83,15 @@ namespace HybreDbTest {
                 t.Write();
 
                 var ds = DummyData.RandomDataset(N);
+                var rows = ds.Take(N - SampleSize);
+
                 var t1 = t;
-                Time("Insert Rows", () => {
-                    foreach(var r in ds)
+                foreach(var r in rows)
+                    t1.Insert(r);
+
+                rows = ds.Skip(N - SampleSize);
+                Time("Insert " + SampleSize + " Rows", () => {
+                    foreach(var r in rows)
                         t1.Insert(r);
                 });
 
@@ -89,8 +99,14 @@ namespace HybreDbTest {
                 t.Commit();
 
                 var rels = DummyData.RandomRelations(N, N_R);
-                Time("Relations Insert", () => {
-                    foreach(var r in rels)
+                var rels_s = rels.Take(N_R - SampleSize_R);
+
+                foreach(var r in rels_s)
+                    t1.Relations["Knows"].Add(r.Item1.A, r.Item1.B, r.Item2);
+
+                rels_s = rels.Skip(N_R - SampleSize_R);
+                Time("Insert " + SampleSize_R + " Relations", () => {
+                    foreach(var r in rels_s)
                         t1.Relations["Knows"].Add(r.Item1.A, r.Item1.B, r.Item2);
                 });
 
@@ -114,8 +130,8 @@ namespace HybreDbTest {
         }
 
         private static void Time(string txt, Action act) {
-            var sw = new Stopwatch();
-            sw.Start();
+            GC.Collect();
+            var sw = Stopwatch.StartNew();
             act();
             sw.Stop();
             Trace.WriteLine(txt + " took " + sw.ElapsedMilliseconds + "ms");

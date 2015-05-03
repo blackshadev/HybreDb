@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -60,6 +61,7 @@ namespace HybreDb.Tables.Types {
         /// <summary>
         /// Compares two instances of NumberPairs, first compares on the first number, if that is equal use the second number.
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int CompareTo(object obj) {
             var n = obj as NumberPair;
             

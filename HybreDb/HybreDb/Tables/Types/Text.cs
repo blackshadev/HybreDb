@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 namespace HybreDb.Tables.Types {
@@ -14,6 +15,7 @@ namespace HybreDb.Tables.Types {
 
         public Text(BinaryReader rdr) { Read(rdr); }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int CompareTo(object obj) {
             var o = obj as Text;
             if (o == null) throw new ArgumentException("Cannot compare to non textual types");

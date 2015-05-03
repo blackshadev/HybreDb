@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace HybreDb.Tables.Types {
     public class Number : DataType {
@@ -60,6 +61,8 @@ namespace HybreDb.Tables.Types {
             return Data.ToString();
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int CompareTo(object obj) {
             var n = obj as Number;
             if (n == null) throw new ArgumentException("Number cannot be compared to a non numeric");

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using HybreDb.BPlusTree.DataTypes;
@@ -22,6 +23,7 @@ namespace HybreDb.Tables {
 
         public abstract void Deserialize(BinaryReader b);
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public abstract int CompareTo(object obj);
 
         public abstract object GetValue();
