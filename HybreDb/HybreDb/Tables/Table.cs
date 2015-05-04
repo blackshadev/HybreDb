@@ -112,6 +112,42 @@ namespace HybreDb.Tables {
                     c.Value.Index.Add(r[c.Key], r.Index);
         }
 
+
+        /// <summary>
+        /// Performs a bulk insert on a table.
+        /// Also bulk inserts all indexed columns
+        /// </summary>
+        public void BulkInsert(IDataType[][] data) {
+            if (Rows.Any()) throw new Exception("Bulk insert can only be performed on an empty table");
+
+            var rows = new KeyValuePair<Number, DataRow>[data.Length];
+
+            var indices = Columns.IndexColumns.ToDictionary(c => c.Key, c => new SortedDictionary<IDataType, Numbers>());
+
+            for (var i = 0; i < data.Length; i++) {
+                var n = new Number(i);
+                var r = new DataRow(this, n, data[i]);
+                rows[i] = new KeyValuePair<Number, DataRow>(n, r);
+
+                Numbers l;
+                IDataType k;
+                foreach (var kvp in indices) {
+                    k = r[kvp.Key];
+                    var b = kvp.Value.TryGetValue(k, out l);
+                    if (!b) l = kvp.Value[k] = new Numbers();
+
+                    l.Add(r.Index);
+                }
+
+            }
+
+            Rows.Init(rows);
+
+            foreach (var kvp in indices) 
+                Columns[kvp.Key].Index.Init(kvp.Value);
+            
+        }
+
         /// <summary>
         /// Writes the table definition to file, 
         /// because table definitions won't change, overwrite the changeables with commit.

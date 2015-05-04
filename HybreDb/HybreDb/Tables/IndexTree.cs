@@ -19,6 +19,8 @@ namespace HybreDb.Tables {
 
         void Init();
 
+        void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> d);
+
         void Commit();
         void Read();
 
@@ -32,7 +34,7 @@ namespace HybreDb.Tables {
     /// Wrapper which holds a DiskTree for a specified type
     /// </summary>
     public class IndexTree<TKey> : IIndexTree
-        where TKey : IComparable, IByteSerializable, new()
+        where TKey : IDataType, new()
     {
         /// <summary>
         /// Name of the index tree, used as filename of the index tree
@@ -126,6 +128,11 @@ namespace HybreDb.Tables {
 
         public void Init() {
             Tree.Init();
+        }
+
+        public void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> data) {
+            var typed = data.Select(e => new KeyValuePair<TKey, Numbers>((TKey)e.Key, e.Value)).ToArray();
+            Tree.Init(typed);
         }
 
         /// <summary>

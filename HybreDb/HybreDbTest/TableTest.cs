@@ -13,6 +13,7 @@ using DateTime = HybreDb.Tables.Types.DateTime;
 namespace HybreDbTest {
     [TestClass]
     public class TableTest {
+        public const int N = 100000;
 
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
         public static Database Db = new Database("UnitTest", true);
@@ -64,11 +65,51 @@ namespace HybreDbTest {
 
         }
 
+        [TestMethod]
+        public void BulkInsert() {
+            var set = GenerateDataset(N);
+            var cols = new[] {
+                new DataColumn { Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true },
+                new DataColumn { Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true },
+                new DataColumn { Name = "UnIndexed_Age", DataType = DataTypes.Types.Number },
+                new DataColumn { Name = "Inserted", DataType = DataTypes.Types.DateTime }
+            };
+
+            var tab = Db.NewTable("BulkBench", cols);
+            Time("BulkInsert " + N + " records", () => tab.BulkInsert(set));
+            tab.Commit();
+
+            int i = 0;
+            Time("Count", () => { i = tab.Rows.Count(); });
+            Assert.IsFalse(i != N, "Missing records");
+
+            Time("Commit", () => { tab.Commit(); });
+
+            Time("\nRead in", () => { tab = Db.Reopen(tab); });
+
+            Time("Count", () => { i = tab.Rows.Count(); });
+
+            Time("Count", () => { i = tab.Rows.Count(); });
+
+            Time("Index Age", () => {
+                var rows = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(90)));
+                //Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
+            });
+
+            Console.WriteLine("\n");
+            Time("Unindexed Age", () => {
+                var rows = tab.FindRows(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
+                //Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
+            });
+
+            Assert.IsFalse(i != N, "Missing records");
+
+        }
+
         [TestMethod] 
         public void Bench() {
-            const int n = 100000;
 
-            var set = GenerateDataset(n);
+            var set = GenerateDataset(N);
             
             var cols = new[] {
                 new DataColumn { Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true },
@@ -80,14 +121,14 @@ namespace HybreDbTest {
             var tab = Db.NewTable("Bench", cols);
             
             int i = 0;
-            Time("Insert " + n + " records", () => { 
-                for(i = 0; i < n; i++)
+            Time("Insert " + N + " records", () => { 
+                for(i = 0; i < N; i++)
                     tab.Insert(set[i]);
             });
 
 
             Time("Count", () => { i = tab.Rows.Count(); });
-            Assert.IsFalse(i != n, "Missing records");
+            Assert.IsFalse(i != N, "Missing records");
             
             Time("Commit", () => { tab.Commit(); });
 
@@ -108,7 +149,7 @@ namespace HybreDbTest {
                 Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
             });
 
-            Assert.IsFalse(i != n, "Missing records");
+            Assert.IsFalse(i != N, "Missing records");
         }
 
 
