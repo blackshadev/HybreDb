@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using HybreDb.Actions;
+using HybreDb.Actions.Result;
 using HybreDb.Communication;
 using Newtonsoft.Json;
 
@@ -60,7 +61,14 @@ namespace HybreDb {
         }
 
         public void ClientDataCallback(object s, ClientDataReceivedEvent e) {
-            var act = HybreAction.Parse(e.Message);
+            IHybreAction act;
+            try {
+                act = HybreAction.Parse(e.Message);
+            } catch (Exception ex) {
+                var res = new HybreError(ex);
+                e.State.Send(JsonConvert.SerializeObject(res));
+                return;
+            }
             lock (Queue) {
                 Queue.Enqueue(new KeyValuePair<ClientState, IHybreAction>(e.State, act));
                 Monitor.Pulse(Queue);

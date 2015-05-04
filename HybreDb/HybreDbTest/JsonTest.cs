@@ -82,6 +82,10 @@ namespace HybreDbTest {
 
         public JsonTest() {
             db = new Database("JsonTest", true);
+            TestData(db);
+        }
+
+        private static void TestData(Database db) {
             var t = DummyData.TestTable(db, "People");
             db.NewRelation("Knows", "People", "People", new[] {
                 new DataColumn("From", DataTypes.Types.Text) 
@@ -96,7 +100,6 @@ namespace HybreDbTest {
         [TestMethod]
         public void Creation() {
             
-
             Time("Initial Parse" , () => HybreAction.Parse(strJson4));
 
             IHybreAction act = null;
@@ -115,10 +118,11 @@ namespace HybreDbTest {
 
         [TestMethod]
         public void SocketServer() {
-            var hybre = new HybreDb.HybreDb("SocketServerTest");
+            var hybre = new HybreDb.HybreDb("SocketServerTest", 4242, true);
+            TestData(hybre.Database);
             hybre.Start();
 
-            var resp = SendAndReceive(strJson1);
+            var resp = SendAndReceive(strJson7);
             Console.WriteLine(resp);
         }
 

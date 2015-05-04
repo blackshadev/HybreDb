@@ -26,6 +26,11 @@ namespace HybreDb.Communication {
             Server = s;
             Socket = cSocket;
 
+            WaitForMessage();
+        }
+
+        public void WaitForMessage() {
+            DataOffset = 0;
             Buffer = new byte[4];
             Socket.BeginReceive(Buffer, 0, 4, SocketFlags.None, ReadLengthCallback, null);
         }
@@ -35,18 +40,22 @@ namespace HybreDb.Communication {
             DataLength = BitConverter.ToInt32(Buffer, 0);
             Buffer = new byte[DataLength];
 
-            Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
+            try {
+                Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
+            } catch {/*Connection error*/}
         }
         
         public void ReadCallback(IAsyncResult ar) {
 
             DataOffset += Socket.EndReceive(ar);
-            
+
             if (DataOffset < DataLength)
                 Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
-            else
+            else {
                 Server.ClientDataReceived(this);
-            
+                WaitForMessage();
+            }
+
         }
 
         public void Send(string str) {

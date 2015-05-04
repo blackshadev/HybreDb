@@ -89,6 +89,7 @@ namespace HybreDb {
             Serialize(wrtr);
 
             wrtr.Write(start);
+            wrtr.Flush();
         }
 
         /// <summary>

@@ -165,10 +165,18 @@ namespace HybreDb {
             Console.ReadKey();
         }
 
+        static void StartHybre() {
+            var d = new HybreDb();
+            d.Start();
+            AppDomain.CurrentDomain.ProcessExit += (s, e) => d.Database.Write();
+        }
+
         static void Main(string[] args) {
-            Test1();
+            //Test1();
             //Test2();
             //Test3();
+            StartHybre();
+
         }
 
         private static IDataType[][] GenerateDataset(int N) {

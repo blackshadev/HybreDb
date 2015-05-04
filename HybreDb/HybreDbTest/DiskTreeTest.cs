@@ -56,7 +56,6 @@ namespace HybreDbTest {
             if(File.Exists("test.dat"))
                 File.Delete("test.dat");
 
-            
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
             var nums = numbers.Select(e => new KeyValuePair<Number, TestData>(e, new TestData { Key = e, Value = "Test_" + e })).ToArray();
