@@ -198,7 +198,12 @@ namespace HybreDb {
         /// <param name="n">Table name</param>
         /// <returns>Table with given name</returns>
         public Table this[string n] {
-            get { return Tables[n]; }
+            get {
+                Table t;
+                var f =  Tables.TryGetValue(n, out t);
+                if(!f) throw new ArgumentException("No such table");
+                return t;
+            }
         }
 
         public IEnumerator<Table> GetEnumerator() {

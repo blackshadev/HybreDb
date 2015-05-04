@@ -21,7 +21,7 @@ namespace HybreDb.Communication {
         protected int DataOffset;
 
         public byte[] Buffer;
-        
+
         public ClientState(SocketServer s, Socket cSocket) {
             Server = s;
             Socket = cSocket;
@@ -48,6 +48,18 @@ namespace HybreDb.Communication {
                 Server.ClientDataReceived(this);
             
         }
+
+        public void Send(string str) {
+            var data = Encoding.Unicode.GetBytes(str);
+
+            Socket.Send(BitConverter.GetBytes(data.Length), 0);
+            Socket.BeginSend(data, 0, data.Length, SocketFlags.None, SendCallback, null);
+        }
+
+        public void SendCallback(IAsyncResult ar) {
+            Socket.EndSend(ar);
+        }
+
     }
 
     public class ClientDataReceivedEvent : EventArgs {
