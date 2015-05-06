@@ -80,6 +80,24 @@ namespace HybreDbTest {
                        "}" +
                     "}";
 
+        protected const string strJson8 = "{" +
+                                              "\"method\": \"createTable\"," +
+                                              "\"params\": {" +
+                                                  "\"table\": \"People\"," +
+                                                  "\"columns\": [" +
+                                                      "{ \"name\": \"Name\", \"dataType\": \"Text\", \"hasIndex\": true }," +
+                                                      "{ \"name\": \"Age\", \"dataType\": \"Number\", \"hasIndex\": true }," +
+                                                "]" +
+                                              "}" +
+                                          "}";
+
+        protected const string strJson9 = "{" +
+                                            "\"method\": \"listTables\"," +
+                                            "\"params\": {}" +
+                                          "}";
+
+
+
         public JsonTest() {
             db = new Database("JsonTest", true);
             TestData(db);
@@ -104,7 +122,7 @@ namespace HybreDbTest {
 
             IHybreAction act = null;
             string str = "";
-            Time("Parsing", () => act = HybreAction.Parse(strJson7));
+            Time("Parsing", () => act = HybreAction.Parse(strJson9));
             object res = null;
             Time("Execution", () => res = HybreAction.Execute(db, act));
             

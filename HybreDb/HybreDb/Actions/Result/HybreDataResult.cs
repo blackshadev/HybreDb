@@ -33,20 +33,11 @@ namespace HybreDb.Actions.Result {
             writer.WritePropertyName("elapsedTime");
             writer.WriteValue(res.ElapsedTime);
 
+            writer.WritePropertyName("tableName");
+            writer.WriteValue(res.Table.Name);
+
             writer.WritePropertyName("columns");
-
-            writer.WriteStartArray();
-
-            foreach (var c in res.Table.Columns.Where(c => !c.Hidden)) {
-                writer.WriteStartObject();
-                writer.WritePropertyName("name");
-                writer.WriteValue(c.Name);
-                writer.WritePropertyName("type");
-                writer.WriteValue(c.DataType.ToString());
-                writer.WriteEndObject();
-            }
-
-            writer.WriteEndArray();
+            HybreResult.SerializeColumns(writer, res.Table.Columns.Where(e => !e.Hidden));
 
             writer.WritePropertyName("rows");
             writer.WriteStartArray();

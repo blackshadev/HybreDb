@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\HybreAction.cs" />
+    <Compile Include="Actions\HybreActionCreateTable.cs" />
     <Compile Include="Actions\HybreActionDelete.cs" />
     <Compile Include="Actions\HybreActionGet.cs" />
     <Compile Include="Actions\HybreActionInsert.cs" />
@@ -54,10 +55,13 @@
     <Compile Include="Actions\HybreActionMatch.cs" />
     <Compile Include="Actions\HybreActionUpdate.cs" />
     <Compile Include="Actions\HybreActionRelationList.cs" />
+    <Compile Include="Actions\HybreActionListTables.cs" />
     <Compile Include="Actions\Result\HybreDataResult.cs" />
     <Compile Include="Actions\Result\HybreError.cs" />
+    <Compile Include="Actions\Result\HybreMultipleResult.cs" />
     <Compile Include="Actions\Result\HybreRelationDataResult.cs" />
     <Compile Include="Actions\Result\HybreResult.cs" />
+    <Compile Include="Actions\Result\HybreStructureResult.cs" />
     <Compile Include="Actions\Result\HybreUpdateResult.cs" />
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />

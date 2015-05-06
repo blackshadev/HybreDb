@@ -8,6 +8,7 @@
     "email": ""
   },
   "dependencies": {
+    "dot": "^1.0.3",
     "roadie": "^0.3.2"
   }
 }

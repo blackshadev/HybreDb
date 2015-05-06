@@ -34,10 +34,15 @@
     <Compile Include="core.js" />
     <Compile Include="HybreDb.js" />
     <Compile Include="webservices\HybreDb.js" />
+    <Compile Include="webservices\View.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
+    <Content Include="template\template.dot.jst" />
+    <Content Include="views\index.html" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="template\" />
+    <Folder Include="views\" />
     <Folder Include="webservices\" />
   </ItemGroup>
   <!-- Do not delete the following Import Project.  While this appears to do nothing it is a marker for setting TypeScript properties before our import that depends on them. -->

@@ -27,6 +27,13 @@ namespace HybreDb {
         /// </summary>
         public string Name { get; protected set; }
 
+        /// <summary>
+        /// Number of tables in the database
+        /// </summary>
+        public int Count {
+            get { return Tables.Count; }
+        }
+
         protected Dictionary<string, Table> Tables;
         protected Stream Stream;
 

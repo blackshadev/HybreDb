@@ -38,7 +38,7 @@ namespace HybreDb.Actions {
             var o = JObject.Parse(json);
             var m = (string)o["method"];
             var cName = "HybreDb.Actions.HybreAction" + char.ToUpper(m[0]) + m.Substring(1);
-            var t = Type.GetType(cName);
+            var t = Type.GetType(cName, true, true);
 
             return (IHybreAction) o["params"].ToObject(t);
         }
@@ -61,6 +61,7 @@ namespace HybreDb.Actions {
 
             return row;
         }
+
 
         /// <summary>
         /// Executes a given action on given database
