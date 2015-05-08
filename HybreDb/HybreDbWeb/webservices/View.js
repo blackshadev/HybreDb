@@ -59,7 +59,7 @@ module.exports = (function () {
             this.ctx.response.send();
         },
         dataFns: {
-            tables: function (cb) {
+            tables: function(cb) {
                 var self = this;
                 this.hybre.send("listTables", {}, function(o) {
                     self.data = o;
@@ -70,14 +70,27 @@ module.exports = (function () {
                 var self = this;
 
                 var tab = this.ctx.request.parameter("table");
-                this.hybre.send("list", { table: tab }, function (o) {
+                if (!tab) return this.ctx.error(404);
+                this.hybre.send("list", { table: tab }, function(o) {
                     self.data = o;
                     cb();
                 });
 
+            },
+            relation: function(cb) {
+                var self = this;
+
+                var tab = this.ctx.request.parameter("table");
+                var rel = this.ctx.request.parameter("relation");
+
+                if (!(tab && rel)) return this.ctx.error(404);
+
+                this.hybre.send("relationList", { table: tab, relation: rel }, function(o) {
+                    self.data = o;
+                    cb();
+                });
             }
         }
-
 
     });
 })();

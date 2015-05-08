@@ -8,6 +8,7 @@ server.addRoutes({
     
     "[GET]/view/{page}/": "View.js",
     "[GET]/view/{page}/{table}/": "View.js",
+    "[GET]/view/{page}/{table}/{relation}": "View.js",
     "[GET]/view/": "View.js",
     
     "[POST]/execute/{cmd}/": "HybreDb.js:execute",
