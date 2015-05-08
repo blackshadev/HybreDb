@@ -15,15 +15,25 @@ module.exports = (function () {
     return require("roadie").WebService.extend({
         pageName: "",
         pageTemplate: null,
+        data: null,
+        dataDone: false,
+        templateDone: false,
         create: function(ctx) {
             this.inherited().create.call(this, ctx);
 
-            this.data = {};
-
-            this.pageName = ctx.request.parameter("page") || "index".toLowerCase();
+            this.hybre = ctx._server.hybre;
 
             var self = this;
+
+            this.pageName = ctx.request.parameter("page") || "index".toLowerCase();
+            var fn = this.dataFns[this.pageName] || function(cb) { cb(); };
+            this.data = fn.call(this, function () {
+                self.dataDone = true;
+                self.send();
+            });
+
             this.fetchPageTemplate(function() {
+                self.templateDone = true;
                 self.send();
             });
         },
@@ -42,10 +52,20 @@ module.exports = (function () {
                 cb();
             });
         },
-        send: function() {
+        send: function () {
+            if (!(this.dataDone && this.templateDone)) return;
             this.ctx.response.header("Content-Type", "text/html");
             this.ctx.response.data(this.pageTemplate(this.data));
             this.ctx.response.send();
+        },
+        dataFns: {
+            tables: function (cb) {
+                var self = this;
+                this.hybre.send("listTables", {}, function(o) {
+                    self.data = o;
+                    cb();
+                });
+            }
         }
 
 

@@ -44,7 +44,7 @@
   
         },
         jsonBody: function(cb) {
-            this.requestAnimationFrame.body(function(dat) {
+            this.ctx.request.body(function(dat) {
                 var o;
                 try {
                     o = JSON.parse(dat.toString());
