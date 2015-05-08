@@ -95,6 +95,10 @@ namespace HybreDb.BPlusTree {
         }
 
         public void Init(KeyValuePair<TKey, TValue>[] sorted) {
+            if (sorted.Length == 0) {
+                Init();
+                return;
+            }
             Root = bulkInsert(sorted);
         }
 

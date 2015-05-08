@@ -6,8 +6,8 @@ var hybre = new Hybre();
 
 server.addRoutes({
     
-    "[GET]/list/{table}/": "HybreDb.js:list",
     "[GET]/view/{page}/": "View.js",
+    "[GET]/view/{page}/{table}/": "View.js",
     "[GET]/view/": "View.js",
     
     "[POST]/execute/{cmd}/": "HybreDb.js:execute",

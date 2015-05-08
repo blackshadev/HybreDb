@@ -40,11 +40,9 @@ namespace HybreDb.Actions.Result {
             HybreResult.SerializeColumns(writer, res.Table.Columns.Where(e => !e.Hidden));
 
             writer.WritePropertyName("rows");
-            writer.WriteStartArray();
+            writer.WriteStartObject();
 
             foreach (var r in res.Rows) {
-                writer.WriteStartObject();
-
                 writer.WritePropertyName(r.Index.ToString());
 
                 writer.WriteStartArray();
@@ -56,10 +54,9 @@ namespace HybreDb.Actions.Result {
 
                 writer.WriteEndArray();
 
-                writer.WriteEndObject();
             }
 
-            writer.WriteEndArray();
+            writer.WriteEndObject();
 
         }
 

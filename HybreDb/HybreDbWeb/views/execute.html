@@ -16,6 +16,7 @@
     var editor = ace.edit("editor");
     editor.setTheme("ace/theme/monokai");
     editor.getSession().setMode("ace/mode/json");
+    editor.$blockScrolling = Infinity;
 
     $("#executeForm").submit(function (e) {
         $("#error").text("");

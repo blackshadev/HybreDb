@@ -83,11 +83,12 @@ namespace HybreDbTest {
         protected const string strJson8 = "{" +
                                               "\"method\": \"createTable\"," +
                                               "\"params\": {" +
-                                                  "\"table\": \"People\"," +
+                                                  "\"table\": \"People2\"," +
                                                   "\"columns\": [" +
                                                       "{ \"name\": \"Name\", \"dataType\": \"Text\", \"hasIndex\": true }," +
                                                       "{ \"name\": \"Age\", \"dataType\": \"Number\", \"hasIndex\": true }," +
-                                                "]" +
+                                                "]," +
+                                                "rows: []" +
                                               "}" +
                                           "}";
 
@@ -122,7 +123,7 @@ namespace HybreDbTest {
 
             IHybreAction act = null;
             string str = "";
-            Time("Parsing", () => act = HybreAction.Parse(strJson9));
+            Time("Parsing", () => act = HybreAction.Parse(strJson6));
             object res = null;
             Time("Execution", () => res = HybreAction.Execute(db, act));
             

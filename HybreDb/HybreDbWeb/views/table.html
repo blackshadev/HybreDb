@@ -1,0 +1,18 @@
+﻿<table class="table table-striped">
+    <thead>
+        <tr>
+            {{ for(var k in it.columns) { }}
+            <th>{{=k}}</th>
+            {{ } }}
+        </tr>
+    </thead>
+    <tbody>
+        {{ for(var k in it.rows) { }}
+        <tr>
+            {{~it.rows[k] : d}}
+            <td>{{=d}}</td>
+            {{~}}
+        </tr>
+        {{ } }}
+    </tbody>
+</table>

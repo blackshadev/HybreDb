@@ -48,7 +48,7 @@ module.exports = (function () {
                 if (err) return self.ctx.error(err);
                 
                 self.pageTemplate = dot.template(template({ page: dat.toString(), pageTitle: pageTitle }));
-                templateCache["index"] = self.pageTemplate;
+                templateCache[self.pageName] = self.pageTemplate;
                 cb();
             });
         },
@@ -65,6 +65,16 @@ module.exports = (function () {
                     self.data = o;
                     cb();
                 });
+            },
+            table: function(cb) {
+                var self = this;
+
+                var tab = this.ctx.request.parameter("table");
+                this.hybre.send("list", { table: tab }, function (o) {
+                    self.data = o;
+                    cb();
+                });
+
             }
         }
 

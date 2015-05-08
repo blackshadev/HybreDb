@@ -179,7 +179,7 @@ namespace HybreDb {
 
             Name = rdr.ReadString();
             var l = rdr.ReadInt32();
-            Tables = new Dictionary<string, Table>();
+            Tables = new Dictionary<string, Table>(StringComparer.OrdinalIgnoreCase);
 
             for (var i = 0; i < l; i++) {
                 var name = rdr.ReadString();
