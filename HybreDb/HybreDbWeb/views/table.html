@@ -1,6 +1,7 @@
 ﻿<table class="table table-striped">
     <thead>
         <tr>
+            <th>Id</th>
             {{ for(var k in it.columns) { }}
             <th>{{=k}}</th>
             {{ } }}
@@ -9,6 +10,7 @@
     <tbody>
         {{ for(var k in it.rows) { }}
         <tr>
+            <td>{{=k}}</td>
             {{~it.rows[k] : d}}
             <td>{{=d}}</td>
             {{~}}
