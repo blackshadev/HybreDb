@@ -25,7 +25,7 @@ module.exports = (function () {
 
             var self = this;
 
-            this.pageName = ctx.request.parameter("page") || "index".toLowerCase();
+            this.pageName = ctx.request.parameter("page") || "home".toLowerCase();
             var fn = this.dataFns[this.pageName] || function(cb) { cb(); };
             this.data = fn.call(this, function () {
                 self.dataDone = true;
@@ -47,7 +47,7 @@ module.exports = (function () {
             fs.readFile("./views/" + this.pageName + ".html", function (err, dat) {
                 if (err) return self.ctx.error(err);
                 
-                self.pageTemplate = dot.template(template({ page: dat.toString(), pageTitle: pageTitle }));
+                self.pageTemplate = dot.template(template({ page: dat.toString(), pageTitle: pageTitle, pages: pages }));
                 templateCache[self.pageName] = self.pageTemplate;
                 cb();
             });

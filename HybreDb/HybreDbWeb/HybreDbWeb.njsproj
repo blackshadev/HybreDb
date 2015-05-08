@@ -39,7 +39,7 @@
     <Content Include="README.md" />
     <Content Include="template\template.dot.jst" />
     <Content Include="views\execute.html" />
-    <Content Include="views\index.html" />
+    <Content Include="views\home.html" />
     <Content Include="views\relation.html" />
     <Content Include="views\table.html" />
     <Content Include="views\tables.html" />
