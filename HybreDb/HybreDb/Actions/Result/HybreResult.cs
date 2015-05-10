@@ -34,6 +34,60 @@ namespace HybreDb.Actions.Result {
             writer.WriteEndObject();
         }
 
+        protected static void SerializeDataRows(JsonWriter writer, Table tab, IEnumerable<DataRow> rows) {
+            writer.WriteStartObject();
+
+            foreach (var r in rows) {
+                writer.WritePropertyName(r.Index.ToString());
+
+                writer.WriteStartObject();
+
+                for (var i = 0; i < tab.Columns.Length; i++) {
+                    if (tab.Columns[i].Hidden) continue;
+                    writer.WritePropertyName(tab.Columns[i].Name);
+                    writer.WriteValue(r[i].GetValue());
+                }
+
+                writer.WriteEndObject();
+
+            }
+
+            writer.WriteEndObject();
+        }
+
+        public static void SerializeRows(JsonWriter writer, Table sourceTable, IEnumerable<DataRow> rows) {
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("tableName");
+            writer.WriteValue(sourceTable.Name);
+
+            writer.WritePropertyName("columns");
+            SerializeColumns(writer, sourceTable.Columns.Where(e => !e.Hidden));
+
+            writer.WritePropertyName("rows");
+            SerializeDataRows(writer, sourceTable, rows);
+
+            writer.WriteEndObject();
+        }
+
+        public static void SerializeRelation(JsonWriter writer, Relation rel, IEnumerable<DataRow> rows) {
+            writer.WriteStartObject();
+
+            writer.WritePropertyName("sourceTable");
+            writer.WriteValue(rel.Source.Name);
+
+            writer.WritePropertyName("destinationTable");
+            writer.WriteValue(rel.Destination.Name);
+
+            writer.WritePropertyName("attributes");
+            SerializeColumns(writer, rel.Table.Columns.Where(e => !e.Hidden));
+
+            writer.WritePropertyName("relationData");
+            SerializeDataRows(writer, rel.Table, rows);
+
+            writer.WriteEndObject();
+        }
+
         public static void SerializeRelations(JsonWriter writer, IEnumerable<Relation> rels) {
             writer.WriteStartObject();
 

@@ -62,6 +62,7 @@
     <Compile Include="Actions\Result\HybreRelationDataResult.cs" />
     <Compile Include="Actions\Result\HybreResult.cs" />
     <Compile Include="Actions\Result\HybreStructureResult.cs" />
+    <Compile Include="Actions\Result\HybreUniformResult.cs" />
     <Compile Include="Actions\Result\HybreUpdateResult.cs" />
     <Compile Include="BPlusTree\BaseNode.cs" />
     <Compile Include="BPlusTree\Collections\DoubleLinkedList.cs" />
