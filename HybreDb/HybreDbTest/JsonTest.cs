@@ -123,7 +123,7 @@ namespace HybreDbTest {
 
             IHybreAction act = null;
             string str = "";
-            Time("Parsing", () => act = HybreAction.Parse(strJson6));
+            Time("Parsing", () => act = HybreAction.Parse(strJson7));
             object res = null;
             Time("Execution", () => res = HybreAction.Execute(db, act));
             
