@@ -48,7 +48,7 @@ namespace HybreDb.BPlusTree.Collections {
             if (!Lookup.TryGetValue(d, out l)) return;
 
             Lookup.Remove(d);
-            l.Unlink();
+            List.Unlink(l);
         }
 
         protected void UpdateExisting(LinkedNode<T> n) {
