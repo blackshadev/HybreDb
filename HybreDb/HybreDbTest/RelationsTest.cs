@@ -126,6 +126,13 @@ namespace HybreDbTest {
 
             Time("Relation Count", () => Console.WriteLine("Relation Count: " + t2.Relations["Knows"].Count()));
 
+            Time("Row Count", () => Console.WriteLine("Row Count: " + t2.Rows.Count()));
+
+            Time("Relation Count", () => Console.WriteLine("Relation Count: " + t2.Relations["Knows"].Count()));
+
+            Trace.WriteLine("Read operations " + t2.Rows.Reads);
+            Trace.WriteLine("Write operations " + t2.Rows.Writes);
+
 
         }
 

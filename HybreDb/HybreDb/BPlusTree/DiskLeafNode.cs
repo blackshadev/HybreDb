@@ -149,32 +149,23 @@ namespace HybreDb.BPlusTree {
         /// </summary>
         public void Write(BinaryWriter wrtr) {
             if (IsBusy || State != NodeState.Changed) return;
-            
+
+            DiskTree.Writes++;
+
             FileOffset = wrtr.BaseStream.Position;
             _buckets.Serialize(wrtr);
             
-
             Free();
         }
 
-        /// <summary>
-        /// Updates the Neighbour reference on disk.
-        /// </summary>
-        public void UpdateNextFileOffset(BinaryWriter wrtr) {
-            if (State != NodeState.OnDisk) return;
-
-            var offs = wrtr.BaseStream.Position;
-
-            wrtr.BaseStream.Position = FileOffset;
-
-            wrtr.BaseStream.Position = offs;
-        }
 
         /// <summary>
         /// Reads the data into the node with given reader
         /// </summary>
         public void Read() {
             if (State != NodeState.OnDisk) return;
+
+            DiskTree.Reads++;
 
             var rdr = new BinaryReader(DiskTree.Stream);
             rdr.BaseStream.Seek(FileOffset, SeekOrigin.Begin);

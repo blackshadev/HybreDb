@@ -156,6 +156,8 @@ namespace HybreDb.BPlusTree {
         public void Write(BinaryWriter wrtr) {
             if (IsBusy || State != NodeState.Changed) return;
 
+            DiskTree.Writes++;
+            
             // First make sure all children are written to file
             foreach (var n in Buckets)
                 ((IDiskNode<TKey, TValue>)n.Value).Write(wrtr);
@@ -173,6 +175,8 @@ namespace HybreDb.BPlusTree {
         public void Read() {
             if (State != NodeState.OnDisk) return;
 
+            DiskTree.Reads++;
+            
             DiskTree.Stream.Position = FileOffset;
             var rdr = new BinaryReader(DiskTree.Stream);
             _buckets = new SortedBuckets<TKey, INode<TKey, TValue>>(rdr, 

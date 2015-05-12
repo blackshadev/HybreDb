@@ -23,6 +23,9 @@ namespace HybreDb.BPlusTree {
         where TValue : IByteSerializable, new() 
     {
 
+        public int Reads = 0;
+        public int Writes = 0;
+
         public delegate void NodeDataRead(object sender, NodeReadEventArgs<TValue> e);
 
         /// <summary>
