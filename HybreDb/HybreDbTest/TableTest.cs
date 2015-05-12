@@ -127,10 +127,11 @@ namespace HybreDbTest {
             });
 
 
+            Time("Commit", () => { tab.Commit(); });
+
             Time("Count", () => { i = tab.Rows.Count(); });
             Assert.IsFalse(i != N, "Missing records");
             
-            Time("Commit", () => { tab.Commit(); });
 
             Time("\nRead in", () => { tab = Db.Reopen(tab); });
             
@@ -156,7 +157,6 @@ namespace HybreDbTest {
         private static IDataType[][] GenerateDataset(int N) {
             var rnd = new Random();
             var o = new IDataType[N][];
-
 
             for (var i = 0; i < N; i++) {
                 var a = new Number(rnd.Next(0, 100));
