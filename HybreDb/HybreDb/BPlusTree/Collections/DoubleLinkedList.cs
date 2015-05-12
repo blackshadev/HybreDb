@@ -55,7 +55,23 @@ namespace HybreDb.BPlusTree.Collections {
             l.Next = null;
 
             return l;
-        } 
+        }
+
+        public void Unlink(LinkedNode<T> n) {
+            if (Tail == n)
+                Tail = n.Prev;
+            if (Head == n)
+                Head = n.Next;
+
+            if (n.Next != null)
+                n.Next.Prev = n.Prev;
+
+            if (n.Prev != null)
+                n.Prev.Next = n.Next;
+
+            n.Next = null;
+            n.Prev = null;
+        }
     }
     public class LinkedNode<T> {
         public LinkedNode<T> Next;
@@ -78,16 +94,5 @@ namespace HybreDb.BPlusTree.Collections {
             n.Next = this;
         }
 
-        public void Unlink() {
-            if (Next != null)
-                Next.Prev = Prev;
-            
-            if (Prev != null)
-                Prev.Next = Next;
-
-            Next = null;
-            Prev = null;
-
-        }
     }
 }

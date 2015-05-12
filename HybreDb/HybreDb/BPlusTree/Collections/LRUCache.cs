@@ -19,7 +19,7 @@ namespace HybreDb.BPlusTree.Collections {
         public event OutDatedHandler OnOutDated;
 
         public int Capacity { get; private set; }
-        public int Count { get; private set; }
+        public int Count { get { return Lookup.Count; } }
 
 
         protected DoubleLinkedList<T> List;
@@ -49,26 +49,25 @@ namespace HybreDb.BPlusTree.Collections {
 
             Lookup.Remove(d);
             l.Unlink();
-            Count--;
         }
 
         protected void UpdateExisting(LinkedNode<T> n) {
-            n.Unlink();
+            
+            List.Unlink(n);
+
             List.AddHead(n);
         }
 
         protected void AddNew(T k) {
-            var l = (Count == Capacity) ? List.RemoveTail() : null;
+            var l = (Count >= Capacity) ? List.RemoveTail() : null;
 
             if (l != null) {
                 Lookup.Remove(l.Data);
                 if (OnOutDated != null) OnOutDated(this, new LRUCacheEventArgs<T> {Data = l.Data});
-                Count--;
             }
 
             l = List.AddHead(k);
             Lookup.Add(k, l);
-            Count++;
         }
     }
 }

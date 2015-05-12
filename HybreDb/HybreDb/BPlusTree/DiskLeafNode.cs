@@ -205,12 +205,6 @@ namespace HybreDb.BPlusTree {
         }
         #endregion
 
-        /// <summary>
-        /// Upon a access update the cache
-        /// </summary>
-        public void Accessed() {
-            DiskTree.Cache.Update(this);
-        }
 
         public override void BeginAccess() {
             Read();

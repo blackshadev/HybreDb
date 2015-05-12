@@ -13,7 +13,7 @@ using HybreDb.Tables.Types;
 namespace HybreDb.Tables {
     public class Table: IDisposable {
         public const int BucketSize = 64;
-        public const int CacheSize = 8;
+        public const int CacheSize = 64;
 
 
         public string Name { get; protected set; }

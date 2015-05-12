@@ -118,6 +118,10 @@ namespace HybreDbTest {
 
             Time("Relation Count", () => Console.WriteLine("Relation Count: " + t2.Relations["Knows"].Count()));
 
+            Trace.WriteLine("Read operations " + t2.Rows.Reads);
+            Trace.WriteLine("Write operations " + t2.Rows.Writes);
+
+
             t2 = DbB.Reopen(t2);
             Console.WriteLine("\nAfter reopen");
             Trace.WriteLine("\nAfter reopen");
