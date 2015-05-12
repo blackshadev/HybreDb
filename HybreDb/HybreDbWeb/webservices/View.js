@@ -8,6 +8,8 @@ module.exports = (function () {
         "/view/execute": "Execute"
     };
 
+    dot.templateSettings["strip"] = false;
+
     var template = dot.template(fs.readFileSync("./template/template.dot.jst", undefined, { pages: pages }));
 
     var templateCache = {};

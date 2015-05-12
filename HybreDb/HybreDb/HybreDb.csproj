@@ -53,6 +53,7 @@
     <Compile Include="Actions\HybreActionInsert.cs" />
     <Compile Include="Actions\HybreActionList.cs" />
     <Compile Include="Actions\HybreActionMatch.cs" />
+    <Compile Include="Actions\HybreActionTestData.cs" />
     <Compile Include="Actions\HybreActionUpdate.cs" />
     <Compile Include="Actions\HybreActionRelationList.cs" />
     <Compile Include="Actions\HybreActionListTables.cs" />

@@ -26,7 +26,7 @@ namespace HybreDb.Relational {
         public Relations(Table t) {
             SourceTable = t;
             ByTable = new Dictionary<Table, List<string>>();
-            ByName = new Dictionary<string, Relation>();
+            ByName = new Dictionary<string, Relation>(StringComparer.OrdinalIgnoreCase);
             ForeignRelations = new Dictionary<Table, Relation>();
         }
 

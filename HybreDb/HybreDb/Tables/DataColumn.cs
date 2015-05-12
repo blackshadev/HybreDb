@@ -90,6 +90,7 @@ namespace HybreDb.Tables {
             wrtr.Write((byte)DataType);
             wrtr.Write(Name);
             wrtr.Write(HasIndex);
+            wrtr.Write(Hidden);
         }
 
 
@@ -101,6 +102,7 @@ namespace HybreDb.Tables {
             Name = rdr.ReadString();
 
             HasIndex = rdr.ReadBoolean();
+            Hidden = rdr.ReadBoolean();
         }
 
         /// <summary>

@@ -55,7 +55,7 @@ namespace HybreDb.Actions.Result {
             writer.WriteEndObject();
         }
 
-        public static void SerializeRows(JsonWriter writer, Table sourceTable, IEnumerable<DataRow> rows) {
+        public static void SerializeTable(JsonWriter writer, Table sourceTable, IEnumerable<DataRow> rows) {
             writer.WriteStartObject();
 
             writer.WritePropertyName("tableName");
@@ -82,7 +82,7 @@ namespace HybreDb.Actions.Result {
             writer.WritePropertyName("attributes");
             SerializeColumns(writer, rel.Table.Columns.Where(e => !e.Hidden));
 
-            writer.WritePropertyName("relationData");
+            writer.WritePropertyName("rows");
             SerializeDataRows(writer, rel.Table, rows);
 
             writer.WriteEndObject();

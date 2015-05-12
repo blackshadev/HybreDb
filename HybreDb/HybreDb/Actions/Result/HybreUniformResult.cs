@@ -54,14 +54,22 @@ namespace HybreDb.Actions.Result {
             writer.WriteValue(res.ElapsedTime);
 
             writer.WritePropertyName("tableData");
+            writer.WriteStartObject();
 
-            foreach (var kvp in res.TableData)
-                HybreResult.SerializeRows(writer, kvp.Key, kvp.Value.Values);
-            
+            foreach (var kvp in res.TableData) {
+                writer.WritePropertyName(kvp.Key.Name);
+                HybreResult.SerializeTable(writer, kvp.Key, kvp.Value.Values);
+            }
+
+            writer.WriteEndObject();
+
             writer.WritePropertyName("relationData");
-            foreach (var kvp in res.RelationData)
+            writer.WriteStartObject();
+            foreach (var kvp in res.RelationData) {
+                writer.WritePropertyName(kvp.Key.Name);
                 HybreResult.SerializeRelation(writer, kvp.Key, kvp.Value.Values);
-            
+            }
+            writer.WriteEndObject();
 
             writer.WriteEndObject();
 
