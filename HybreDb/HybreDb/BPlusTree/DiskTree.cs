@@ -25,6 +25,7 @@ namespace HybreDb.BPlusTree {
 
         public int Reads = 0;
         public int Writes = 0;
+        public int Freed = 0;
 
         public delegate void NodeDataRead(object sender, NodeReadEventArgs<TValue> e);
 

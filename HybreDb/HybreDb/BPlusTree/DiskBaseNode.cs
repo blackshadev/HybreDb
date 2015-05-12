@@ -139,6 +139,8 @@ namespace HybreDb.BPlusTree {
         /// Frees the resources from the node.
         /// </summary>
         public void Free() {
+            DiskTree.Freed++;
+
             _buckets.Dispose();
             _buckets = null;
             State = NodeState.OnDisk;

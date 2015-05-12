@@ -120,7 +120,7 @@ namespace HybreDbTest {
 
             Trace.WriteLine("Read operations " + t2.Rows.Reads);
             Trace.WriteLine("Write operations " + t2.Rows.Writes);
-
+            Trace.WriteLine("Free operations " + t2.Rows.Freed);
 
             t2 = DbB.Reopen(t2);
             Console.WriteLine("\nAfter reopen");
@@ -136,6 +136,8 @@ namespace HybreDbTest {
 
             Trace.WriteLine("Read operations " + t2.Rows.Reads);
             Trace.WriteLine("Write operations " + t2.Rows.Writes);
+            Trace.WriteLine("Free operations " + t2.Rows.Freed);
+
 
 
         }
