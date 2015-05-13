@@ -47,11 +47,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Actions\HybreAction.cs" />
+    <Compile Include="Actions\HybreActionAddRelation.cs" />
     <Compile Include="Actions\HybreActionCreateTable.cs" />
     <Compile Include="Actions\HybreActionDelete.cs" />
     <Compile Include="Actions\HybreActionGet.cs" />
     <Compile Include="Actions\HybreActionInsert.cs" />
-    <Compile Include="Actions\HybreActionList.cs" />
+    <Compile Include="Actions\HybreActionListTable.cs" />
     <Compile Include="Actions\HybreActionMatch.cs" />
     <Compile Include="Actions\HybreActionTestData.cs" />
     <Compile Include="Actions\HybreActionUpdate.cs" />

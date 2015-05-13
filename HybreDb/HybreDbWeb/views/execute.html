@@ -20,24 +20,7 @@
     editor.getSession().setMode("ace/mode/json");
     editor.$blockScrolling = Infinity;
 
-    var graph = document.getElementById("graph");
-    
-    //var nodes = [
-    //    { id: 1, label: 'Node 1' },
-    //    { id: 2, label: 'Node 2' },
-    //    { id: 3, label: 'Node 3' },
-    //    { id: 4, label: 'Node 4' },
-    //    { id: 5, label: 'Node 5' }
-    //];
-
-    //var edges = [
-    //    { from: 1, to: 2 },
-    //    { from: 1, to: 3 },
-    //    { from: 2, to: 4 },
-    //    { from: 2, to: 5 }
-    //];
-
-    var n  = new vis.Network(graph, { }, {});
+    var n  = new HybreResult("graph");
     
     $("#executeForm").submit(function (e) {
         $("#error").text("");
@@ -53,80 +36,7 @@
             return;
         }
 
-        var border = 'blue';
-        var colors = ["red", "purple", "blue", "pink", "white"];
-        var graph_data = { data: { nodes: [], edges: [] }, options: { groups: {} } };
-
-        function clearGraph() {
-            graph_data = { data: { nodes: [], edges: [] }, options: { groups: {} } };
-        }
-
-        function createTitle(d) {
-            var t = $("<table/>");
-            for (var k in d) {
-                $("<tr/>").append($("<td/>").text(k)).append($("<td/>").text(d[k])).appendTo(t);
-            }
-            return t[0];
-        }
-
-        function createNodes(data) {
-            var iX = 0;
-
-            graph_data.data.nodes = [];
-            
-            for (var tab in data) {
-                
-                if (!graph_data.options.groups["tab_" + tab]) {
-                    graph_data.options.groups["tab_" + tab] = {
-                        color: {
-                            border: border,
-                            background: colors[iX++]
-                        }
-                    };
-                }
-
-                for (var id in data[tab].rows) {
-                    graph_data.data.nodes.push({
-                        id: tab + "." + id,
-                        title: createTitle(data[tab].rows[id]),
-                        group:  "tab_" + tab
-                    });
-                }
-
-            }
-        }
-
-        function createEdges(data) {
-            var iX = 0;
-            for (var rel in data) {
-                
-                if (!graph_data.options.groups["rel_" + rel]) {
-                    graph_data.options.groups["rel_" + rel] = {
-                        color: {
-                            background: colors[colors.length - (iX++) + 1]
-                        }
-                    };
-                }
-
-                var from_tab = data[rel].sourceTable;
-                var to_tab = data[rel].destinationTable;
-
-                graph_data.data.edges = [];
-                for (var id in data[rel].rows) {
-                    var r = data[rel].rows[id];
-                    graph_data.data.edges.push({
-                        id: id,
-                        from: from_tab + "." + r[".rel.src"],
-                        to: to_tab + "." + r[".rel.dest"],
-                        group: "rel_" + rel,
-                        style: "arrow",
-                        title: createTitle(r)
-                    });
-                }
-
-            }
-        }
-
+        
         $.ajax({
             url: "/execute/" + $("#action").val(),
             type: "POST",
@@ -135,18 +45,9 @@
                 var d = JSON.parse(str);
                 console.log(d);
 
-                var nodes;
-                var edges;
-                if (d.tableData)
-                    nodes = createNodes(d.tableData);
-                if (d.relationData)
-                    edges = createEdges(d.relationData);
+                n.setData(d);
 
-                console.log(graph_data);
-
-                n.setOptions(graph_data.options);
-                n.setData(graph_data.data);
-
+                
             },
             error: function(res) {
                 console.error(res.responseText);

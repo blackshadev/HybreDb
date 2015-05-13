@@ -55,6 +55,11 @@ module.exports = (function () {
             });
         },
         send: function () {
+            if (this.data) {
+                var json = JSON.stringify(this.data);
+                this.data.json = json;
+            }
+
             if (!(this.dataDone && this.templateDone)) return;
             this.ctx.response.header("Content-Type", "text/html");
             this.ctx.response.data(this.pageTemplate(this.data));

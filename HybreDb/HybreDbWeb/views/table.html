@@ -1,5 +1,16 @@
 ﻿<table class="table table-striped">
     <thead>
+        <tr><th>RelationName</th></tr>
+    </thead>
+    <tbody>
+        {{ for(var k in it.relations) { }}
+        <tr><td><a href="/view/relation/{{=it.tableName}}/{{=k}}">{{=k}}</a></td></tr>
+        {{ } }}
+    </tbody>
+</table>
+
+<table class="table table-striped">
+    <thead>
         <tr>
             <th>Id</th>
             {{ for(var k in it.columns) { }}

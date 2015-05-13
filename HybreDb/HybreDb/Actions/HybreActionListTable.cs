@@ -10,12 +10,14 @@ namespace HybreDb.Actions {
     /// <summary>
     /// Action which lists the contents of a given table
     /// </summary>
-    public class HybreActionList : IHybreAction {
+    public class HybreActionListTable : IHybreAction {
         [JsonProperty("table")]
         public string TableName;
 
         public HybreResult Execute(Database db) {
-            return new HybreDataResult(db[TableName], db[TableName].Rows.Select(e => e.Value));
+            var res = new HybreUniformResult();
+            res.Add(db[TableName], db[TableName].Rows.Select(e => e.Value));
+            return res;
         }
     }
 }

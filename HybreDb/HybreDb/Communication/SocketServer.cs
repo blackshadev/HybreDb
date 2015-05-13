@@ -32,7 +32,9 @@ namespace HybreDb.Communication {
         public void WaitForMessage() {
             DataOffset = 0;
             Buffer = new byte[4];
-            Socket.BeginReceive(Buffer, 0, 4, SocketFlags.None, ReadLengthCallback, null);
+            try {
+                Socket.BeginReceive(Buffer, 0, 4, SocketFlags.None, ReadLengthCallback, null);
+            } catch(Exception e) {/* Connection errror */}
         }
 
         public void ReadLengthCallback(IAsyncResult ar) {

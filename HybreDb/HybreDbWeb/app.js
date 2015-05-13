@@ -14,7 +14,9 @@ server.addRoutes({
     "[POST]/execute/{cmd}/": "HybreDb.js:execute",
     "[GET]/{table}/": "HybreDb.js:list",
     "[POST]/{table}/": "HybreDb.js:createTable",
-    "[DELETE]/{table}/": "HybreDb.js:delete"
+    "[DELETE]/{table}/": "HybreDb.js:delete",
+
+    "[GET]/static/*": "Static.js"
 });
 server.hybre = hybre;
 

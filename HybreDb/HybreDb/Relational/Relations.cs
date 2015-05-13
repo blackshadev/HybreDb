@@ -67,7 +67,15 @@ namespace HybreDb.Relational {
         /// </summary>
         /// <param name="n">Name of the relation</param>
         public Relation this[string n] {
-            get { return ByName[n]; }
+            get {
+                Relation r;
+                if(!ByName.TryGetValue(n, out r))
+                    throw new KeyNotFoundException("No such relation found");
+                
+
+
+                return r;
+            }
         }
 
         /// <summary>

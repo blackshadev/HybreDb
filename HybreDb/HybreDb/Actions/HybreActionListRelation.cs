@@ -13,7 +13,7 @@ namespace HybreDb.Actions {
     /// <summary>
     /// Action which lists a given relation
     /// </summary>
-    public class HybreActionRelationList : IHybreAction {
+    public class HybreActionListRelation : IHybreAction {
 
         [JsonProperty("table")]
         public string TableName;

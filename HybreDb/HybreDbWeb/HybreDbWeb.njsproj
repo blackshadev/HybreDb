@@ -33,7 +33,9 @@
     <Compile Include="app.js" />
     <Compile Include="core.js" />
     <Compile Include="HybreDb.js" />
+    <Compile Include="statics\graph.js" />
     <Compile Include="webservices\HybreDb.js" />
+    <Compile Include="webservices\Static.js" />
     <Compile Include="webservices\View.js" />
     <Content Include="package.json" />
     <Content Include="README.md" />
@@ -45,6 +47,7 @@
     <Content Include="views\tables.html" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="statics\" />
     <Folder Include="template\" />
     <Folder Include="views\" />
     <Folder Include="webservices\" />

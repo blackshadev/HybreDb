@@ -209,7 +209,7 @@ namespace HybreDb {
             get {
                 Table t;
                 var f =  Tables.TryGetValue(n, out t);
-                if(!f) throw new ArgumentException("No such table");
+                if(!f) throw new KeyNotFoundException("No such table");
                 return t;
             }
         }

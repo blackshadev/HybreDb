@@ -36,6 +36,17 @@ namespace HybreDb.Actions.Result {
             writer.WritePropertyName("tableName");
             writer.WriteValue(res.Table.Name);
 
+            writer.WritePropertyName("relations");
+            writer.WriteStartObject();
+
+            foreach (var rel in res.Table.Relations) {
+                writer.WritePropertyName(rel.Name);
+                HybreResult.SerializeRelation(writer, rel, new DataRow[0]);
+            }
+
+            writer.WriteEndObject();
+
+
             writer.WritePropertyName("columns");
             HybreResult.SerializeColumns(writer, res.Table.Columns.Where(e => !e.Hidden));
 
