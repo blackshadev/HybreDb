@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HybreDb.Actions.Result;
 using HybreDb.BPlusTree.DataTypes;
+using HybreDb.Relational;
 using HybreDb.Tables;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -62,6 +63,19 @@ namespace HybreDb.Actions {
             return row;
         }
 
+        public static IDataType[] ParseData(Relation r, Dictionary<string, object> data) {
+            if(r.Table.Columns.Length - 3 != data.Count)
+                throw new ArgumentException("Invalid number of data given, expected " + (r.Table.Columns.Length - 3) + " got " + data.Count);
+            
+            var row = new IDataType[data.Count];
+            foreach (var d in data) {
+                var iX = r.Table.Columns.GetIndex(d.Key);
+                row[iX - 3] = r.Table.Columns[iX].DataType.CreateType(d.Value);
+            }
+
+            return row;
+
+        }
 
         /// <summary>
         /// Executes a given action on given database

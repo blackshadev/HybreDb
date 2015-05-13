@@ -155,12 +155,12 @@ namespace HybreDb {
         public Relation NewRelation(string relName, string srcTable, string destTable, DataColumn[] attrs) {
             CheckUserIdentifier(relName);
 
-
             foreach (var c in attrs)
                 CheckUserIdentifier(c.Name);
 
             var src = Tables[srcTable];
-            var r = src.Relations.Add(relName, src, Tables[destTable], attrs);
+            var dst = Tables[destTable];
+            var r = src.Relations.Add(relName, src, dst, attrs);
             src.Write();
             
             return r;

@@ -8,9 +8,10 @@
     this.clear();
     this.network = new vis.Network(this.jGraph[0], {}, {});
 
-    this.borderColor = "blue";
-    this.colors = ["red", "purple", "blue", "pink", "white"];
+}
 
+function randomColor() {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
 HybreResult.prototype.setData = function(graph) {
@@ -41,12 +42,11 @@ HybreResult.prototype.clear = function(dom) {
 HybreResult.prototype.createNodes = function (data) {
     var iX = 0;
     for (var tab in data) {
-
+        var c = randomColor();
         if (!this.options.groups["tab_" + tab]) {
             this.options.groups["tab_" + tab] = {
                 color: {
-                    border: this.border,
-                    background: this.colors[iX++]
+                    background: c
                 }
             };
         }
@@ -54,7 +54,7 @@ HybreResult.prototype.createNodes = function (data) {
         for (var id in data[tab].rows) {
             this.data.nodes.push({
                 id: tab + "." + id,
-                title: this.createTitle(data[tab].rows[id]),
+                title: this.createTitle(data[tab].rows[id], tab),
                 group: "tab_" + tab
             });
         }
@@ -65,36 +65,33 @@ HybreResult.prototype.createNodes = function (data) {
 HybreResult.prototype.createEdges = function(data) {
     var iX = 0;
     for (var rel in data) {
-        
-        if (!this.options.groups["rel_" + rel]) {
-            this.options.groups["rel_" + rel] = {
-                color: {
-                    border: this.colors[this.colors.length - (iX++) + 1]
-                }
-            };
-        }
-        
+        var c = randomColor();
         var from_tab = data[rel].sourceTable;
         var to_tab = data[rel].destinationTable;
         
         for (var id in data[rel].rows) {
             var r = data[rel].rows[id];
             this.data.edges.push({
-                id: id,
+                id: rel + "_" + id,
                 from: from_tab + "." + r[".rel.src"],
                 to: to_tab + "." + r[".rel.dest"],
-                group: "rel_" + rel,
+                color: {
+                    color: c
+                },
                 style: "arrow",
-                title: this.createTitle(r)
+                title: this.createTitle(r, rel)
             });
         }
 
+        iX++;
     }
 };
 
-HybreResult.prototype.createTitle = function(d) {
-    var t = $("<table/>");
+HybreResult.prototype.createTitle = function(d, descr) {
+    var t = $("<table class=\"attribute-table\" />");
+    t.append($("<caption/>").text(descr, descr));
     for (var k in d) {
+        if(k[0] === ".") continue;
         $("<tr/>").append($("<td/>").text(k)).append($("<td/>").text(d[k])).appendTo(t);
     }
     return t[0];

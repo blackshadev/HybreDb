@@ -30,7 +30,7 @@ namespace HybreDb.Actions {
 
             var rel = t.Relations[RelationName];
 
-            rel.Add(From, To, HybreAction.ParseData(rel.Table, Data) );
+            rel.Add(From, To, HybreAction.ParseData(rel, Data) );
 
             rel.Commit();
 

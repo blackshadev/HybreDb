@@ -20,14 +20,14 @@ namespace HybreDb.Relational {
         protected Table SourceTable;
         protected Dictionary<Table, List<string>> ByTable;
         protected Dictionary<string, Relation> ByName;
-        protected Dictionary<Table, Relation> ForeignRelations;
+        protected List<Relation> ForeignRelations;
         
 
         public Relations(Table t) {
             SourceTable = t;
             ByTable = new Dictionary<Table, List<string>>();
             ByName = new Dictionary<string, Relation>(StringComparer.OrdinalIgnoreCase);
-            ForeignRelations = new Dictionary<Table, Relation>();
+            ForeignRelations = new List<Relation>();
         }
 
         #region Serialization
@@ -59,7 +59,7 @@ namespace HybreDb.Relational {
             
             relNames.Add(rel.Name);
             
-            SourceTable.Database[rel.Destination.Name].Relations.ForeignRelations.Add(SourceTable, rel);
+            SourceTable.Database[rel.Destination.Name].Relations.ForeignRelations.Add(rel);
         }
 
         /// <summary>
@@ -110,9 +110,9 @@ namespace HybreDb.Relational {
             }
 
             foreach (var r in ForeignRelations) {
-                var nums = r.Value.Table.FindKeys(new KeyValuePair<string, object>(".rel.dest", idx));
+                var nums = r.Table.FindKeys(new KeyValuePair<string, object>(".rel.dest", idx));
                 if (nums == null) continue;
-                r.Value.Table.RemoveAll(nums);
+                r.Table.RemoveAll(nums);
             }
 
         }
