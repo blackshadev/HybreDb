@@ -65,13 +65,11 @@ namespace HybreDb.Actions {
 
             rel.Add(0, 1, new IDataType[] { new Text("UvA") });
             rel.Add(0, 2, new IDataType[] { new Text("Baken") });
-            rel.Add(0, 3, new IDataType[] { new Text("Zus") });
             rel.Add(0, 4, new IDataType[] { new Text("UvA") });
 
             rel.Add(2, 0, new IDataType[] { new Text("Baken") });
             rel.Add(1, 2, new IDataType[] { new Text("UvA") });
             rel.Add(2, 1, new IDataType[] { new Text("UvA") });
-            rel.Add(2, 0, new IDataType[] { new Text("UvA") });
             rel.Add(4, 0, new IDataType[] { new Text("UvA") });
             
             tab.Commit();

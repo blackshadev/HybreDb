@@ -32,6 +32,8 @@ namespace HybreDb.Actions {
 
             rel.Add(From, To, HybreAction.ParseData(rel.Table, Data) );
 
+            rel.Commit();
+
             return new HybreUpdateResult{Affected = 1};
         }
     }

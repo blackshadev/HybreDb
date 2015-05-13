@@ -1,6 +1,8 @@
 ﻿var fs = require("fs");
 var dot = require("dot");
 
+
+
 module.exports = (function () {
     var pages = {
         "/view/" : "Home",
@@ -9,6 +11,14 @@ module.exports = (function () {
     };
 
     dot.templateSettings["strip"] = false;
+    
+    function findKeyIgnoreCase(o, key) {
+        for (var k in o) {
+            if (key.toLowerCase() === k.toLowerCase())
+                return o[k];
+        }
+
+    }
 
     var template = dot.template(fs.readFileSync("./template/template.dot.jst", undefined, { pages: pages }));
 
@@ -29,7 +39,7 @@ module.exports = (function () {
 
             this.pageName = ctx.request.parameter("page") || "home".toLowerCase();
             var fn = this.dataFns[this.pageName] || function(cb) { cb(); };
-            this.data = fn.call(this, function () {
+            fn.call(this, function () {
                 self.dataDone = true;
                 self.send();
             });
@@ -78,9 +88,21 @@ module.exports = (function () {
 
                 var tab = this.ctx.request.parameter("table");
                 if (!tab) return this.ctx.error(404);
-                this.hybre.send("list", { table: tab }, function(o) {
-                    self.data = o;
-                    cb();
+
+                self.data = { tableStruct: {}, tableData: {} };
+                var iX = 0;
+
+
+                this.hybre.send("getTableStructure", { table: tab }, function(o) {
+                    self.data.tableStruct = o;
+                    if (iX++)
+                        cb();
+                });
+
+                this.hybre.send("listTable", { table: tab }, function (o) {
+                    self.data.tableData = findKeyIgnoreCase(o.tableData, tab);
+                    if (iX++)
+                        cb();
                 });
 
             },
@@ -92,7 +114,7 @@ module.exports = (function () {
 
                 if (!(tab && rel)) return this.ctx.error(404);
 
-                this.hybre.send("relationList", { table: tab, relation: rel }, function(o) {
+                this.hybre.send("listRelation", { table: tab, relation: rel }, function(o) {
                     self.data = o;
                     cb();
                 });
