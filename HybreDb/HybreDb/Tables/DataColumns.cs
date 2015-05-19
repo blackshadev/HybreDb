@@ -102,7 +102,7 @@ namespace HybreDb.Tables {
             var l = rdr.ReadInt32();
 
             Columns = new DataColumn[l];
-            ByName = new Dictionary<string, int>(l);
+            ByName = new Dictionary<string, int>(l, StringComparer.OrdinalIgnoreCase);
             IndexedColumnsList = new List<int>(l);
 
 

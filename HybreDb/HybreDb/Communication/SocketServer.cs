@@ -52,7 +52,7 @@ namespace HybreDb.Communication {
             DataOffset += Socket.EndReceive(ar);
 
             if (DataOffset < DataLength)
-                Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
+                Socket.BeginReceive(Buffer, DataOffset, DataLength - DataOffset, SocketFlags.None, ReadCallback, null);
             else {
                 Server.ClientDataReceived(this);
                 WaitForMessage();

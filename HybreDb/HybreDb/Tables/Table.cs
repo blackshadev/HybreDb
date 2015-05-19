@@ -15,7 +15,6 @@ namespace HybreDb.Tables {
         public const int BucketSize = 64;
         public const int CacheSize = 2048;
 
-
         public string Name { get; protected set; }
 
         public Database Database { get; protected set; }
@@ -234,7 +233,6 @@ namespace HybreDb.Tables {
 
             foreach (var r in Relations)
                 r.Table.Revert();
-
         }
 
         /// <summary>

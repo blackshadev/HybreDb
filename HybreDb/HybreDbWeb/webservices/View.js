@@ -37,7 +37,7 @@ module.exports = (function () {
 
             var self = this;
 
-            this.pageName = ctx.request.parameter("page") || "home".toLowerCase();
+            this.pageName = (ctx.request.parameter("page") || "home").toLowerCase();
             var fn = this.dataFns[this.pageName] || function(cb) { cb(); };
             fn.call(this, function () {
                 self.dataDone = true;

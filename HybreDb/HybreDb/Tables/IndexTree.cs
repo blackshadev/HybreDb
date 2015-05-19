@@ -67,7 +67,7 @@ namespace HybreDb.Tables {
         /// </summary>
         /// <param name="d">Key value to match</param>
         public Numbers Match(TKey d) {
-            return Tree.Get(d);
+            return Tree.Get(d) ?? new Numbers();
         }
 
         /// <summary>

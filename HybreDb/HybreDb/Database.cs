@@ -97,6 +97,10 @@ namespace HybreDb {
 
             wrtr.Write(start);
             wrtr.Flush();
+
+            foreach (var t in Tables.Values)
+                t.Write();
+
         }
 
         /// <summary>
@@ -115,8 +119,6 @@ namespace HybreDb {
 
             var t = new Table(this, name, cols);
             Tables.Add(t.Name, t);
-
-            Write();
             
             return t;
         }
@@ -161,7 +163,6 @@ namespace HybreDb {
             var src = Tables[srcTable];
             var dst = Tables[destTable];
             var r = src.Relations.Add(relName, src, dst, attrs);
-            src.Write();
             
             return r;
         }
@@ -171,8 +172,9 @@ namespace HybreDb {
             wrtr.Write(Name);
             wrtr.Write(Tables.Count);
 
-            foreach(var t in Tables.Values)
+            foreach (var t in Tables.Values)
                 wrtr.Write(t.Name);
+            
         }
 
         public void Deserialize(BinaryReader rdr) {

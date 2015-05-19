@@ -1,0 +1,10 @@
+{
+  "name": "RandomData",
+  "version": "0.0.0",
+  "description": "RandomData",
+  "main": "app.js",
+  "author": {
+    "name": "Vincent",
+    "email": ""
+  }
+}

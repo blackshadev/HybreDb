@@ -28,9 +28,10 @@ namespace HybreDb.Actions.Result {
             var f = TableData.TryGetValue(tab, out rows);
             if (!f) rows = TableData[tab] = new Dictionary<Number, DataRow>();
 
-            foreach (var r in newrows)
-                rows[r.Index] = r;
 
+            foreach (var r in newrows)
+                    rows[r.Index] = r;
+            
         }
 
         public void Add(Relation rel, IEnumerable<DataRow> newrows) {

@@ -39,7 +39,10 @@ namespace HybreDb.Actions {
                     rows.Add(local_rows);
             }
 
-            return new HybreDataResult(t, t.GetData(rows));
+            var res = new HybreUniformResult();
+            res.Add(t, t.GetData(rows));
+            
+            return res;
         }
     }
 

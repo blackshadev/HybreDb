@@ -32,7 +32,7 @@ namespace HybreDb.Relational {
 
         #region Serialization
         public void Serialize(BinaryWriter wrtr) {
-            wrtr.Write(ByTable.Count);
+            wrtr.Write(ByName.Count);
 
             foreach (var kvp in ByName) 
                 kvp.Value.Serialize(wrtr);

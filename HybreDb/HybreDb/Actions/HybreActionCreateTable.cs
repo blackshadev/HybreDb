@@ -17,14 +17,14 @@ namespace HybreDb.Actions {
         [JsonProperty("columns")]
         public DataColumn[] Columns;
 
-        [JsonProperty("rows")]
+        [JsonProperty("data")]
         public Dictionary<string, object>[] Data;
 
         public HybreResult Execute(Database db) {
 
             var t = db.NewTable(TableName, Columns);
             
-            IDataType[][] d;
+            var d = new IDataType[0][];
             int i = 0;
 
             if (Data != null) {
@@ -33,10 +33,13 @@ namespace HybreDb.Actions {
                 for (i = 0; i < Data.Length; i++)
                     d[i] = HybreAction.ParseData(t, Data[i]);
 
-                t.BulkInsert(d);
+                
             }
 
             db.Write();
+
+            t.BulkInsert(d);
+
             t.Commit();
 
             return new HybreUpdateResult { Affected = i };

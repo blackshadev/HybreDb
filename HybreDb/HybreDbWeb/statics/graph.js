@@ -4,9 +4,19 @@
     this.jControl = $(dom);
     this.jLabel = $("<p/>").appendTo(this.jControl);
     this.jGraph = $("<div/>", { style: "height:100%;" }).appendTo(this.jControl);
+    
+    
+    this.data = { nodes: new vis.DataSet(), edges: new vis.DataSet() };
+    this.options = {
+        groups: {},
+        smoothCurves: { dynamic: false, type: "continuous" },
+        stabilize: false,
+        physics: { barnesHut: { gravitationalConstant: 0, centralGravity: 0, springConstant: 0 } },
+        hideEdgesOnDrag: true
+    };
+    this.network = new vis.Network(this.jGraph[0], this.data, this.options);
 
     this.clear();
-    this.network = new vis.Network(this.jGraph[0], {}, {});
 
 }
 
@@ -14,28 +24,34 @@ function randomColor() {
     return '#' + Math.floor(Math.random() * 16777215).toString(16);
 }
 
-HybreResult.prototype.setData = function(graph) {
+HybreResult.prototype.setData = function (graph) {
     this.clear();
+    if(this.network) this.network.destroy();
 
     this.jLabel.text("Took " + graph.elapsedTime);
-    
 
-    if(graph.tableData) this.createNodes(graph.tableData);
-    if(graph.relationData) this.createEdges(graph.relationData);
+    if (graph.tableData) {
+        console.time("createNodes");
+        this.createNodes(graph.tableData);
+        console.timeEnd("createNodes");
+    }
+    if (graph.relationData) {
+        console.time("CreateEdges");
+        this.createEdges(graph.relationData);
+        console.timeEnd("CreateEdges");
+    }
 
-    this.network.setOptions(this.options);
-    this.network.setData(this.data);
+    console.time("plottingData");
+    this.network = new vis.Network(this.jGraph[0], this.data, this.options);
+    console.timeEnd("plottingData");
 
 };
 
 HybreResult.prototype.clear = function(dom) {
-    this.data = { nodes: [], edges: [] };
-    this.options = { groups: {}  };
+    this.data.edges.clear();
+    this.data.nodes.clear();
 
-    if (dom) {
-        this.network.setOptions(this.options);
-        this.network.setData(this.data);
-    }
+    this.options.groups = {};
 };
 
 // Data is object of tables
@@ -51,13 +67,16 @@ HybreResult.prototype.createNodes = function (data) {
             };
         }
 
+        var arr = [];
         for (var id in data[tab].rows) {
-            this.data.nodes.push({
+            arr.push({
                 id: tab + "." + id,
                 title: this.createTitle(data[tab].rows[id], tab),
                 group: "tab_" + tab
             });
         }
+
+        this.data.nodes.add(arr);
 
     }
 };
@@ -68,10 +87,11 @@ HybreResult.prototype.createEdges = function(data) {
         var c = randomColor();
         var from_tab = data[rel].sourceTable;
         var to_tab = data[rel].destinationTable;
-        
+
+        var arr = [];
         for (var id in data[rel].rows) {
             var r = data[rel].rows[id];
-            this.data.edges.push({
+            arr.push({
                 id: rel + "_" + id,
                 from: from_tab + "." + r[".rel.src"],
                 to: to_tab + "." + r[".rel.dest"],
@@ -82,6 +102,7 @@ HybreResult.prototype.createEdges = function(data) {
                 title: this.createTitle(r, rel)
             });
         }
+        this.data.edges.add(arr);
 
         iX++;
     }
