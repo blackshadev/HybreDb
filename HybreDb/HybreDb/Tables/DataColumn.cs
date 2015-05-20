@@ -166,6 +166,14 @@ namespace HybreDb.Tables {
             if (HasIndex) Index.Dispose();
         }
 
+        /// <summary>
+        /// Drops the columns index
+        /// </summary>
+        public void Drop() {
+            if (HasIndex) Index.Drop();
+            HasIndex = false;
+        }
+
         
     }
 }

@@ -26,6 +26,7 @@ namespace HybreDb.Tables {
 
         void Revert();
 
+        void Drop();
 
         Numbers Match(object k);
     }
@@ -152,6 +153,10 @@ namespace HybreDb.Tables {
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public void Drop() {
+            Tree.Drop();
         }
 
         /// <summary>

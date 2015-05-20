@@ -6,5 +6,10 @@
   "author": {
     "name": "Vincent",
     "email": ""
+  },
+  "dependencies": {
+    "chance": "^0.7.5",
+    "mysql": "^2.6.2",
+    "node-mysql": "^0.4.2"
   }
 }

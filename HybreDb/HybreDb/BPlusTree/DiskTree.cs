@@ -187,5 +187,10 @@ namespace HybreDb.BPlusTree {
         internal void DataRead(TValue v) {
             if (OnDataRead != null) OnDataRead(this, new NodeReadEventArgs<TValue> {Data = v});
         }
+
+        public void Drop() {
+            Dispose();
+            File.Delete(Filename);
+        }
     }
 }

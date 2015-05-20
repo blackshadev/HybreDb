@@ -36,8 +36,6 @@ namespace HybreDb.BPlusTree {
 
         protected NodeState OldState;
 
-        public INode<TKey, TValue> First { get { return this; } } 
-
         public DiskTree<TKey, TValue> DiskTree { get; private set; }
 
         public DiskLeafNode(DiskTree<TKey, TValue> t, long offset)
@@ -106,7 +104,7 @@ namespace HybreDb.BPlusTree {
             return n;
         }
 
-        public bool Merge(INode<TKey, TValue> n) {
+        public override bool Merge(INode<TKey, TValue> n) {
             BeginAccess();
             n.BeginAccess();
             var r = base.Merge(n);
@@ -115,7 +113,7 @@ namespace HybreDb.BPlusTree {
             return r;
         }
 
-        public bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r) {
+        public override bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r) {
             BeginAccess();
             l.BeginAccess();
             r.BeginAccess();
@@ -194,7 +192,7 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Serializes the node, the node is represented by it's node type and the offset of it's data within the file
         /// </summary>
-        public void Serialize(BinaryWriter wrtr) {
+        public new void Serialize(BinaryWriter wrtr) {
             wrtr.Write((byte)Type);
             wrtr.Write(FileOffset);   
         }
@@ -202,7 +200,7 @@ namespace HybreDb.BPlusTree {
         /// <summary>
         /// Not implemeted because these nodes are created via DiskTree.Create
         /// </summary>
-        public void Deserialize(BinaryReader rdr) {
+        public new void Deserialize(BinaryReader rdr) {
             throw new NotImplementedException();
         }
         #endregion

@@ -37,6 +37,8 @@ namespace HybreDbTest {
             Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
+            t.Write();
+
             sw.Start();
             CheckAccess(t, numbers);
             sw.Stop();

@@ -52,6 +52,7 @@
     <Compile Include="Actions\HybreActionAll.cs" />
     <Compile Include="Actions\HybreActionCreateTable.cs" />
     <Compile Include="Actions\HybreActionDelete.cs" />
+    <Compile Include="Actions\HybreActionDropTable.cs" />
     <Compile Include="Actions\HybreActionGet.cs" />
     <Compile Include="Actions\HybreActionGetTableStructure.cs" />
     <Compile Include="Actions\HybreActionInsert.cs" />

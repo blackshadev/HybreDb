@@ -171,5 +171,9 @@ namespace HybreDb.Relational {
             Destination = null;
             Database = null;
         }
+
+        public void Drop() {
+            Table.Drop();
+        }
     }
 }

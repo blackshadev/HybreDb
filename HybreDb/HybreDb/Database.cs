@@ -124,6 +124,19 @@ namespace HybreDb {
         }
 
         /// <summary>
+        /// Deletes a table
+        /// </summary>
+        /// <param name="tableName"></param>
+        public void DropTable(string tableName) {
+            var t = this[tableName];
+            
+            t.Drop();
+            Tables.Remove(tableName);
+
+            Write();
+        }
+
+        /// <summary>
         /// Reopens a table by commiting and disposing the old one
         /// and creating a new instance
         /// </summary>
@@ -244,6 +257,6 @@ namespace HybreDb {
                 throw new ArgumentException("Illegal user identifier given `" + ident + "`. Only numeric, alphanumeric and underscore are allowed as characters.");
         }
         #endregion
-        
+
     }
 }

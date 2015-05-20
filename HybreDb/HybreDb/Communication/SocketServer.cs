@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace HybreDb.Communication {
 
-    public class ClientState {
+    public class ClientState : IDisposable {
         public SocketServer Server;
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace HybreDb.Communication {
             Buffer = new byte[4];
             try {
                 Socket.BeginReceive(Buffer, 0, 4, SocketFlags.None, ReadLengthCallback, null);
-            } catch(Exception e) {/* Connection errror */}
+            } catch { Dispose(); }
         }
 
         public void ReadLengthCallback(IAsyncResult ar) {
@@ -44,7 +44,7 @@ namespace HybreDb.Communication {
 
             try {
                 Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
-            } catch {/*Connection error*/}
+            } catch { Dispose(); }
         }
         
         public void ReadCallback(IAsyncResult ar) {
@@ -64,13 +64,27 @@ namespace HybreDb.Communication {
             var data = Encoding.Unicode.GetBytes(str);
 
             Socket.Send(BitConverter.GetBytes(data.Length), 0);
-            Socket.BeginSend(data, 0, data.Length, SocketFlags.None, SendCallback, null);
+            try {
+                Socket.BeginSend(data, 0, data.Length, SocketFlags.None, SendCallback, null);
+            }
+            catch { Dispose(); }
         }
 
         public void SendCallback(IAsyncResult ar) {
             Socket.EndSend(ar);
         }
 
+        protected void Dispose(bool all = false) {
+            Socket.Close();
+            Socket.Dispose();
+            Buffer = null;
+            DataLength = 0;
+            DataOffset = 0;
+        }
+
+        public void Dispose() {
+            Dispose(true);
+        }
     }
 
     public class ClientDataReceivedEvent : EventArgs {

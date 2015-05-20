@@ -47,6 +47,8 @@ namespace HybreDb.Tables {
 
         protected FileStream Stream;
 
+        protected string Filename;
+
         /// <summary>
         /// Creates a new table base on the given DataColumns
         /// </summary>
@@ -61,7 +63,8 @@ namespace HybreDb.Tables {
             Rows = new DiskTree<Number, DataRow>(Database.GetPath(name) + ".idx.bin", BucketSize, CacheSize);
             Rows.OnDataRead += (s, args) => { args.Data.Table = this; };
 
-            Stream = DbFile.Open(Database.GetPath(Name) + ".table.bin" );
+            Filename = Database.GetPath(Name) + ".table.bin";
+            Stream = DbFile.Open(Filename);
             Counter = 0;
 
             Rows.Init();
@@ -79,7 +82,8 @@ namespace HybreDb.Tables {
         public Table(Database db, string name) {
             Database = db;
             Name = name;
-            Stream = DbFile.Open(Database.GetPath(name) + ".table.bin");
+            Filename = Database.GetPath(name) + ".table.bin";
+            Stream = DbFile.Open(Filename);
             Relations = new Relations(this);
 
             Rows = new DiskTree<Number, DataRow>(Database.GetPath(name + ".idx.bin"), BucketSize, CacheSize);
@@ -388,5 +392,21 @@ namespace HybreDb.Tables {
             Columns.Dispose();
         }
 
+        /// <summary>
+        /// Drops the table by removing all files associated with this table
+        /// </summary>
+        public void Drop() {
+            Stream.Dispose();
+            File.Delete(Filename);
+
+            foreach(var c in Columns)
+                c.Drop();
+            foreach (var r in Relations)
+                r.Drop();
+
+            Rows.Drop();
+            
+
+        }
     }
 }
