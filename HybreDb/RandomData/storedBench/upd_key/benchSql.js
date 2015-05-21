@@ -1,4 +1,4 @@
-var rel = "./";
+var rel = "../../";
 process.chdir(__dirname + "/" + rel);
 var dat = require(rel + "./app.js");
 var $b = require(rel + "./bench.js");
@@ -29,7 +29,7 @@ var QueryBenchmark = $b.Benchmark.extend({
 	getStmts: function(tdef, tab) {
 		var name = dat.chance.name();
 		var key = dat.getRandomId(tdef);
-		return ["select * from `" + tab.table + "` where prefix='Mister'"];
+		return ["update `" + tab.table + "` set name = '" + name + "' where `.id`=" + key];
 	},
 	getTime: function(cb) {
 		var self = this;
@@ -62,11 +62,7 @@ var QueryBenchmark = $b.Benchmark.extend({
 	doStep: function(cb) {
 		var self = this;
 
-		var smts = [
-			"drop table if exists `" + this.name + "` "
-		];
-		smts.push.apply(smts, dat.jsonToSql(this.tDef, this.tabData));
-
+		var smts = dat.jsonToSql(this.tDef, this.tabData);
 		var stepper = new QueryStepper(smts, this.conn);
 		stepper.onDone = cb;
 		stepper.onNext = function() {
@@ -74,8 +70,13 @@ var QueryBenchmark = $b.Benchmark.extend({
 			self.queryIX++;
 		};
 
-		stepper.start();
+		this.conn.query("drop table if exists `" + this.name + "` ", function(err) {
+			if(err) throw err;
+			self.lastQueryIX++;
+			self.queryIX++;
 
+			stepper.start();
+		});
 	}
 });
 
@@ -92,7 +93,7 @@ connection.query("use HybreDb");
 
 var b = new QueryBenchmark({
 	tableName: "people_big", 
-	fileName: "results/sel_cond/MySQL.json",
+	fileName: "results/upd_key/MySQL.json",
 	tDef: dat.table_defs.people_big, 
 	connection: connection,
 	isSec: true,

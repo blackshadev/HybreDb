@@ -1,5 +1,9 @@
 ﻿var chance = new require("chance")(42);
 
+function getRandomId(def) {
+    return chance.integer({ min: 0, max: def.N - 1 });
+}
+
 function generateDataset(cols, N) {
     var ds = [];
     ds.length = N;
@@ -17,6 +21,10 @@ function generateDataset(cols, N) {
     }
 
     return ds;
+}
+
+function reset() {
+    chance = new require("chance")(42);
 }
 
 function generateTable(name, def) {
@@ -76,6 +84,8 @@ function generateRelationData(def, sourceDef, destDef) {
         // relation already exists
         if(rels[from][to]) continue;
 
+        rels[from][to] = true;
+
         var dataAttrs = {
             ".rel.src": from,
             ".rel.dest": to
@@ -109,7 +119,6 @@ function toFile(name, def, data) {
 var fs = require("fs");
 function jsonToFile(fname, data) {
     var str = JSON.stringify(data);
-    
     
     fs.writeFile(fname, str, function(err) {
         if (err) throw err;
@@ -162,6 +171,50 @@ function jsonToSql(def, o) {
 	return arr;
 }
 
+function relToSql(def, o) {
+    var sql = "";
+    var col_order = [".rel.src", ".rel.dest"];
+    var indices = [];
+
+    var arr = [];
+    sql += "create table `" + o.relation + "` (";
+
+    sql += "`.rel.src` int, `.rel.dest` int, ";
+    sql += o.attributes.map(function(c) {
+        col_order.push(c.name);
+        if(c.hasIndex) indices.push(c.name);
+        return "`" + c.name + "` " + def.attributes[c.name].sqlType;
+    }).join(", ") + ",";
+
+    if(indices.length) {
+        sql += indices.map(function(c) {
+            return "INDEX (" + c + ")";
+        }).join(",") + ",";
+    }
+
+    sql += "PRIMARY KEY (`.rel.src`, `.rel.dest`)";
+    sql += ")";
+    
+    arr.push(sql);
+
+    sql = "insert into `" + o.relation + "` (" + 
+            col_order.map(function(c) { 
+                return "`" + c + "`"; 
+            }).join(", ") + 
+            ") values ";
+    
+    sql += o.data.map(function(d) {
+        return "(" + 
+            col_order.map(function(c) {
+                return def.attributes[c] && def.attributes[c].type === "text" ? "\"" + d[c] + "\"" : d[c];
+            }).join(", ") + 
+        ")";
+    }).join(", ");
+
+    arr.push(sql);
+
+    return arr;
+}
 
 function jsonToPgSql(def, o) {
     var sql = "";
@@ -182,7 +235,8 @@ function jsonToPgSql(def, o) {
 
     arr.push.apply(arr, indices.map(function(c) { 
         return "create index idx_" + c + " on \"" + o.table + "\" (" + c + ")";
-    }));
+    })) + ", ";
+
     
 
     sql = "explain analyze insert into \"" + o.table + "\" (" + 
@@ -194,7 +248,52 @@ function jsonToPgSql(def, o) {
     sql += o.data.map(function(d) {
         return "(" + 
             col_order.map(function(c) {
-                return def.columns[c].type === "text" ? "'" + d[c] + "'" : d[c];
+                return def.columns[c] && def.columns[c].type === "text" ? "'" + d[c] + "'" : d[c];
+            }).join(", ") + 
+        ")";
+    }).join(", ");
+
+    arr.push(sql);
+
+    return arr;
+}
+
+function relToPgSql(def, o) {
+    var sql = "";
+    var col_order = [".rel.src", ".rel.dest"];
+    var indices = [];
+
+    var arr = [];
+    sql += "create table \"" + o.relation + "\" (";
+
+    sql += "\".rel.src\" int, \".rel.dest\" int, ";
+    sql += o.attributes.map(function(c) {
+        col_order.push(c.name);
+        if(c.hasIndex) indices.push(c.name);
+        return "\"" + c.name + "\" " + def.attributes[c.name].sqlType;
+    }).join(", ") + ",";
+
+    if(indices.length) {
+        sql += indices.map(function(c) {
+            return "INDEX (" + c + ")";
+        }).join(",") + ",";
+    }
+
+    sql += "PRIMARY KEY (\".rel.src\", \".rel.dest\")";
+    sql += ")";
+    
+    arr.push(sql);
+
+    sql = "insert into \"" + o.relation + "\" (" + 
+            col_order.map(function(c) { 
+                return "\"" + c + "\""; 
+            }).join(", ") + 
+            ") values ";
+    
+    sql += o.data.map(function(d) {
+        return "(" + 
+            col_order.map(function(c) {
+                return def.attributes[c] && def.attributes[c].type === "text" ? "'" + d[c] + "'" : d[c];
             }).join(", ") + 
         ")";
     }).join(", ");
@@ -238,7 +337,8 @@ var relation_def = {
         attributes: {
             place: {
                 type: "text",
-                hasIndex: true,
+                sqlType: "varchar(255)",
+                hasIndex: false,
                 generator: chance.state.bind(chance, { full: true })
             }
         }
@@ -246,7 +346,7 @@ var relation_def = {
 };
 
 
-generateAll(table_def, {});//relation_def);
+generateAll(table_def, relation_def);
 
 module.exports = {
 	generateAll: generateAll,
@@ -254,5 +354,11 @@ module.exports = {
 	relation_defs: relation_def,
 	jsonToSql: jsonToSql,
     jsonToPgSql: jsonToPgSql,
-	generateTable: generateTable
+    generateRelation: generateRelation,
+	generateTable: generateTable,
+    getRandomId: getRandomId,
+    getRandomName: chance.name.bind(chance, { middle: true }),
+    relToSql: relToSql,
+    relToPgSql: relToPgSql,
+    reset: reset
 };

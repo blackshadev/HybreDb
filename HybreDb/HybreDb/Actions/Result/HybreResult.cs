@@ -10,7 +10,7 @@ using Newtonsoft.Json;
 namespace HybreDb.Actions.Result {
     public class HybreResult {
         [JsonProperty("elapsedTime")]
-        public long ElapsedTime;
+        public double ElapsedTime;
 
         public static void SerializeColumns(JsonWriter writer, IEnumerable<DataColumn> cols) {
             writer.WriteStartObject();

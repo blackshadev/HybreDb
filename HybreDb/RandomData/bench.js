@@ -34,6 +34,9 @@ var Benchmark = $c.Object.extend({
 		this.name = oPar.tableName;
 		this.tDef = oPar.tDef;
 
+		this.rDef = oPar.rDef;
+		this.relName = oPar.relName;
+
 		this.steps = oPar.steps || [100, 1000, 10000, 100000];
 		this.rep = oPar.rep || 5;
 		this._mult = oPar.isSec ?  1000 : 1;
@@ -62,28 +65,35 @@ var Benchmark = $c.Object.extend({
 
 		console.log("step (" + this.stepIX + "/" + this.steps.length + ")");
 
+		this.getData();
+		
+		var self = this;
+		this.doStep(function() {
+			var smts = self.getStmts(self.tDef, self.tabData);
+			self.cStepper(smts);
+
+			self.iterIX = -1;
+			self.nextIter();
+		})
+	},
+	getData: function() {
 		this.tDef.N = this.steps[this.stepIX];
-
-		var tab = dat.generateTable(this.name, this.tDef);
-		var smts = this.getStmts(this.tDef, tab);
-
-		this.cStepper(smts);
-
-		this.iterIX = -1;
-		this.nextIter();
+		this.tabData = dat.generateTable(this.name, this.tDef);
+		if(this.rDef) {
+			this.rDef.N = this.steps[this.stepIX];
+			this.relData = dat.generateRelation(this.relName, this.rDef, this.tDef, this.tDef);
+		}
 	},
 	getStmts: function(tdef, tab) { throw "Not yet implemented"},
 
 	nextIter: function() {
+		//dat.reset();
 		if(++this.iterIX >= this.rep) return this.nextStep();
 
 		console.log("-- iter (" + this.iterIX + "/" + this.rep + ")");
 
 		var self = this;
 		this.doIter(function() {
-			// Increment both counters to ensure the drop table isnt measured
-			self.lastQueryIX++;
-			self.queryIX++;
 
 			self.stepper.start();
 		});
@@ -110,28 +120,19 @@ var Benchmark = $c.Object.extend({
 		});
 	},
 	done: function() {
-		console.log(this.data);
+		if(this.fileName)
+			fs.writeFileSync(this.fileName, JSON.stringify(this.data));
+	
 
-		var d = {};
-
-		for(var k in this.data) {
-			var avg = calc_avg(this.data[k]);
-			var std = calc_std(avg, this.data[k]);
-			d[k] = [avg, std];
-		}
-
-		console.log(d);
-
-		if(this.fileName) {
-			fs.writeFileSync(this.fileName, JSON.stringify(d));
-		}
-
-		if(this.onDone) this.onDone(d);
+		if(this.onDone) this.onDone(this.data);
 	},
 	getTime: function(cb) {
 		throw new "Not yet implemented";
 	},
 	doIter: function(cb) {
+		cb();
+	},
+	doStep: function(cb) {
 		cb();
 	},
 	doStart: function(cb) {

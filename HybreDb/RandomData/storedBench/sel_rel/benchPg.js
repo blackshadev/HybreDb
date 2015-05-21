@@ -1,25 +1,34 @@
-var rel = "./";
+var rel = "../../";
 process.chdir(__dirname + "/" + rel);
 var dat = require(rel + "./app.js");
 var $b = require(rel + "./bench.js");
 
-var mysql = require('mysql');
+var pg = require('pg');
 var fs = require("fs");
 
 var QueryStepper = $b.Stepper.extend({
 	create: function (smts, conn) {
 		this.inherited().create.call(this, smts);
 		
+		this.data = [];
 		this.conn = conn;
 	},
 	exec: function(smt, cb) {
-		this.conn.query(smt, function(err) {
+		var self = this;
+		
+		this.conn.query(smt, function(err, res) {
 			if(err) throw err;
+
+			self.data = res.rows;
+
 			cb();
 		});
 	}
 });
 
+
+
+var re = /Execution time\: (\d+\.\d+) ms/;
 var QueryBenchmark = $b.Benchmark.extend({ 
 	stepperClass: QueryStepper,
 	create: function(oPar) {
@@ -29,75 +38,55 @@ var QueryBenchmark = $b.Benchmark.extend({
 	getStmts: function(tdef, tab) {
 		var name = dat.chance.name();
 		var key = dat.getRandomId(tdef);
-		return ["select * from `" + tab.table + "` where prefix='Mister'"];
+		return ["explain analyze select * from \"" + tab.table + "\" tab left join \"" + this.relData.relation + "\" rel on rel.\".rel.src\"=tab.\".id\" and rel.\".rel.dest\"=tab.\".id\""]
 	},
 	getTime: function(cb) {
 		var self = this;
-		this.conn.query("show profiles", function(err, rows) {
-			if(err) throw err;
 
-			var tot = 0, found = 0;
-			rows.forEach(function(r) {
-				if(r.Query_ID >= self.lastQueryIX && r.Query_ID <= self.queryIX) {
-					tot += r.Duration * self._mult;
-					found++;
-				}
-			});
+		if(this.stepper.data[7] && this.stepper.data[7]["QUERY PLAN"]) {
+			var res = this.stepper.data[7]["QUERY PLAN"].match(re);
+			if(res) return cb(parseFloat(res[1]));
+		}
+		console.log(this.stepper.data);
 
-			if(found < self.stepper.smts.length) throw "Missing records";
-
-			cb(tot);
-		});
 	},
 	cStepper: function(smts) {
 		this.inherited().cStepper.call(this, smts);
 		this.stepper.conn = this.conn;
 	},
-	doStart: function(cb) {
-		this.conn.query("set profiling = 1", function(err) {
-			if(err) throw err;
-			cb();
-		});
-	},
 	doStep: function(cb) {
 		var self = this;
 
 		var smts = [
-			"drop table if exists `" + this.name + "` "
+			"drop table if exists \"" + this.name + "\" ", 
+			"drop table if exists \"" + this.relName + "\" "
 		];
-		smts.push.apply(smts, dat.jsonToSql(this.tDef, this.tabData));
+		smts.push.apply(smts, dat.jsonToPgSql(this.tDef, this.tabData));
+		smts.push.apply(smts, dat.relToPgSql(this.rDef, this.relData));
 
 		var stepper = new QueryStepper(smts, this.conn);
 		stepper.onDone = cb;
-		stepper.onNext = function() {
-			self.lastQueryIX++;
-			self.queryIX++;
-		};
 
 		stepper.start();
-
 	}
 });
 
 
-var connection = mysql.createConnection({
-  host     : 'localhost',
-  user     : 'root',
-  password : 'smurf1992'
-});
-connection.connect();
-
-connection.query("use HybreDb");
-
-
+var client = new pg.Client("postgres://postgres:smurf1992@localhost/HybreDb");
 var b = new QueryBenchmark({
 	tableName: "people_big", 
-	fileName: "results/sel_cond/MySQL.json",
+	relName: "knows",
+	fileName: "results/sel_rel/Postgres.json",
 	tDef: dat.table_defs.people_big, 
-	connection: connection,
+	rDef: dat.relation_defs.knows,
+	connection: client,
 	isSec: true,
 	rep: 20,
 	steps: [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000]
 });
-b.onDone = function() { connection.end(); };
-b.start();
+b.onDone = function() { client.end(); };
+
+client.connect(function(err) {
+	if(err) throw err;
+	b.start();
+});

@@ -1,4 +1,4 @@
-var rel = "./";
+var rel = "../../";
 process.chdir(__dirname + "/" + rel);
 var dat = require(rel + "./app.js");
 var $b = require(rel + "./bench.js");
@@ -29,7 +29,7 @@ var QueryBenchmark = $b.Benchmark.extend({
 	getStmts: function(tdef, tab) {
 		var name = dat.chance.name();
 		var key = dat.getRandomId(tdef);
-		return ["select * from `" + tab.table + "` where prefix='Mister'"];
+		return ["select * from `" + tab.table + "` tab left join `" + this.relData.relation + "` rel on rel.`.rel.src`=tab.`.id` and rel.`.rel.dest`=tab.`.id`"];
 	},
 	getTime: function(cb) {
 		var self = this;
@@ -63,9 +63,11 @@ var QueryBenchmark = $b.Benchmark.extend({
 		var self = this;
 
 		var smts = [
-			"drop table if exists `" + this.name + "` "
+			"drop table if exists `" + this.name + "` ", 
+			"drop table if exists `" + this.relName + "` "
 		];
 		smts.push.apply(smts, dat.jsonToSql(this.tDef, this.tabData));
+		smts.push.apply(smts, dat.relToSql(this.rDef, this.relData));
 
 		var stepper = new QueryStepper(smts, this.conn);
 		stepper.onDone = cb;
@@ -92,8 +94,10 @@ connection.query("use HybreDb");
 
 var b = new QueryBenchmark({
 	tableName: "people_big", 
-	fileName: "results/sel_cond/MySQL.json",
+	relName: "knows",
+	fileName: "results/sel_rel/MySQL.json",
 	tDef: dat.table_defs.people_big, 
+	rDef: dat.relation_defs.knows, 
 	connection: connection,
 	isSec: true,
 	rep: 20,

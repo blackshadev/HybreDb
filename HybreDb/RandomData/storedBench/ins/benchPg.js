@@ -1,4 +1,4 @@
-var rel = "./";
+var rel = "../../";
 process.chdir(__dirname + "/" + rel);
 var dat = require(rel + "./app.js");
 var $b = require(rel + "./bench.js");
@@ -15,7 +15,6 @@ var QueryStepper = $b.Stepper.extend({
 	},
 	exec: function(smt, cb) {
 		var self = this;
-		
 		this.conn.query(smt, function(err, res) {
 			if(err) throw err;
 
@@ -36,35 +35,28 @@ var QueryBenchmark = $b.Benchmark.extend({
 		this.conn = oPar.connection;
 	},
 	getStmts: function(tdef, tab) {
-		return ["explain analyze select * from \"" + tab.table + "\" where prefix='Mister'"]
+		return dat.jsonToPgSql(tdef, tab);
 	},
 	getTime: function(cb) {
 		var self = this;
 
-		var l = this.stepper.data.length -1;
-		if(this.stepper.data[l] && this.stepper.data[l]["QUERY PLAN"]) {
-			var res = this.stepper.data[l]["QUERY PLAN"].match(re);
-			if(res) return cb(parseFloat(res[1]));
+		if(this.stepper.data[3] && this.stepper.data[3]["QUERY PLAN"]) {
+			var res = this.stepper.data[3]["QUERY PLAN"].match(re);
+			if(res) cb(parseFloat(res[1]));
 		}
-		console.log(this.stepper.data);
 
 	},
 	cStepper: function(smts) {
 		this.inherited().cStepper.call(this, smts);
 		this.stepper.conn = this.conn;
 	},
-	doStep: function(cb) {
+	doIter: function(cb) {
 		var self = this;
+		this.conn.query("drop table if exists \"" + this.name + "\" ", function(err) {
+			if(err) throw err;
 
-		var smts = [
-			"drop table if exists \"" + this.name + "\" "
-		];
-		smts.push.apply(smts, dat.jsonToPgSql(this.tDef, this.tabData));
-
-		var stepper = new QueryStepper(smts, this.conn);
-		stepper.onDone = cb;
-
-		stepper.start();
+			cb();
+		});
 	}
 });
 
@@ -72,7 +64,7 @@ var QueryBenchmark = $b.Benchmark.extend({
 var client = new pg.Client("postgres://postgres:smurf1992@localhost/HybreDb");
 var b = new QueryBenchmark({
 	tableName: "people_big", 
-	fileName: "results/sel_cond/Postgres.json",
+	fileName: "results/ins/Postgres.json",
 	tDef: dat.table_defs.people_big, 
 	connection: client,
 	isSec: true,

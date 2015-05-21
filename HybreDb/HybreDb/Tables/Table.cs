@@ -69,7 +69,9 @@ namespace HybreDb.Tables {
 
             Rows.Init();
 
-            foreach (var _c in Columns.IndexColumns) _c.Value.Index.Init();
+            foreach (var _c in Columns.IndexColumns)
+                _c.Value.Index.Init();
+            
 
             Write();
         }

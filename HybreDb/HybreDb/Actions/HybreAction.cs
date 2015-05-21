@@ -111,7 +111,7 @@ namespace HybreDb.Actions {
                 db.Revert();
                 res = new HybreError(e);
             }
-            res.ElapsedTime = sw.ElapsedMilliseconds;
+            res.ElapsedTime = sw.Elapsed.TotalMilliseconds;
 
             return res;
         }

@@ -63,8 +63,8 @@ namespace HybreDb.Communication {
         public void Send(string str) {
             var data = Encoding.Unicode.GetBytes(str);
 
-            Socket.Send(BitConverter.GetBytes(data.Length), 0);
             try {
+                Socket.Send(BitConverter.GetBytes(data.Length), 0);
                 Socket.BeginSend(data, 0, data.Length, SocketFlags.None, SendCallback, null);
             }
             catch { Dispose(); }
@@ -74,7 +74,7 @@ namespace HybreDb.Communication {
             Socket.EndSend(ar);
         }
 
-        protected void Dispose(bool all = false) {
+        protected void Dispose(bool all) {
             Socket.Close();
             Socket.Dispose();
             Buffer = null;

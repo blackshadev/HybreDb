@@ -1,4 +1,4 @@
-var rel = "./";
+var rel = "../../";
 process.chdir(__dirname + "/" + rel);
 var dat = require(rel + "./app.js");
 var $b = require(rel + "./bench.js");
@@ -29,15 +29,12 @@ var HybreBenchmark = $b.Benchmark.extend({
 	stepperClass: HybreStepper,
 	create: function(oPar) {
 		this.inherited().create.call(this, oPar);
-		
 		this.conn = oPar.connection;
 	},
-	getData: function() {
-		this.inherited().getData.call(this);
-
-	},
 	getStmts: function(tdef, tab) {
-		return [["match", { table: tab.table, condition: [ { "type": "and", "field": "prefix", "value": "Mister" } ] } ]];
+		var name = dat.chance.name();
+		var key = dat.getRandomId(tdef);
+		return [["update", { table: tab.table, key: key, data: { name: name } } ]];
 	},
 	getTime: function(cb) {
 		cb(this.stepper.data.elapsedTime);
@@ -53,6 +50,7 @@ var HybreBenchmark = $b.Benchmark.extend({
 
 			self.conn.send("createTable", self.tabData, function(d) {
 				if(d.error) throw JSON.stringify(d.error);
+
 				cb();
 			});
 
@@ -64,7 +62,7 @@ var HybreBenchmark = $b.Benchmark.extend({
 var connection = new Hybre();
 var b = new HybreBenchmark({
 	tableName: "people_big", 
-	fileName: "results/sel_cond/HybreDb.json",
+	fileName: "results/upd_key/HybreDb.json",
 	tDef: dat.table_defs.people_big, 
 	connection: connection,
 	isSec: false,

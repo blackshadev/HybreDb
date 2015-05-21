@@ -1,4 +1,4 @@
-var rel = "./";
+var rel = "../../";
 process.chdir(__dirname + "/" + rel);
 var dat = require(rel + "./app.js");
 var $b = require(rel + "./bench.js");
@@ -20,6 +20,7 @@ var QueryStepper = $b.Stepper.extend({
 	}
 });
 
+
 var QueryBenchmark = $b.Benchmark.extend({ 
 	stepperClass: QueryStepper,
 	create: function(oPar) {
@@ -27,9 +28,7 @@ var QueryBenchmark = $b.Benchmark.extend({
 		this.conn = oPar.connection;
 	},
 	getStmts: function(tdef, tab) {
-		var name = dat.chance.name();
-		var key = dat.getRandomId(tdef);
-		return ["select * from `" + tab.table + "` where prefix='Mister'"];
+		return dat.jsonToSql(tdef, tab);
 	},
 	getTime: function(cb) {
 		var self = this;
@@ -38,13 +37,14 @@ var QueryBenchmark = $b.Benchmark.extend({
 
 			var tot = 0, found = 0;
 			rows.forEach(function(r) {
-				if(r.Query_ID >= self.lastQueryIX && r.Query_ID <= self.queryIX) {
+				// console.log(r, self.lastQueryIX, self.queryIX);
+				if(r.Query_ID > self.lastQueryIX && r.Query_ID <= self.queryIX) {
 					tot += r.Duration * self._mult;
 					found++;
 				}
 			});
 
-			if(found < self.stepper.smts.length) throw "Missing records";
+			if(found !== self.stepper.smts.length) throw "Missing profiles"
 
 			cb(tot);
 		});
@@ -59,23 +59,15 @@ var QueryBenchmark = $b.Benchmark.extend({
 			cb();
 		});
 	},
-	doStep: function(cb) {
+	doIter: function(cb) {
 		var self = this;
+		this.conn.query("drop table if exists `" + this.name + "`", function(err) {
+			if(err) throw err;
 
-		var smts = [
-			"drop table if exists `" + this.name + "` "
-		];
-		smts.push.apply(smts, dat.jsonToSql(this.tDef, this.tabData));
-
-		var stepper = new QueryStepper(smts, this.conn);
-		stepper.onDone = cb;
-		stepper.onNext = function() {
 			self.lastQueryIX++;
 			self.queryIX++;
-		};
-
-		stepper.start();
-
+			cb();
+		});
 	}
 });
 
@@ -92,7 +84,7 @@ connection.query("use HybreDb");
 
 var b = new QueryBenchmark({
 	tableName: "people_big", 
-	fileName: "results/sel_cond/MySQL.json",
+	fileName: "results/ins/MySQL.json",
 	tDef: dat.table_defs.people_big, 
 	connection: connection,
 	isSec: true,

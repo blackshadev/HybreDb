@@ -44,10 +44,11 @@ namespace HybreDb.Tables {
             ByName = new Dictionary<string, int>(cols.Length, StringComparer.OrdinalIgnoreCase);
             for (var i = 0; i < cols.Length; i++) {
                 ByName.Add(cols[i].Name, i);
+                cols[i].Table = t;
+
                 if (!cols[i].HasIndex) continue;
                 
                 IndexedColumnsList.Add(i);
-                cols[i].Table = t;
                 cols[i].CreateIndex();
             }
         }
@@ -60,8 +61,11 @@ namespace HybreDb.Tables {
         public DataColumns(Table t, BinaryReader rdr) : this(t) {
             Deserialize(rdr);
 
-            foreach (var c in IndexColumns)
-                c.Value.Index.Read();
+            foreach (var c in Columns) {
+                if(c.HasIndex) c.Index.Read();
+                c.Table = t;
+            }
+            
             
         }
 
