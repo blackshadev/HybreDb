@@ -27,9 +27,9 @@ var QueryBenchmark = $b.Benchmark.extend({
 		this.conn = oPar.connection;
 	},
 	getStmts: function(tdef, tab) {
-		var name = dat.getRandomName();
+		var name = dat.chance.name();
 		var key = dat.getRandomId(tdef);
-		return ["update `" + tab.table + "` set name = '" + name + "' where `.id`=" + key];
+		return ["select * from `" + tab.table + "` where prefix='Mister'"];
 	},
 	getTime: function(cb) {
 		var self = this;
@@ -62,7 +62,11 @@ var QueryBenchmark = $b.Benchmark.extend({
 	doStep: function(cb) {
 		var self = this;
 
-		var smts = dat.jsonToSql(this.tDef, this.tabData);
+		var smts = [
+			"drop table if exists `" + this.name + "` "
+		];
+		smts.push.apply(smts, dat.jsonToSql(this.tDef, this.tabData));
+
 		var stepper = new QueryStepper(smts, this.conn);
 		stepper.onDone = cb;
 		stepper.onNext = function() {
@@ -70,13 +74,8 @@ var QueryBenchmark = $b.Benchmark.extend({
 			self.queryIX++;
 		};
 
-		this.conn.query("drop table if exists `" + this.name + "` ", function(err) {
-			if(err) throw err;
-			self.lastQueryIX++;
-			self.queryIX++;
+		stepper.start();
 
-			stepper.start();
-		});
 	}
 });
 
@@ -93,11 +92,11 @@ connection.query("use HybreDb");
 
 var b = new QueryBenchmark({
 	tableName: "people_big", 
-	fileName: "results/upd_key/MySQL.json",
+	fileName: "results/sel_cond/MySQL.json",
 	tDef: dat.table_defs.people_big, 
 	connection: connection,
 	isSec: true,
-	rep: 100,
+	rep: 20,
 	steps: [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000]
 });
 b.onDone = function() { connection.end(); };

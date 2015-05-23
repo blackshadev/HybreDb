@@ -36,15 +36,14 @@ var QueryBenchmark = $b.Benchmark.extend({
 		this.conn = oPar.connection;
 	},
 	getStmts: function(tdef, tab) {
-		var name = dat.chance.name();
-		var key = dat.getRandomId(tdef);
-		return ["explain analyze select * from \"" + tab.table + "\" tab left join \"" + this.relData.relation + "\" rel on rel.\".rel.src\"=tab.\".id\" and rel.\".rel.dest\"=tab.\".id\""]
+		return ["explain analyze select * from \"" + this.relData.relation + "\" rel join \"" + tab.table + "\" tab1 on rel.\".rel.src\"=tab1.\".id\" join \"" + tab.table + "\" tab2 on rel.\".rel.dest\"=tab2.\".id\""]
 	},
 	getTime: function(cb) {
 		var self = this;
 
-		if(this.stepper.data[7] && this.stepper.data[7]["QUERY PLAN"]) {
-			var res = this.stepper.data[7]["QUERY PLAN"].match(re);
+		var l = this.stepper.data.length;
+		if(this.stepper.data[l-1] && this.stepper.data[l-1]["QUERY PLAN"]) {
+			var res = this.stepper.data[l-1]["QUERY PLAN"].match(re);
 			if(res) return cb(parseFloat(res[1]));
 		}
 		console.log(this.stepper.data);

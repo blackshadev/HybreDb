@@ -15,6 +15,7 @@ var QueryStepper = $b.Stepper.extend({
 	},
 	exec: function(smt, cb) {
 		var self = this;
+		
 		this.conn.query(smt, function(err, res) {
 			if(err) throw err;
 
@@ -35,15 +36,14 @@ var QueryBenchmark = $b.Benchmark.extend({
 		this.conn = oPar.connection;
 	},
 	getStmts: function(tdef, tab) {
-		var name = dat.getRandomName();
-		var key = dat.getRandomId(tdef);
-		return ["explain analyze update " + tab.table + " set name='" + name + "' where \".id\"=" + key]
+		return ["explain analyze select * from \"" + tab.table + "\" where prefix='Mister'"]
 	},
 	getTime: function(cb) {
 		var self = this;
 
-		if(this.stepper.data[4] && this.stepper.data[4]["QUERY PLAN"]) {
-			var res = this.stepper.data[4]["QUERY PLAN"].match(re);
+		var l = this.stepper.data.length -1;
+		if(this.stepper.data[l] && this.stepper.data[l]["QUERY PLAN"]) {
+			var res = this.stepper.data[l]["QUERY PLAN"].match(re);
 			if(res) return cb(parseFloat(res[1]));
 		}
 		console.log(this.stepper.data);
@@ -56,15 +56,15 @@ var QueryBenchmark = $b.Benchmark.extend({
 	doStep: function(cb) {
 		var self = this;
 
-		var smts = dat.jsonToPgSql(this.tDef, this.tabData);
+		var smts = [
+			"drop table if exists \"" + this.name + "\" "
+		];
+		smts.push.apply(smts, dat.jsonToPgSql(this.tDef, this.tabData));
+
 		var stepper = new QueryStepper(smts, this.conn);
 		stepper.onDone = cb;
 
-		this.conn.query("drop table if exists \"" + this.name + "\" ", function(err) {
-			if(err) throw err;
-
-			stepper.start();
-		});
+		stepper.start();
 	}
 });
 
@@ -72,11 +72,11 @@ var QueryBenchmark = $b.Benchmark.extend({
 var client = new pg.Client("postgres://postgres:smurf1992@localhost/HybreDb");
 var b = new QueryBenchmark({
 	tableName: "people_big", 
-	fileName: "results/upd_key/Postgres.json",
+	fileName: "results/sel_cond/Postgres.json",
 	tDef: dat.table_defs.people_big, 
 	connection: client,
 	isSec: true,
-	rep: 100,
+	rep: 20,
 	steps: [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000, 250000, 500000]
 });
 b.onDone = function() { client.end(); };

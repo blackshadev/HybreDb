@@ -74,7 +74,7 @@ var b = new QueryBenchmark({
 	tDef: dat.table_defs.people_big, 
 	connection: client,
 	isSec: true,
-	rep: 20,
+	rep: 100,
 	steps: [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000, 250000, 500000]
 });
 b.onDone = function() { client.end(); };

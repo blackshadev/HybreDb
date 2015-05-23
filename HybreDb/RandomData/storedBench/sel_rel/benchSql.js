@@ -27,9 +27,7 @@ var QueryBenchmark = $b.Benchmark.extend({
 		this.conn = oPar.connection;
 	},
 	getStmts: function(tdef, tab) {
-		var name = dat.chance.name();
-		var key = dat.getRandomId(tdef);
-		return ["select * from `" + tab.table + "` tab left join `" + this.relData.relation + "` rel on rel.`.rel.src`=tab.`.id` and rel.`.rel.dest`=tab.`.id`"];
+		return ["select * from `" + this.relData.relation + "` rel join `" + tab.table + "` tab1 on rel.`.rel.src`=tab1.`.id` join `" + tab.table + "` tab2 on rel.`.rel.dest`=tab2.`.id`"];
 	},
 	getTime: function(cb) {
 		var self = this;

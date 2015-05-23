@@ -37,7 +37,7 @@ var HybreBenchmark = $b.Benchmark.extend({
 
 	},
 	getStmts: function(tdef, tab) {
-		return [["listRelation", { table: tab.table, relation: this.relData.relation } ]];
+		return [["match", { table: tab.table, condition: [ { "type": "and", "field": "prefix", "value": "Mister" } ] } ]];
 	},
 	getTime: function(cb) {
 		cb(this.stepper.data.elapsedTime);
@@ -53,12 +53,7 @@ var HybreBenchmark = $b.Benchmark.extend({
 
 			self.conn.send("createTable", self.tabData, function(d) {
 				if(d.error) throw JSON.stringify(d.error);
-
-				self.conn.send("createRelation", self.relData, function(d) {
-					if(d.error) throw JSON.stringify(d.error);
-					cb();
-				});
-
+				cb();
 			});
 
 		});
@@ -69,14 +64,12 @@ var HybreBenchmark = $b.Benchmark.extend({
 var connection = new Hybre();
 var b = new HybreBenchmark({
 	tableName: "people_big", 
-	relName: "knows",
-	fileName: "results/sel_rel/HybreDb.json",
+	fileName: "results/sel_cond/HybreDb.json",
 	tDef: dat.table_defs.people_big, 
-	rDef: dat.relation_defs.knows,
 	connection: connection,
 	isSec: false,
 	rep: 20,
-	steps: [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000]
+	steps: [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000, 250000, 500000]
 });
 b.onDone = function() { connection.close(); };
 

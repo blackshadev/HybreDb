@@ -32,7 +32,7 @@ var HybreBenchmark = $b.Benchmark.extend({
 		this.conn = oPar.connection;
 	},
 	getStmts: function(tdef, tab) {
-		var name = dat.chance.name();
+		var name = dat.getRandomName();
 		var key = dat.getRandomId(tdef);
 		return [["update", { table: tab.table, key: key, data: { name: name } } ]];
 	},
@@ -66,7 +66,7 @@ var b = new HybreBenchmark({
 	tDef: dat.table_defs.people_big, 
 	connection: connection,
 	isSec: false,
-	rep: 20,
+	rep: 100,
 	steps: [10, 100, 500, 1000, 5000, 10000, 25000, 50000, 75000, 100000, 250000, 500000]
 });
 b.onDone = function() { connection.close(); };

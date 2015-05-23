@@ -101,6 +101,9 @@ namespace HybreDb.Actions {
         /// <returns>Result of the action</returns>
         /// <remarks>This function catches exceptions thrown in execution of the action, these exceptions are returned as a instance of HybreResult by HybreError</remarks>
         public static HybreResult Execute(Database db, IHybreAction act) {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
             HybreResult res;
             var sw = new Stopwatch();
             sw.Start();
