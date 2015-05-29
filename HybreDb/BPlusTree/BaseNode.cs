@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using HybreDb.BPlusTree.Collections;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree {

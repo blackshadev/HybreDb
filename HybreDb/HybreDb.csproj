@@ -89,7 +89,7 @@
     <Compile Include="BPlusTree\Collections\LRUCache.cs" />
     <Compile Include="BPlusTree\LeafNode.cs" />
     <Compile Include="BPlusTree\Node.cs" />
-    <Compile Include="BPlusTree\SortedBuckets.cs" />
+    <Compile Include="BPlusTree\Collections\SortedBuckets.cs" />
     <Compile Include="BPlusTree\Tree.cs" />
     <Compile Include="Database.cs" />
     <Compile Include="DbFile.cs" />
