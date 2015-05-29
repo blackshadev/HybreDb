@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybreDb", "HybreDb\HybreDb.csproj", "{1F963B4D-D255-4594-9532-1C886094E049}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HybreDbTest", "HybreDbTest\HybreDbTest.csproj", "{99B8E631-80B5-4DF3-B622-6EB918EBA997}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4055E2C1-18C2-46A5-8DD1-04672BC75CE7}"
+	ProjectSection(SolutionItems) = preProject
+		Performance1.psess = Performance1.psess
+		Performance2.psess = Performance2.psess
+	EndProjectSection
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "HybreDbWeb", "HybreDbWeb\HybreDbWeb.njsproj", "{DEED6A74-CB30-446A-AED6-C07B5F1DA267}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "RandomData", "RandomData\RandomData.njsproj", "{0A658406-87BF-4300-9DA4-37E552D41F30}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1F963B4D-D255-4594-9532-1C886094E049}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F963B4D-D255-4594-9532-1C886094E049}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F963B4D-D255-4594-9532-1C886094E049}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F963B4D-D255-4594-9532-1C886094E049}.Release|Any CPU.Build.0 = Release|Any CPU
+		{99B8E631-80B5-4DF3-B622-6EB918EBA997}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{99B8E631-80B5-4DF3-B622-6EB918EBA997}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{99B8E631-80B5-4DF3-B622-6EB918EBA997}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{99B8E631-80B5-4DF3-B622-6EB918EBA997}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DEED6A74-CB30-446A-AED6-C07B5F1DA267}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DEED6A74-CB30-446A-AED6-C07B5F1DA267}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DEED6A74-CB30-446A-AED6-C07B5F1DA267}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DEED6A74-CB30-446A-AED6-C07B5F1DA267}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A658406-87BF-4300-9DA4-37E552D41F30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A658406-87BF-4300-9DA4-37E552D41F30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A658406-87BF-4300-9DA4-37E552D41F30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A658406-87BF-4300-9DA4-37E552D41F30}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

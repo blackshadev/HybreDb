@@ -1,7 +1,0 @@
-C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\obj\Debug\.NETFramework,Version=v4.5.AssemblyAttribute.cs
-C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\HybreDb.exe.config
-C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\HybreDb.exe.mdb
-C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\HybreDb.exe
-C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\obj\Debug\HybreDb.exe
-C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\obj\Debug\HybreDb.exe.mdb
-C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\Newtonsoft.Json.dll
