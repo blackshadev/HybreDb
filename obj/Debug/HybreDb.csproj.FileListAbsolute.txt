@@ -1,0 +1,8 @@
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\HybreDb.exe.config
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\obj\Debug\HybreDb.exe
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\HybreDb.exe
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\HybreDb.pdb
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\Newtonsoft.Json.dll
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\bin\Debug\Newtonsoft.Json.xml
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\obj\Debug\HybreDb.pdb
+C:\Users\Vincent\Git\relDb\HybreDb\HybreDb\obj\Debug\HybreDb.csprojResolveAssemblyReference.cache
