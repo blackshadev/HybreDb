@@ -1,38 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using HybreDb.Actions.Result;
+using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
     /// <summary>
-    /// Action which updates the data of a given record
+    ///     Action which updates the data of a given record
     /// </summary>
     public class HybreActionUpdate : IHybreAction {
-
-        [JsonProperty("table")]
-        public string TableName;
+        [JsonProperty("data")]
+        public Dictionary<string, object> Data;
 
         [JsonProperty("key")]
         public int Key;
 
-        [JsonProperty("data")]
-        public Dictionary<string, object> Data;
+        [JsonProperty("table")]
+        public string TableName;
 
         public HybreResult Execute(Database db) {
-            var t = db[TableName];
+            Table t = db[TableName];
 
             foreach (var d in Data) {
-                var data = t.Columns[d.Key].DataType.CreateType(d.Value);
+                IDataType data = t.Columns[d.Key].DataType.CreateType(d.Value);
                 t.Update(Key, d.Key, data);
             }
 
             t.Commit();
 
-            return new HybreUpdateResult { Affected = 1 };
+            return new HybreUpdateResult {Affected = 1};
         }
     }
 }

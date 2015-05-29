@@ -5,41 +5,24 @@ using System.IO;
 using HybreDb.Storage;
 
 namespace HybreDb.BPlusTree.Collections {
-
     public class SortedBuckets<TKey, TValue> : IEnumerable<KeyValuePair<TKey, TValue>>, IDisposable, IByteSerializable
         where TKey : IComparable, IByteSerializable
-        where TValue : IByteSerializable
-    {
-
-        protected TKey[] _keys;
-        protected TValue[] _values;
-
+        where TValue : IByteSerializable {
         public int Capacity;
         public int Count = 0;
-
-        public IEnumerable<TKey> Keys {
-            get {
-                for (var i = 0; i < Count; i++)
-                    yield return _keys[i];
-            }
-        }
-
-        public IEnumerable<TValue> Values {
-            get {
-                for (var i = 0; i < Count; i++)
-                    yield return _values[i];
-            }
-        }
+        protected TKey[] _keys;
+        protected TValue[] _values;
 
         public SortedBuckets(int size) {
             Capacity = size;
             _keys = new TKey[size];
             _values = new TValue[size];
 
-            var t = _keys.GetType();
+            Type t = _keys.GetType();
         }
 
-        public SortedBuckets(BinaryReader rdr, Func<BinaryReader, TKey> kConstructor, Func<BinaryReader, TValue> vConstructor) {
+        public SortedBuckets(BinaryReader rdr, Func<BinaryReader, TKey> kConstructor,
+            Func<BinaryReader, TValue> vConstructor) {
             Capacity = rdr.ReadInt32();
             Count = rdr.ReadInt32();
 
@@ -47,12 +30,53 @@ namespace HybreDb.BPlusTree.Collections {
             _values = new TValue[Capacity];
 
 
-
             for (int i = 0; i < Count; i++) {
                 _keys[i] = kConstructor(rdr);
                 _values[i] = vConstructor(rdr);
             }
-        } 
+        }
+
+        public IEnumerable<TKey> Keys {
+            get {
+                for (int i = 0; i < Count; i++)
+                    yield return _keys[i];
+            }
+        }
+
+        public IEnumerable<TValue> Values {
+            get {
+                for (int i = 0; i < Count; i++)
+                    yield return _values[i];
+            }
+        }
+
+        public void Serialize(BinaryWriter wrtr) {
+            wrtr.Write(Capacity);
+            wrtr.Write(Count);
+
+            for (int i = 0; i < Count; i++) {
+                _keys[i].Serialize(wrtr);
+                _values[i].Serialize(wrtr);
+            }
+        }
+
+        public void Deserialize(BinaryReader rdr) {
+            throw new NotImplementedException();
+        }
+
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
+            for (int i = 0; i < Count; i++)
+                yield return new KeyValuePair<TKey, TValue>(_keys[i], _values[i]);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
+        }
 
 
         public void Set(int idx, TKey key, TValue value) {
@@ -69,7 +93,6 @@ namespace HybreDb.BPlusTree.Collections {
             //idx = ~idx;
 
 
-
             if (idx < Count) {
                 Array.Copy(_keys, idx, _keys, idx + 1, Count - idx);
                 Array.Copy(_values, idx, _values, idx + 1, Count - idx);
@@ -84,7 +107,7 @@ namespace HybreDb.BPlusTree.Collections {
 
         public void Remove(TKey key) {
             int idx = Index(key);
-            if(idx < 0) throw new ArgumentException("Key does not exist");
+            if (idx < 0) throw new ArgumentException("Key does not exist");
 
             RemoveIndex(idx);
         }
@@ -100,8 +123,8 @@ namespace HybreDb.BPlusTree.Collections {
         }
 
         public bool TryGetValue(TKey key, out TValue result) {
-            var idx = Index(key);
-            var found = idx > -1 && _keys[idx] != null && _keys[idx].CompareTo(key) == 0;
+            int idx = Index(key);
+            bool found = idx > -1 && _keys[idx] != null && _keys[idx].CompareTo(key) == 0;
             result = found ? _values[idx] : default(TValue);
             return found;
         }
@@ -137,7 +160,7 @@ namespace HybreDb.BPlusTree.Collections {
         }
 
         /// <summary>
-        /// Takes items from the beginning of the sorted buckets to the end
+        ///     Takes items from the beginning of the sorted buckets to the end
         /// </summary>
         /// <param name="end"></param>
         /// <returns></returns>
@@ -150,7 +173,7 @@ namespace HybreDb.BPlusTree.Collections {
             Array.Copy(_keys, end, _keys, 0, Count - end);
             Array.Copy(_values, end, _values, 0, Count - end);
 
-            for (var i = 0; i < end; i++) {
+            for (int i = 0; i < end; i++) {
                 _keys[Count - end + i] = default(TKey);
                 _values[Count - end + i] = default(TValue);
             }
@@ -163,7 +186,7 @@ namespace HybreDb.BPlusTree.Collections {
         }
 
         /// <summary>
-        ///  Takes items from the end of the sorted buckets beginning by start
+        ///     Takes items from the end of the sorted buckets beginning by start
         /// </summary>
         /// <param name="start"></param>
         /// <returns></returns>
@@ -173,7 +196,7 @@ namespace HybreDb.BPlusTree.Collections {
             Array.Copy(_values, start, d._values, 0, Count - start);
 
 
-            for (var i = 0; i < Count - start; i++) {
+            for (int i = 0; i < Count - start; i++) {
                 _keys[start + i] = default(TKey);
                 _values[start + i] = default(TValue);
             }
@@ -206,7 +229,6 @@ namespace HybreDb.BPlusTree.Collections {
             Array.Copy(s._values, 0, _values, 0, s.Count);
 
             Count += s.Count;
-
         }
 
         public void LoadSorted(IEnumerable<KeyValuePair<TKey, TValue>> data) {
@@ -222,40 +244,11 @@ namespace HybreDb.BPlusTree.Collections {
         }
 
 
-        public IEnumerator<KeyValuePair<TKey, TValue>> GetEnumerator() {
-            for (var i = 0; i < Count; i++)
-                yield return new KeyValuePair<TKey, TValue>(_keys[i], _values[i]);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
-        }
-
-        public void Dispose() {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         protected virtual void Dispose(bool disposing) {
             _keys = null;
             _values = null;
             Count = 0;
             Capacity = 0;
-        }
-
-        public void Serialize(BinaryWriter wrtr) {
-            wrtr.Write(Capacity);
-            wrtr.Write(Count);
-
-            for (int i = 0; i < Count; i++) {
-                _keys[i].Serialize(wrtr);
-                _values[i].Serialize(wrtr);
-            }
-
-        }
-
-        public void Deserialize(BinaryReader rdr) {
-            throw new NotImplementedException();
         }
     }
 }

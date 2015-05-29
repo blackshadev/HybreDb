@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace HybreDb.Tables {
@@ -11,7 +7,8 @@ namespace HybreDb.Tables {
             return typeof (DataRowSerializer).IsAssignableFrom(objectType);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer) {
             throw new NotImplementedException();
         }
 
@@ -19,12 +16,11 @@ namespace HybreDb.Tables {
             var row = value as DataRow;
 
             writer.WriteStartObject();
-            for (var i = 0; i < row.Count; i++) {
+            for (int i = 0; i < row.Count; i++) {
                 writer.WritePropertyName(row.Table.Columns[i].Name);
                 writer.WriteValue(row[i].GetValue());
             }
             writer.WriteEndObject();
-
         }
     }
 }

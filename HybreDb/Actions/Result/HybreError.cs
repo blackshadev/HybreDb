@@ -1,25 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions.Result {
-    [JsonConverter(typeof(HybreErrorJsonSerialiser))]
+    [JsonConverter(typeof (HybreErrorJsonSerialiser))]
     public class HybreError : HybreResult {
-
         public Exception Error;
 
         public HybreError(Exception e) {
             Error = e;
         }
-
     }
 
     public class HybreErrorJsonSerialiser : JsonConverter {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
-
             var err = value as HybreError;
 
             writer.WriteStartObject();
@@ -29,7 +22,7 @@ namespace HybreDb.Actions.Result {
 
 
             writer.WritePropertyName("error");
-            
+
             writer.WriteStartObject();
             writer.WritePropertyName("type");
             writer.WriteValue(err.Error.GetType().Name);
@@ -42,7 +35,8 @@ namespace HybreDb.Actions.Result {
             writer.WriteEndObject();
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer) {
             throw new NotImplementedException();
         }
 

@@ -98,8 +98,6 @@
     <Compile Include="Relational\Relation.cs" />
     <Compile Include="Relational\Relations.cs" />
     <Compile Include="Storage\ByteSerializable.cs" />
-    <Compile Include="Storage\Crc32.cs" />
-    <Compile Include="Storage\Storage.cs" />
     <Compile Include="Tables\DataColumn.cs" />
     <Compile Include="Tables\DataColumns.cs" />
     <Compile Include="Tables\DataRow.cs" />

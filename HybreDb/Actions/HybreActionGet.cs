@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HybreDb.Actions.Result;
+﻿using HybreDb.Actions.Result;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
     /// <summary>
-    /// Action which gets a row beloning to given key
+    ///     Action which gets a row beloning to given key
     /// </summary>
     public class HybreActionGet : IHybreAction {
-        [JsonProperty("table")] 
-        public string TableName;
-
         [JsonProperty("key")]
         public int Key;
 
+        [JsonProperty("table")]
+        public string TableName;
+
         public HybreResult Execute(Database db) {
-            return new HybreDataResult(db[TableName], new [] { db[TableName][Key] } );
+            return new HybreDataResult(db[TableName], new[] {db[TableName][Key]});
         }
     }
 }

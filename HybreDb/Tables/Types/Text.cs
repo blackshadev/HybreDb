@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Runtime.CompilerServices;
-using System.Security.Cryptography;
 
 namespace HybreDb.Tables.Types {
     public class Text : DataType {
@@ -13,7 +12,9 @@ namespace HybreDb.Tables.Types {
             Data = d;
         }
 
-        public Text(BinaryReader rdr) { Read(rdr); }
+        public Text(BinaryReader rdr) {
+            Read(rdr);
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override int CompareTo(object obj) {

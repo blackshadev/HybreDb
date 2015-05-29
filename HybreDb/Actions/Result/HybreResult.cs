@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HybreDb.Relational;
 using HybreDb.Tables;
 using Newtonsoft.Json;
@@ -15,7 +12,7 @@ namespace HybreDb.Actions.Result {
         public static void SerializeColumns(JsonWriter writer, IEnumerable<DataColumn> cols) {
             writer.WriteStartObject();
 
-            foreach (var c in cols) {
+            foreach (DataColumn c in cols) {
                 writer.WritePropertyName(c.Name);
                 writer.WriteStartObject();
 
@@ -37,19 +34,18 @@ namespace HybreDb.Actions.Result {
         protected static void SerializeDataRows(JsonWriter writer, Table tab, IEnumerable<DataRow> rows) {
             writer.WriteStartObject();
 
-            foreach (var r in rows) {
+            foreach (DataRow r in rows) {
                 writer.WritePropertyName(r.Index.ToString());
 
                 writer.WriteStartObject();
 
-                for (var i = 0; i < tab.Columns.Length; i++) {
+                for (int i = 0; i < tab.Columns.Length; i++) {
                     if (tab.Columns[i].Hidden) continue;
                     writer.WritePropertyName(tab.Columns[i].Name);
                     writer.WriteValue(r[i].GetValue());
                 }
 
                 writer.WriteEndObject();
-
             }
 
             writer.WriteEndObject();
@@ -91,7 +87,7 @@ namespace HybreDb.Actions.Result {
         public static void SerializeRelations(JsonWriter writer, IEnumerable<Relation> rels) {
             writer.WriteStartObject();
 
-            foreach (var rel in rels) {
+            foreach (Relation rel in rels) {
                 writer.WritePropertyName(rel.Name);
                 writer.WriteStartObject();
 

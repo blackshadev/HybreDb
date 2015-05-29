@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions.Result {
-    [JsonConverter(typeof(HybreMultiResultSerializer))]
+    [JsonConverter(typeof (HybreMultiResultSerializer))]
     public class HybreMultipleResult : HybreResult {
-        
         public HybreResult[] Results;
     }
 
@@ -18,7 +13,8 @@ namespace HybreDb.Actions.Result {
             serializer.Serialize(writer, r.Results);
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer) {
             throw new NotImplementedException();
         }
 

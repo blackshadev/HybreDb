@@ -1,18 +1,58 @@
-﻿using System;   
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Storage;
 using HybreDb.Tables.Types;
 
 namespace HybreDb.Tables {
     public class DataColumn : IByteSerializable, IDisposable {
         /// <summary>
-        /// System Type of the data in this column
+        ///     Internal data type, used in serialization and creation
+        /// </summary>
+        public DataTypes.Types DataType;
+
+        /// <summary>
+        ///     Whenever this column has an index associated with the data
+        /// </summary>
+        public bool HasIndex;
+
+        /// <summary>
+        ///     Whenever the column is hidden to the user
+        /// </summary>
+        public bool Hidden;
+
+        /// <summary>
+        ///     Name of the DataColumn
+        /// </summary>
+        public string Name;
+
+        /// <summary>
+        ///     Reference to the table containing this column
+        /// </summary>
+        internal Table Table;
+
+        public DataColumn() {}
+
+        /// <summary>
+        ///     Creates a existing DataColumn based on a BinaryStream and bound to a given table
+        /// </summary>
+        public DataColumn(Table t, BinaryReader rdr) {
+            Table = t;
+            Deserialize(rdr);
+        }
+
+        /// <summary>
+        ///     Creates a definition of a DataColumn which is not yet bound to a table
+        /// </summary>
+        public DataColumn(string name, DataTypes.Types type, bool idx = false, bool hidden = false) {
+            Name = name;
+            DataType = type;
+            HasIndex = idx;
+            Hidden = hidden;
+        }
+
+        /// <summary>
+        ///     System Type of the data in this column
         /// </summary>
         public Type Type {
             get { return DataType.GetSystemType(); }
@@ -23,71 +63,16 @@ namespace HybreDb.Tables {
         }
 
         /// <summary>
-        /// Internal data type, used in serialization and creation
-        /// </summary>
-        public DataTypes.Types DataType;
-        
-        /// <summary>
-        /// Name of the DataColumn
-        /// </summary>
-        public string Name;
-
-        /// <summary>
-        /// Whenever this column has an index associated with the data
-        /// </summary>
-        public bool HasIndex;
-
-        /// <summary>
-        /// Whenever the column is hidden to the user
-        /// </summary>
-        public bool Hidden;
-        
-        /// <summary>
-        /// Index tree
+        ///     Index tree
         /// </summary>
         public IIndexTree Index { get; protected set; }
 
-        /// <summary>
-        /// Reference to the table containing this column
-        /// </summary>
-        internal Table Table;
-
-        public DataColumn() {}
 
         /// <summary>
-        /// Creates a existing DataColumn based on a BinaryStream and bound to a given table
-        /// </summary>
-        public DataColumn(Table t, BinaryReader rdr) {
-            Table = t;
-            Deserialize(rdr);
-        }
-
-        /// <summary>
-        /// Creates a definition of a DataColumn which is not yet bound to a table
-        /// </summary>
-        public DataColumn(string name, DataTypes.Types type, bool idx = false, bool hidden = false) {
-            Name = name;
-            DataType = type;
-            HasIndex = idx;
-            Hidden = hidden;
-        }
-
-
-        /// <summary>
-        /// Creates the index tree with given DataTypes as generic key type
-        /// </summary>
-        public void CreateIndex() {
-            if (!HasIndex) return;
-
-            var t = typeof (IndexTree<>).MakeGenericType(new[] {DataType.GetSystemType()});
-            Index = (IIndexTree)Activator.CreateInstance(t, new object[] { Table.Database.GetPath(Table.Name + "_" + Name) });
-        }
-
-        /// <summary>
-        /// Serializes the DataColumn, this does not serialize the IndexTree, use Commit() for that purpose.
+        ///     Serializes the DataColumn, this does not serialize the IndexTree, use Commit() for that purpose.
         /// </summary>
         public void Serialize(BinaryWriter wrtr) {
-            wrtr.Write((byte)DataType);
+            wrtr.Write((byte) DataType);
             wrtr.Write(Name);
             wrtr.Write(HasIndex);
             wrtr.Write(Hidden);
@@ -95,7 +80,7 @@ namespace HybreDb.Tables {
 
 
         /// <summary>
-        /// Deserializes the DataColumn, this does not create the IndexTree, use CreateIndex() fot that.
+        ///     Deserializes the DataColumn, this does not create the IndexTree, use CreateIndex() fot that.
         /// </summary>
         public void Deserialize(BinaryReader rdr) {
             DataType = (DataTypes.Types) rdr.ReadByte();
@@ -105,8 +90,23 @@ namespace HybreDb.Tables {
             Hidden = rdr.ReadBoolean();
         }
 
+        public void Dispose() {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
         /// <summary>
-        /// 
+        ///     Creates the index tree with given DataTypes as generic key type
+        /// </summary>
+        public void CreateIndex() {
+            if (!HasIndex) return;
+
+            Type t = typeof (IndexTree<>).MakeGenericType(new[] {DataType.GetSystemType()});
+            Index =
+                (IIndexTree) Activator.CreateInstance(t, new object[] {Table.Database.GetPath(Table.Name + "_" + Name)});
+        }
+
+        /// <summary>
         /// </summary>
         public void Commit() {
             if (HasIndex) Index.Commit();
@@ -114,14 +114,14 @@ namespace HybreDb.Tables {
 
 
         /// <summary>
-        /// Performs a type check with the ColumnData type and given object data type
+        ///     Performs a type check with the ColumnData type and given object data type
         /// </summary>
         public bool CheckType(object o) {
             return DataType.GetSystemType() == o.GetType();
         }
 
         /// <summary>
-        /// Match given numbers belonging to given object 
+        ///     Match given numbers belonging to given object
         /// </summary>
         /// <param name="obj">Value to match with column</param>
         /// <returns>Numbers containing the indices of rows satisfying the match condition</returns>
@@ -135,14 +135,14 @@ namespace HybreDb.Tables {
         }
 
         /// <summary>
-        /// Match with the index tree
+        ///     Match with the index tree
         /// </summary>
         protected Numbers MatchIndexed(object obj) {
             return Index.Match(obj);
         }
 
         /// <summary>
-        /// Match by iterating over all tree nodes
+        ///     Match by iterating over all tree nodes
         /// </summary>
         protected Numbers MatchIterate(object obj) {
             var nums = new Numbers();
@@ -154,26 +154,19 @@ namespace HybreDb.Tables {
             return nums;
         }
 
-        public void Dispose() {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
         /// <summary>
-        /// Dispose all resources held by the DataColumn
+        ///     Dispose all resources held by the DataColumn
         /// </summary>
         protected virtual void Dispose(bool disposing) {
             if (HasIndex) Index.Dispose();
         }
 
         /// <summary>
-        /// Drops the columns index
+        ///     Drops the columns index
         /// </summary>
         public void Drop() {
             if (HasIndex) Index.Drop();
             HasIndex = false;
         }
-
-        
     }
 }

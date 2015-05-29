@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HybreDb.BPlusTree.DataTypes;
+﻿using System.IO;
 using HybreDb.Storage;
-using HybreDb.Tables;
 
 namespace HybreDb.Test {
     public class TestData : IByteSerializable {
-
         public int Key;
         public string Value;
 

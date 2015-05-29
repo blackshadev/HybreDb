@@ -4,7 +4,7 @@ using System.Runtime.CompilerServices;
 
 namespace HybreDb.Tables.Types {
     public class DateTime : DataType {
-         private System.DateTime Data;
+        private System.DateTime Data;
 
         public DateTime() {}
 
@@ -39,7 +39,7 @@ namespace HybreDb.Tables.Types {
         public override int CompareTo(object obj) {
             var o = obj as DateTime;
 
-            if(o == null) throw new ArgumentException("Comparisions must have the same type");
+            if (o == null) throw new ArgumentException("Comparisions must have the same type");
 
             return Data.CompareTo(o.Data);
         }

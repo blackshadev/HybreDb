@@ -8,10 +8,6 @@ namespace HybreDb.Tables.Types {
     public class Numbers : IByteSerializable, IEnumerable<Number> {
         public HashSet<Number> Nums;
 
-        public int Count {
-            get { return Nums.Count; }
-        }
-
         public Numbers(BinaryReader rdr) : this() {
             Deserialize(rdr);
         }
@@ -22,6 +18,32 @@ namespace HybreDb.Tables.Types {
 
         public Numbers(IEnumerable<Number> nums) {
             Nums = new HashSet<Number>(nums);
+        }
+
+        public int Count {
+            get { return Nums.Count; }
+        }
+
+        public void Serialize(BinaryWriter wrtr) {
+            wrtr.Write(Nums.Count);
+            foreach (Number n in Nums)
+                n.Serialize(wrtr);
+        }
+
+        public void Deserialize(BinaryReader rdr) {
+            int l = rdr.ReadInt32();
+
+            Nums.Clear();
+            for (int i = 0; i < l; i++)
+                Nums.Add(new Number(rdr));
+        }
+
+        public IEnumerator<Number> GetEnumerator() {
+            return Nums.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator() {
+            return GetEnumerator();
         }
 
         public void Add(Number n) {
@@ -40,31 +62,8 @@ namespace HybreDb.Tables.Types {
             Nums.Remove(n);
         }
 
-        public void Serialize(BinaryWriter wrtr) {
-            wrtr.Write(Nums.Count);
-            foreach(var n in Nums)
-                n.Serialize(wrtr);
-        }
-
-        public void Deserialize(BinaryReader rdr) {
-            var l = rdr.ReadInt32();
-
-            Nums.Clear();
-            for (var i = 0; i < l; i++)
-                Nums.Add(new Number(rdr));
-
-        }
-
         public object GetValue() {
             return Nums.Select(e => e.GetValue()).ToArray();
-        }
-
-        public IEnumerator<Number> GetEnumerator() {
-            return Nums.GetEnumerator();
-        }
-
-        IEnumerator IEnumerable.GetEnumerator() {
-            return GetEnumerator();
         }
 
         public Number[] AsArray() {

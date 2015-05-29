@@ -1,37 +1,33 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using HybreDb.Actions.Result;
+using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables;
 using HybreDb.Tables.Types;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions {
     /// <summary>
-    /// Action which finds records in a given table based on given conditions
+    ///     Action which finds records in a given table based on given conditions
     /// </summary>
     public class HybreActionMatch : IHybreAction {
+        [JsonProperty("condition")]
+        public ActionCondition[] Condition;
 
         [JsonProperty("table")]
         public string TableName;
 
-        [JsonProperty("condition")]
-        public ActionCondition[] Condition;
-
         public HybreResult Execute(Database db) {
-            var t = db[TableName];
+            Table t = db[TableName];
 
             var rows = new Numbers();
-            for(var i = 0; i < Condition.Length; i++) {
-                var c = Condition[i];
-                var field = t.Columns[c.FieldName];
-                var data = field.DataType.CreateType(c.Value);
-                var type = c.Type;
+            for (int i = 0; i < Condition.Length; i++) {
+                ActionCondition c = Condition[i];
+                DataColumn field = t.Columns[c.FieldName];
+                IDataType data = field.DataType.CreateType(c.Value);
+                ActionCondition.ConditionType type = c.Type;
 
 
-                var local_rows = t.FindKeys(new KeyValuePair<string, object>(c.FieldName, data));
+                Numbers local_rows = t.FindKeys(new KeyValuePair<string, object>(c.FieldName, data));
 
                 if (type == ActionCondition.ConditionType.And && i > 0)
                     rows.Intersect(local_rows);
@@ -41,7 +37,7 @@ namespace HybreDb.Actions {
 
             var res = new HybreUniformResult();
             res.Add(t, t.GetData(rows));
-            
+
             return res;
         }
     }
@@ -52,16 +48,13 @@ namespace HybreDb.Actions {
             Or
         };
 
+        [JsonProperty("field")]
+        public string FieldName;
+
         [JsonProperty("type")]
         public ConditionType Type;
 
-        [JsonProperty("field")] 
-        public string FieldName;
-
         [JsonProperty("value")]
         public object Value;
-
-
-
     }
 }

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace HybreDb.BPlusTree.Collections {
+﻿namespace HybreDb.BPlusTree.Collections {
     public class DoubleLinkedList<T> {
         public LinkedNode<T> Head { get; private set; }
         public LinkedNode<T> Tail { get; private set; }
@@ -14,13 +8,13 @@ namespace HybreDb.BPlusTree.Collections {
         }
 
         public LinkedNode<T> AddHead(LinkedNode<T> l) {
-            if(Head != null) l.InsertBefore(Head);
+            if (Head != null) l.InsertBefore(Head);
             Head = l;
 
             if (l.Next == null) Tail = l;
 
             return l;
-        } 
+        }
 
         public LinkedNode<T> AddTail(T dat) {
             return AddTail(new LinkedNode<T>(dat));
@@ -33,10 +27,10 @@ namespace HybreDb.BPlusTree.Collections {
             if (l.Prev == null) Head = l;
 
             return l;
-        } 
+        }
 
         public LinkedNode<T> RemoveTail() {
-            var l = Tail;
+            LinkedNode<T> l = Tail;
 
             if (l == null) return l;
 
@@ -47,7 +41,7 @@ namespace HybreDb.BPlusTree.Collections {
         }
 
         public LinkedNode<T> RemoveHead() {
-            var l = Head;
+            LinkedNode<T> l = Head;
 
             if (l == null) return l;
 
@@ -73,10 +67,11 @@ namespace HybreDb.BPlusTree.Collections {
             n.Prev = null;
         }
     }
+
     public class LinkedNode<T> {
+        public T Data;
         public LinkedNode<T> Next;
         public LinkedNode<T> Prev;
-        public T Data;
 
         public LinkedNode(T data) {
             Data = data;
@@ -93,6 +88,5 @@ namespace HybreDb.BPlusTree.Collections {
             Next = n.Next;
             n.Next = this;
         }
-
     }
 }

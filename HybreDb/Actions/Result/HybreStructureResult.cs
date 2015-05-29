@@ -1,26 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using HybreDb.Tables;
 using Newtonsoft.Json;
 
 namespace HybreDb.Actions.Result {
     /// <summary>
-    /// Represents the structure of a table
+    ///     Represents the structure of a table
     /// </summary>
-    
-    [JsonConverter(typeof(HybreStructureResultSerializer))]
+    [JsonConverter(typeof (HybreStructureResultSerializer))]
     public class HybreStructureResult : HybreResult {
-
         public Table Table;
-
     }
 
     public class HybreStructureResultSerializer : JsonConverter {
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) {
-
             var res = value as HybreStructureResult;
 
             writer.WriteStartObject();
@@ -38,10 +31,10 @@ namespace HybreDb.Actions.Result {
             HybreResult.SerializeRelations(writer, res.Table.Relations);
 
             writer.WriteEndObject();
-
         }
 
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) {
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue,
+            JsonSerializer serializer) {
             throw new NotImplementedException();
         }
 
@@ -49,5 +42,4 @@ namespace HybreDb.Actions.Result {
             return typeof (HybreStructureResult).IsAssignableFrom(objectType);
         }
     }
-
 }
