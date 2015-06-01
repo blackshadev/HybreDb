@@ -18,7 +18,7 @@ First compile HybreDb (with msbuild/xbuild) and run it (with mono). As it is cur
 
 Next run HybreDbWeb/app.js with NodeJS. Now navigate to [your localhost](http://localhost/) and enjoy. You can change the HTTP port in the app.js file.
 
-## [Integrating HybreDb](hybreDbComm)
+## [Integrating HybreDb](../wiki/hybreDbComm)
 
 
 # Features
