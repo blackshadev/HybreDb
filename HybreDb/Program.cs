@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Configuration;
 
 namespace HybreDb {
     public class Program {
@@ -148,7 +149,10 @@ namespace HybreDb {
         //}
 
         private static void StartHybre() {
-            var d = new HybreDb();
+            var port = Convert.ToInt32(ConfigurationManager.AppSettings["HybreDb_Port"]);
+            var name = ConfigurationManager.AppSettings["HybreDb_DatabaseName"];
+
+            var d = new HybreDb(name, port);
             d.Start();
             AppDomain.CurrentDomain.ProcessExit += (s, e) => d.Database.Write();
         }

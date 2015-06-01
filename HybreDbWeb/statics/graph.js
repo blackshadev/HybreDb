@@ -42,6 +42,10 @@ HybreResult.prototype.setData = function (graph) {
     }
 
     console.time("plottingData");
+    var lotsOfData = this.data.nodes > 1000 || this.data.edges > 1000;
+    this.options.stabilize = !lotsOfData;
+    this.options.hideEdgesOnDrag = lotsOfData;
+    this.options.physics.barnesHut = lotsOfData ? { gravitationalConstant: 0, centralGravity: 0, springConstant: 0 } : {};
     this.network = new vis.Network(this.jGraph[0], this.data, this.options);
     console.timeEnd("plottingData");
 
