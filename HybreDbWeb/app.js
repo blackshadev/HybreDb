@@ -1,7 +1,7 @@
 ﻿var Roadie = require("roadie");
 var Hybre = require("./HybreDb.js");
 
-var server = new Roadie.Server({ port: 80, webserviceDir: "webservices/", root: __dirname });
+var server = new Roadie.Server({ port: 8080, webserviceDir: "webservices/", root: __dirname });
 var hybre = new Hybre();
 
 server.addRoutes({

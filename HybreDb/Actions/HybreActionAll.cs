@@ -4,6 +4,7 @@ using HybreDb.Relational;
 using HybreDb.Tables;
 
 namespace HybreDb.Actions {
+
     public class HybreActionAll : IHybreAction {
         public HybreResult Execute(Database db) {
             var res = new HybreUniformResult();

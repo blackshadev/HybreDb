@@ -56,12 +56,14 @@
     <Compile Include="Actions\HybreActionGet.cs" />
     <Compile Include="Actions\HybreActionGetTableStructure.cs" />
     <Compile Include="Actions\HybreActionInsert.cs" />
+    <Compile Include="Actions\HybreActionListActions.cs" />
     <Compile Include="Actions\HybreActionListTable.cs" />
     <Compile Include="Actions\HybreActionMatch.cs" />
     <Compile Include="Actions\HybreActionTestData.cs" />
     <Compile Include="Actions\HybreActionUpdate.cs" />
     <Compile Include="Actions\HybreActionListRelation.cs" />
     <Compile Include="Actions\HybreActionListTables.cs" />
+    <Compile Include="Actions\Result\ActionListResult.cs" />
     <Compile Include="Actions\Result\HybreDataResult.cs" />
     <Compile Include="Actions\Result\HybreError.cs" />
     <Compile Include="Actions\Result\HybreMultipleResult.cs" />
