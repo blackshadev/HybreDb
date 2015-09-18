@@ -2,50 +2,43 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Runtime.Remoting.Messaging;
 using HybreDb;
 using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables;
 using HybreDb.Tables.Types;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NUnit.Framework;
-using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
-using DateTime = HybreDb.Tables.Types.DateTime;
+using DateTime = System.DateTime;
 using Text = HybreDb.Tables.Types.Text;
 
 namespace HybreDbTest {
-
     public class TableTest {
         public const int N = 100000;
 
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
         public static Database Db = new Database("UnitTest", true);
 
-        [TestCase]
-        public void Create() {
-
-
-            var tab = DummyData.TestTable(Db, "Test");
+        [TestCase] public void Create() {
+            Table tab = DummyData.TestTable(Db, "Test");
             DummyData.TestRows(tab);
 
             Console.WriteLine("After insert");
             Console.WriteLine(tab.ToString());
 
             tab = Db.Reopen(tab);
-            
+
             Console.WriteLine("After Read");
             Console.WriteLine(tab.ToString());
 
             Console.WriteLine("\nTessa lookup");
-            var tessas = tab.FindRows(new KeyValuePair<string, object>("Name", new Text("Tessa")));
+            IEnumerable<DataRow> tessas = tab.FindRows(new KeyValuePair<string, object>("Name", new Text("Tessa")));
 
             Console.WriteLine(String.Join("\n", tessas.Select(n => n.ToString())));
-            
+
             Console.WriteLine("\n 22 lookup");
-            var tters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(22)));
+            IEnumerable<DataRow> tters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(22)));
             Console.WriteLine(String.Join("\n", tters.Select(n => n.ToString())));
 
-            foreach (var r in tessas.ToArray())
+            foreach (DataRow r in tessas.ToArray())
                 tab.Remove(r.Index);
 
             tab.Commit();
@@ -53,7 +46,7 @@ namespace HybreDbTest {
             Console.WriteLine("\nAfter Delete");
             Console.WriteLine(tab.ToString());
 
-            foreach (var r in tters.ToArray())
+            foreach (DataRow r in tters.ToArray())
                 tab.Update(r.Index, "Age", new Number(23));
 
 
@@ -63,22 +56,20 @@ namespace HybreDbTest {
             Console.WriteLine(tab.ToString());
 
             Console.WriteLine("\n 23 lookup");
-            var dters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(23)));
+            IEnumerable<DataRow> dters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(23)));
             Console.WriteLine(String.Join("\n", dters.Select(n => n.ToString())));
-
         }
 
-        [TestCase]
-        public void BulkInsert() {
-            var set = GenerateDataset(N);
+        [TestCase] public void BulkInsert() {
+            IDataType[][] set = GenerateDataset(N);
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true },
-                new DataColumn { Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true },
-                new DataColumn { Name = "UnIndexed_Age", DataType = DataTypes.Types.Number },
-                new DataColumn { Name = "Inserted", DataType = DataTypes.Types.DateTime }
+                new DataColumn {Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true},
+                new DataColumn {Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true},
+                new DataColumn {Name = "UnIndexed_Age", DataType = DataTypes.Types.Number},
+                new DataColumn {Name = "Inserted", DataType = DataTypes.Types.DateTime}
             };
 
-            var tab = Db.NewTable("BulkBench", cols);
+            Table tab = Db.NewTable("BulkBench", cols);
             Time("BulkInsert " + N + " records", () => tab.BulkInsert(set));
             tab.Commit();
 
@@ -95,37 +86,35 @@ namespace HybreDbTest {
             Time("Count", () => { i = tab.Rows.Count(); });
 
             Time("Index Age", () => {
-                var rows = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(90)));
+                IEnumerable<DataRow> rows = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(90)));
                 //Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
             });
 
             Console.WriteLine("\n");
             Time("Unindexed Age", () => {
-                var rows = tab.FindRows(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
+                IEnumerable<DataRow> rows =
+                    tab.FindRows(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
                 //Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
             });
 
             Assert.IsFalse(i != N, "Missing records");
-
         }
 
-        [TestCase] 
-        public void Bench() {
+        [TestCase] public void Bench() {
+            IDataType[][] set = GenerateDataset(N);
 
-            var set = GenerateDataset(N);
-            
             var cols = new[] {
-                new DataColumn { Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true },
-                new DataColumn { Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true },
-                new DataColumn { Name = "UnIndexed_Age", DataType = DataTypes.Types.Number },
-                new DataColumn { Name = "Inserted", DataType = DataTypes.Types.DateTime }
+                new DataColumn {Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true},
+                new DataColumn {Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true},
+                new DataColumn {Name = "UnIndexed_Age", DataType = DataTypes.Types.Number},
+                new DataColumn {Name = "Inserted", DataType = DataTypes.Types.DateTime}
             };
 
-            var tab = Db.NewTable("Bench", cols);
-            
+            Table tab = Db.NewTable("Bench", cols);
+
             int i = 0;
-            Time("Insert " + N + " records", () => { 
-                for(i = 0; i < N; i++)
+            Time("Insert " + N + " records", () => {
+                for (i = 0; i < N; i++)
                     tab.Insert(set[i]);
             });
 
@@ -134,22 +123,23 @@ namespace HybreDbTest {
 
             Time("Count", () => { i = tab.Rows.Count(); });
             Assert.IsFalse(i != N, "Missing records");
-            
+
 
             Time("\nRead in", () => { tab = Db.Reopen(tab); });
-            
+
             Time("Count", () => { i = tab.Rows.Count(); });
 
             Time("Count", () => { i = tab.Rows.Count(); });
 
             Time("Index Age", () => {
-                var rows = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(90)));
+                IEnumerable<DataRow> rows = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(90)));
                 Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
             });
 
             Console.WriteLine("\n");
             Time("Unindexed Age", () => {
-                var rows = tab.FindRows(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
+                IEnumerable<DataRow> rows =
+                    tab.FindRows(new KeyValuePair<string, object>("UnIndexed_Age", new Number(90)));
                 Console.WriteLine(String.Join("\n", rows.Select(e => e.ToString())));
             });
 
@@ -161,13 +151,13 @@ namespace HybreDbTest {
             var rnd = new Random();
             var o = new IDataType[N][];
 
-            for (var i = 0; i < N; i++) {
+            for (int i = 0; i < N; i++) {
                 var a = new Number(rnd.Next(0, 100));
                 o[i] = new IDataType[] {
                     new Text(RandomString(rnd.Next(0, 25), rnd)),
                     a,
                     a,
-                    new DateTime(System.DateTime.Now), 
+                    new HybreDb.Tables.Types.DateTime(DateTime.Now)
                 };
             }
 
@@ -177,7 +167,7 @@ namespace HybreDbTest {
         private static string RandomString(int n, Random r) {
             var c = new char[n];
 
-            for (var i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
                 c[i] = Chars[r.Next(0, Chars.Length)];
 
             return new string(c);
