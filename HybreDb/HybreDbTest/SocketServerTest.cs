@@ -4,12 +4,13 @@ using System.Net.Sockets;
 using System.Threading;
 using HybreDb.Communication;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace HybreDbTest {
-    [TestClass]
+    
     public class SocketServerTest {
         
-        [TestMethod]
+        [TestCase]
         public void Small() {
             var s = new ThreadedSocketServer();
             s.OnDataReceived += (o, e) => Console.WriteLine(e.Message);

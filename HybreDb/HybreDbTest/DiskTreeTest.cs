@@ -8,9 +8,10 @@ using HybreDb.Tables.Types;
 using HybreDb.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HybreDb.BPlusTree.DataTypes;
+using NUnit.Framework;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace HybreDbTest {
-    [TestClass]
     public class DiskTreeTest {
 
         public const int N = 10000;
@@ -20,7 +21,7 @@ namespace HybreDbTest {
         public Stopwatch sw = new Stopwatch();
         public DiskTreeTest Cache { get; private set; }
 
-        [TestMethod]
+        [TestCase]
         public void TestInserts() {
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
@@ -53,7 +54,7 @@ namespace HybreDbTest {
 
         }
 
-        [TestMethod] 
+        [TestCase] 
         public void WriteCheck() {
             if(File.Exists("test.dat"))
                 File.Delete("test.dat");

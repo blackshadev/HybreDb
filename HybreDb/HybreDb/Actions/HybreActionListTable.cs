@@ -16,7 +16,10 @@ namespace HybreDb.Actions {
 
         public HybreResult Execute(Database db) {
             var res = new HybreUniformResult();
-            res.Add(db[TableName], db[TableName].Rows.Select(e => e.Value));
+            var rows = db[TableName].Rows.Select(e => e.Value);
+            
+            res.Add(db[TableName], rows);
+            
             return res;
         }
     }

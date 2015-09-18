@@ -8,47 +8,50 @@ using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Tables;
 using HybreDb.Tables.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 using DateTime = HybreDb.Tables.Types.DateTime;
+using Text = HybreDb.Tables.Types.Text;
 
 namespace HybreDbTest {
-    [TestClass]
+
     public class TableTest {
         public const int N = 100000;
 
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
         public static Database Db = new Database("UnitTest", true);
 
-        [TestMethod]
+        [TestCase]
         public void Create() {
 
 
             var tab = DummyData.TestTable(Db, "Test");
             DummyData.TestRows(tab);
 
-            Trace.WriteLine("After insert");
-            Trace.WriteLine(tab.ToString());
+            Console.WriteLine("After insert");
+            Console.WriteLine(tab.ToString());
 
             tab = Db.Reopen(tab);
             
-            Trace.WriteLine("After Read");
-            Trace.WriteLine(tab.ToString());
+            Console.WriteLine("After Read");
+            Console.WriteLine(tab.ToString());
 
-            Trace.WriteLine("\nTessa lookup");
+            Console.WriteLine("\nTessa lookup");
             var tessas = tab.FindRows(new KeyValuePair<string, object>("Name", new Text("Tessa")));
 
-            Trace.WriteLine(String.Join("\n", tessas.Select(n => n.ToString())));
+            Console.WriteLine(String.Join("\n", tessas.Select(n => n.ToString())));
             
-            Trace.WriteLine("\n 22 lookup");
+            Console.WriteLine("\n 22 lookup");
             var tters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(22)));
-            Trace.WriteLine(String.Join("\n", tters.Select(n => n.ToString())));
+            Console.WriteLine(String.Join("\n", tters.Select(n => n.ToString())));
 
             foreach (var r in tessas.ToArray())
                 tab.Remove(r.Index);
 
             tab.Commit();
 
-            Trace.WriteLine("\nAfter Delete");
-            Trace.WriteLine(tab.ToString());
+            Console.WriteLine("\nAfter Delete");
+            Console.WriteLine(tab.ToString());
 
             foreach (var r in tters.ToArray())
                 tab.Update(r.Index, "Age", new Number(23));
@@ -56,16 +59,16 @@ namespace HybreDbTest {
 
             tab = Db.Reopen(tab);
 
-            Trace.WriteLine("\nAfter Read");
-            Trace.WriteLine(tab.ToString());
+            Console.WriteLine("\nAfter Read");
+            Console.WriteLine(tab.ToString());
 
-            Trace.WriteLine("\n 23 lookup");
+            Console.WriteLine("\n 23 lookup");
             var dters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(23)));
-            Trace.WriteLine(String.Join("\n", dters.Select(n => n.ToString())));
+            Console.WriteLine(String.Join("\n", dters.Select(n => n.ToString())));
 
         }
 
-        [TestMethod]
+        [TestCase]
         public void BulkInsert() {
             var set = GenerateDataset(N);
             var cols = new[] {
@@ -106,7 +109,7 @@ namespace HybreDbTest {
 
         }
 
-        [TestMethod] 
+        [TestCase] 
         public void Bench() {
 
             var set = GenerateDataset(N);
@@ -185,7 +188,7 @@ namespace HybreDbTest {
             sw.Start();
             act();
             sw.Stop();
-            Trace.WriteLine(txt + " took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine(txt + " took " + sw.ElapsedMilliseconds + "ms");
         }
     }
 }

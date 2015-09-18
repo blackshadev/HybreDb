@@ -8,9 +8,12 @@ using HybreDb.Tables.Types;
 using HybreDb.Test;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using HybreDb.BPlusTree.DataTypes;
+using NUnit.Framework;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
+using Text = HybreDb.Tables.Types.Text;
 
 namespace HybreDbTest {
-    [TestClass]
+
     public class TreeTest {
         
         private Tree<Number, TestData> Tree; 
@@ -21,6 +24,7 @@ namespace HybreDbTest {
         public TreeTest() {
             Tree = new Tree<Number, TestData>(50);
             RandomNumbers = GenerateRandomNumbers(N);
+            Tree.Init();
         }
 
         protected static List<Number> GenerateRandomNumbers(int n) {
@@ -37,7 +41,7 @@ namespace HybreDbTest {
             return l;
         }
             
-        [TestMethod]
+        [TestCase]
         public void TestInserts() {
             
             var sw = new Stopwatch();
@@ -45,7 +49,7 @@ namespace HybreDbTest {
             foreach (int t in RandomNumbers)
                 Tree.Insert(t, new TestData {Key = t, Value = "Test_" + t });
             sw.Stop();
-            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
 
             CheckTree();
             CheckAccess();
@@ -110,9 +114,10 @@ namespace HybreDbTest {
             Trace.WriteLine("CheckTree took " + sw.ElapsedMilliseconds + "ms");
         }
 
-        [TestMethod] 
+        [TestCase] 
         public void TestRemoval() {
             var t = new Tree<Number, TestData>(5);
+            t.Init();
             var sw = new Stopwatch();
             var nums = RandomNumbers.Take(1000).ToArray();
 
@@ -120,7 +125,7 @@ namespace HybreDbTest {
             foreach (int i in nums)
                 t.Insert(i, new TestData { Key = i, Value = "Test_" + i } );
             sw.Stop();
-            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
 
 
             sw.Reset();
@@ -129,7 +134,7 @@ namespace HybreDbTest {
                 Assert.IsFalse(t[i].Key != i, "Tree is invalid");
             }
             sw.Stop();
-            Trace.WriteLine("Check took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Check took " + sw.ElapsedMilliseconds + "ms");
 
 
             for(var i = 0; i < nums.Length; i++) {
@@ -142,7 +147,7 @@ namespace HybreDbTest {
             t.Insert(25, new TestData { Key = 25, Value = "new" });
         }
 
-        [TestMethod] 
+        [TestCase] 
         public void TestBulkInsert() {
             var nums = RandomNumbers.Select(e => new KeyValuePair<Number, TestData>(e, new TestData { Key = e, Value = "Test_" + e })).ToArray();
             
@@ -152,7 +157,7 @@ namespace HybreDbTest {
             var t = new Tree<Number, TestData>(50);
             t.Init(nums);
             sw.Stop();
-            Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 
             var iX = t.Count();
 
@@ -164,9 +169,10 @@ namespace HybreDbTest {
 
         }
 
-        [TestMethod] 
+        [TestCase] 
         public void TestText() {
             var t = new Tree<Text, TestData>(50);
+            t.Init();
 
             var data = RandomNumbers.Select(e => new KeyValuePair<Text, TestData>(new Text("Tester_" + e), new TestData {Key = e, Value = "Tester_" + e}) );
 
@@ -176,7 +182,7 @@ namespace HybreDbTest {
                 t.Insert(i.Key, i.Value);
             }
             sw.Stop();
-            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
             
             sw.Start();
@@ -184,7 +190,7 @@ namespace HybreDbTest {
                 Assert.IsFalse(d.Value.Key != t[d.Key].Key, "String values don't match");
             }
             sw.Stop();
-            Trace.WriteLine("Accesses took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Accesses took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
         }
 

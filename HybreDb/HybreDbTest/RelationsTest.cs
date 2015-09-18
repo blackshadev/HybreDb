@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 using HybreDb;
 using HybreDb.Relational;
 using HybreDb.Tables;
-using HybreDb.Tables.Types;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
+using Text = HybreDb.Tables.Types.Text;
 
 namespace HybreDbTest {
-    [TestClass]
     public class Relations {
         public const int N   = 110000;
         public const int N_R = 110000;
@@ -23,7 +23,7 @@ namespace HybreDbTest {
         Database DbB = new Database("RelationBench", true);
 
 
-        [TestMethod]
+        [TestCase]
         public void Basic() {
             Table t;
             if (!Db.Any()) {
@@ -68,7 +68,7 @@ namespace HybreDbTest {
 
         }
 
-        [TestMethod]
+        [TestCase]
         public void Bench() {
             Table t;
             if (!DbB.Any()) {

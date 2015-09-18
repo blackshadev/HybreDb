@@ -8,10 +8,10 @@ using HybreDb.Actions;
 using HybreDb.Tables;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
+using NUnit.Framework;
 
 namespace HybreDbTest {
 
-    [TestClass]
     public class JsonTest {
         private Database db;
 
@@ -73,7 +73,7 @@ namespace HybreDbTest {
                        "}" +
                     "}";
         protected const string strJson7 = "{" +
-                       "\"method\": \"relationList\"," +
+                       "\"method\": \"listRelation\"," +
                        "\"params\": {" +
                             "\"table\": \"People\"," +
                             "\"relation\": \"Knows\"" +
@@ -116,7 +116,7 @@ namespace HybreDbTest {
             t.Commit();
         }
 
-        [TestMethod]
+        [TestCase]
         public void Creation() {
             
             Time("Initial Parse" , () => HybreAction.Parse(strJson4));
@@ -135,7 +135,7 @@ namespace HybreDbTest {
             Console.WriteLine(str);
         }
 
-        [TestMethod]
+        [TestCase]
         public void SocketServer() {
             var hybre = new HybreDb.HybreDb("SocketServerTest", 4242, true);
             TestData(hybre.Database);
