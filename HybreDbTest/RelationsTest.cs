@@ -22,7 +22,8 @@ namespace HybreDbTest {
         private readonly Database DbB = new Database("RelationBench", true);
 
 
-        [TestCase] public void Basic() {
+        [TestCase]
+        public void Basic() {
             Table t;
             if (!Db.Any()) {
                 t = DummyData.TestTable(Db, "Test");
@@ -68,7 +69,7 @@ namespace HybreDbTest {
             }
         }
 
-        [TestCase] 
+        [TestCase]
         public void Bench() {
             Table t;
             if (!DbB.Any()) {

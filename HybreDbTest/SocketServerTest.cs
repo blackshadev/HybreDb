@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace HybreDbTest {
     public class SocketServerTest {
-        [TestCase] 
+        [TestCase]
         public void Small() {
             var s = new ThreadedSocketServer();
             s.OnDataReceived += (o, e) => Console.WriteLine(e.Message);

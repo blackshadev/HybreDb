@@ -35,7 +35,7 @@ namespace HybreDbTest {
             return l;
         }
 
-        [TestCase] 
+        [TestCase]
         public void TestInserts() {
             var sw = new Stopwatch();
             sw.Start();
@@ -107,7 +107,8 @@ namespace HybreDbTest {
             Trace.WriteLine("CheckTree took " + sw.ElapsedMilliseconds + "ms");
         }
 
-        [TestCase] public void TestRemoval() {
+        [TestCase]
+        public void TestRemoval() {
             var t = new Tree<Number, TestData>(5);
             t.Init();
             var sw = new Stopwatch();
@@ -139,7 +140,7 @@ namespace HybreDbTest {
             t.Insert(25, new TestData {Key = 25, Value = "new"});
         }
 
-        [TestCase] 
+        [TestCase]
         public void TestBulkInsert() {
             KeyValuePair<Number, TestData>[] nums =
                 RandomNumbers.Select(
@@ -161,7 +162,8 @@ namespace HybreDbTest {
                 Assert.IsFalse(n.Value != t[n.Key], "Invalid key");
         }
 
-        [TestCase] public void TestText() {
+        [TestCase]
+        public void TestText() {
             var t = new Tree<Text, TestData>(50);
             t.Init();
 

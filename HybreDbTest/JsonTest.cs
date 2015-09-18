@@ -117,7 +117,7 @@ namespace HybreDbTest {
             t.Commit();
         }
 
-        [TestCase] 
+        [TestCase]
         public void Creation() {
             Time("Initial Parse", () => HybreAction.Parse(strJson4));
 
@@ -135,7 +135,7 @@ namespace HybreDbTest {
             Console.WriteLine(str);
         }
 
-        [TestCase] 
+        [TestCase]
         public void SocketServer() {
             var hybre = new HybreDb.HybreDb("SocketServerTest", 4242, true);
             TestData(hybre.Database);

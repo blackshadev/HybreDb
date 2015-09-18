@@ -17,7 +17,7 @@ namespace HybreDbTest {
         public Stopwatch sw = new Stopwatch();
         public DiskTreeTest Cache { get; private set; }
 
-        [TestCase, Sequential] 
+        [TestCase, Sequential]
         public void TestInserts() {
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
@@ -50,7 +50,7 @@ namespace HybreDbTest {
             sw.Reset();
         }
 
-        [TestCase, Sequential] 
+        [TestCase, Sequential]
         public void WriteCheck() {
             if (File.Exists("test_write.dat"))
                 File.Delete("test_write.dat");

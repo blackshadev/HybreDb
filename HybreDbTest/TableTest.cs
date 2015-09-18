@@ -17,7 +17,8 @@ namespace HybreDbTest {
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
         public static Database Db = new Database("UnitTest", true);
 
-        [TestCase] public void Create() {
+        [TestCase]
+        public void Create() {
             Table tab = DummyData.TestTable(Db, "Test");
             DummyData.TestRows(tab);
 
@@ -60,7 +61,8 @@ namespace HybreDbTest {
             Console.WriteLine(String.Join("\n", dters.Select(n => n.ToString())));
         }
 
-        [TestCase] public void BulkInsert() {
+        [TestCase]
+        public void BulkInsert() {
             IDataType[][] set = GenerateDataset(N);
             var cols = new[] {
                 new DataColumn {Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true},
@@ -100,7 +102,7 @@ namespace HybreDbTest {
             Assert.IsFalse(i != N, "Missing records");
         }
 
-        [TestCase] 
+        [TestCase]
         public void Bench() {
             IDataType[][] set = GenerateDataset(N);
 
