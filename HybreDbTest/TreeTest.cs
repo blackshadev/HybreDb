@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Globalization;
 using System.Linq;
 using HybreDb.BPlusTree;
 using HybreDb.Tables.Types;
 using HybreDb.Test;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
-using HybreDb.BPlusTree.DataTypes;
+using NUnit.Framework;
+using Text = HybreDb.Tables.Types.Text;
 
 namespace HybreDbTest {
-    [TestClass]
     public class TreeTest {
-        
-        private Tree<Number, TestData> Tree; 
+        private readonly List<Number> RandomNumbers;
+        private readonly Tree<Number, TestData> Tree;
         private int N = 10000;
-        private List<Number> RandomNumbers; 
 
 
         public TreeTest() {
             Tree = new Tree<Number, TestData>(50);
             RandomNumbers = GenerateRandomNumbers(N);
+            Tree.Init();
         }
 
         protected static List<Number> GenerateRandomNumbers(int n) {
@@ -28,7 +26,7 @@ namespace HybreDbTest {
 
             var rnd = new Random();
             while (l.Count < n) {
-                var i = rnd.Next();
+                int i = rnd.Next();
                 if (l.Contains(i)) continue;
 
                 l.Add(i);
@@ -36,16 +34,14 @@ namespace HybreDbTest {
 
             return l;
         }
-            
-        [TestMethod]
-        public void TestInserts() {
-            
+
+        [TestCase] public void TestInserts() {
             var sw = new Stopwatch();
             sw.Start();
             foreach (int t in RandomNumbers)
-                Tree.Insert(t, new TestData {Key = t, Value = "Test_" + t });
+                Tree.Insert(t, new TestData {Key = t, Value = "Test_" + t});
             sw.Stop();
-            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
 
             CheckTree();
             CheckAccess();
@@ -59,9 +55,9 @@ namespace HybreDbTest {
             var sw = new Stopwatch();
             sw.Start();
 
-            for (var i = 0; i < n; i++) {
+            for (int i = 0; i < n; i++) {
                 int iX = rnd.Next(0, N);
-                var num = RandomNumbers[iX];
+                Number num = RandomNumbers[iX];
                 Assert.IsFalse(num != Tree[num].Key, "failed");
             }
 
@@ -72,8 +68,8 @@ namespace HybreDbTest {
         public void CheckAccess() {
             var sw = new Stopwatch();
             sw.Start();
-            foreach (var n in RandomNumbers) {
-                var v = Tree[n];
+            foreach (Number n in RandomNumbers) {
+                TestData v = Tree[n];
                 Assert.IsFalse(v.Key != n, "Accessed failed");
             }
             sw.Stop();
@@ -84,7 +80,7 @@ namespace HybreDbTest {
             var sw = new Stopwatch();
             sw.Start();
 
-            foreach (var n in RandomNumbers) {
+            foreach (Number n in RandomNumbers) {
                 Tree.Remove(n);
             }
 
@@ -110,17 +106,17 @@ namespace HybreDbTest {
             Trace.WriteLine("CheckTree took " + sw.ElapsedMilliseconds + "ms");
         }
 
-        [TestMethod] 
-        public void TestRemoval() {
+        [TestCase] public void TestRemoval() {
             var t = new Tree<Number, TestData>(5);
+            t.Init();
             var sw = new Stopwatch();
-            var nums = RandomNumbers.Take(1000).ToArray();
+            Number[] nums = RandomNumbers.Take(1000).ToArray();
 
             sw.Start();
             foreach (int i in nums)
-                t.Insert(i, new TestData { Key = i, Value = "Test_" + i } );
+                t.Insert(i, new TestData {Key = i, Value = "Test_" + i});
             sw.Stop();
-            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
 
 
             sw.Reset();
@@ -129,46 +125,49 @@ namespace HybreDbTest {
                 Assert.IsFalse(t[i].Key != i, "Tree is invalid");
             }
             sw.Stop();
-            Trace.WriteLine("Check took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Check took " + sw.ElapsedMilliseconds + "ms");
 
 
-            for(var i = 0; i < nums.Length; i++) {
+            for (int i = 0; i < nums.Length; i++) {
                 t.Remove(nums[i]);
-                
-                for(int j = i + 1; j < nums.Length; j++)
-                    Assert.IsFalse(t[nums[j]].Key != nums[j] , "Remove corrupted tree");
+
+                for (int j = i + 1; j < nums.Length; j++)
+                    Assert.IsFalse(t[nums[j]].Key != nums[j], "Remove corrupted tree");
             }
 
-            t.Insert(25, new TestData { Key = 25, Value = "new" });
+            t.Insert(25, new TestData {Key = 25, Value = "new"});
         }
 
-        [TestMethod] 
-        public void TestBulkInsert() {
-            var nums = RandomNumbers.Select(e => new KeyValuePair<Number, TestData>(e, new TestData { Key = e, Value = "Test_" + e })).ToArray();
-            
+        [TestCase] public void TestBulkInsert() {
+            KeyValuePair<Number, TestData>[] nums =
+                RandomNumbers.Select(
+                    e => new KeyValuePair<Number, TestData>(e, new TestData {Key = e, Value = "Test_" + e})).ToArray();
+
 
             var sw = new Stopwatch();
             sw.Start();
             var t = new Tree<Number, TestData>(50);
             t.Init(nums);
             sw.Stop();
-            Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 
-            var iX = t.Count();
+            int iX = t.Count();
 
             Assert.IsFalse(nums.Length != iX, "Missing entries");
 
-            foreach (var n in nums) 
+            foreach (var n in nums)
                 Assert.IsFalse(n.Value != t[n.Key], "Invalid key");
-            
-
         }
 
-        [TestMethod] 
-        public void TestText() {
+        [TestCase] public void TestText() {
             var t = new Tree<Text, TestData>(50);
+            t.Init();
 
-            var data = RandomNumbers.Select(e => new KeyValuePair<Text, TestData>(new Text("Tester_" + e), new TestData {Key = e, Value = "Tester_" + e}) );
+            IEnumerable<KeyValuePair<Text, TestData>> data =
+                RandomNumbers.Select(
+                    e =>
+                        new KeyValuePair<Text, TestData>(new Text("Tester_" + e),
+                            new TestData {Key = e, Value = "Tester_" + e}));
 
             var sw = new Stopwatch();
             sw.Start();
@@ -176,18 +175,16 @@ namespace HybreDbTest {
                 t.Insert(i.Key, i.Value);
             }
             sw.Stop();
-            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
-            
+
             sw.Start();
             foreach (var d in data) {
                 Assert.IsFalse(d.Value.Key != t[d.Key].Key, "String values don't match");
             }
             sw.Stop();
-            Trace.WriteLine("Accesses took " + sw.ElapsedMilliseconds + "ms");
+            Console.WriteLine("Accesses took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
         }
-
     }
-
 }
