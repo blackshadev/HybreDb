@@ -1,0 +1,10 @@
+﻿<table class="table table-striped">
+    <thead>
+        <tr><th>Table name</th></tr>
+    </thead>
+    <tbody>
+        {{~ it : tab }}
+        <tr><td><a href="/view/table/{{=tab.tableName}}">{{=tab.tableName}}</a></td></tr>
+        {{~}}
+    </tbody>
+</table>
