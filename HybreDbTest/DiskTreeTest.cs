@@ -17,20 +17,22 @@ namespace HybreDbTest {
         public Stopwatch sw = new Stopwatch();
         public DiskTreeTest Cache { get; private set; }
 
-        [TestCase] public void TestInserts() {
+        [TestCase, Sequential] 
+        public void TestInserts() {
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
 
-            if (File.Exists("test.dat")) File.Delete("test.dat");
+            if (File.Exists("test_insert.dat"))
+                File.Delete("test_insert.dat");
 
-            var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize);
+            var t = new DiskTree<Number, TestData>("test_insert.dat", BucketSize, CacheSize);
             t.Init();
 
             sw.Start();
             foreach (Number n in numbers)
                 t.Insert(n, new TestData {Key = n, Value = "test_" + n});
             sw.Stop();
-            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
             t.Write();
@@ -38,19 +40,20 @@ namespace HybreDbTest {
             sw.Start();
             CheckAccess(t, numbers);
             sw.Stop();
-            Console.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
             sw.Start();
             CheckIterate(t, numbers);
             sw.Stop();
-            Console.WriteLine("Iterate took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Iterate took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
         }
 
-        [TestCase] public void WriteCheck() {
-            if (File.Exists("test.dat"))
-                File.Delete("test.dat");
+        [TestCase, Sequential] 
+        public void WriteCheck() {
+            if (File.Exists("test_write.dat"))
+                File.Delete("test_write.dat");
 
             var numbers = new Number[N];
             GenerateRandomNumbers(numbers);
@@ -60,7 +63,7 @@ namespace HybreDbTest {
             var sw = new Stopwatch();
 
             sw.Start();
-            var t = new DiskTree<Number, TestData>("test.dat", BucketSize, CacheSize);
+            var t = new DiskTree<Number, TestData>("test_write.dat", BucketSize, CacheSize);
             t.Init(nums);
             sw.Stop();
             Console.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
@@ -75,19 +78,19 @@ namespace HybreDbTest {
             sw.Start();
             t.Read();
             sw.Stop();
-            Console.WriteLine("Read took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Read took " + sw.ElapsedMilliseconds + "ms");
 
             sw.Reset();
             sw.Start();
             CheckAccess(t, numbers);
             sw.Stop();
-            Console.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Access took " + sw.ElapsedMilliseconds + "ms");
 
             sw.Reset();
             sw.Start();
             CheckIterate(t, numbers);
             sw.Stop();
-            Console.WriteLine("Iterate took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Iterate took " + sw.ElapsedMilliseconds + "ms");
         }
 
 

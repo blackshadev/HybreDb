@@ -68,7 +68,8 @@ namespace HybreDbTest {
             }
         }
 
-        [TestCase] public void Bench() {
+        [TestCase] 
+        public void Bench() {
             Table t;
             if (!DbB.Any()) {
                 t = DummyData.TestTable(DbB, "Test");

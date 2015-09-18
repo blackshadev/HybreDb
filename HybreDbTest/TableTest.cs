@@ -100,7 +100,8 @@ namespace HybreDbTest {
             Assert.IsFalse(i != N, "Missing records");
         }
 
-        [TestCase] public void Bench() {
+        [TestCase] 
+        public void Bench() {
             IDataType[][] set = GenerateDataset(N);
 
             var cols = new[] {
@@ -178,7 +179,7 @@ namespace HybreDbTest {
             sw.Start();
             act();
             sw.Stop();
-            Console.WriteLine(txt + " took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine(txt + " took " + sw.ElapsedMilliseconds + "ms");
         }
     }
 }

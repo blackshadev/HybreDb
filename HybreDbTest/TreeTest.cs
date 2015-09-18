@@ -35,13 +35,14 @@ namespace HybreDbTest {
             return l;
         }
 
-        [TestCase] public void TestInserts() {
+        [TestCase] 
+        public void TestInserts() {
             var sw = new Stopwatch();
             sw.Start();
             foreach (int t in RandomNumbers)
                 Tree.Insert(t, new TestData {Key = t, Value = "Test_" + t});
             sw.Stop();
-            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
 
             CheckTree();
             CheckAccess();
@@ -138,7 +139,8 @@ namespace HybreDbTest {
             t.Insert(25, new TestData {Key = 25, Value = "new"});
         }
 
-        [TestCase] public void TestBulkInsert() {
+        [TestCase] 
+        public void TestBulkInsert() {
             KeyValuePair<Number, TestData>[] nums =
                 RandomNumbers.Select(
                     e => new KeyValuePair<Number, TestData>(e, new TestData {Key = e, Value = "Test_" + e})).ToArray();
@@ -149,7 +151,7 @@ namespace HybreDbTest {
             var t = new Tree<Number, TestData>(50);
             t.Init(nums);
             sw.Stop();
-            Console.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Bulk insert took " + sw.ElapsedMilliseconds + "ms");
 
             int iX = t.Count();
 
@@ -175,7 +177,7 @@ namespace HybreDbTest {
                 t.Insert(i.Key, i.Value);
             }
             sw.Stop();
-            Console.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Insert took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
 
             sw.Start();
@@ -183,7 +185,7 @@ namespace HybreDbTest {
                 Assert.IsFalse(d.Value.Key != t[d.Key].Key, "String values don't match");
             }
             sw.Stop();
-            Console.WriteLine("Accesses took " + sw.ElapsedMilliseconds + "ms");
+            Trace.WriteLine("Accesses took " + sw.ElapsedMilliseconds + "ms");
             sw.Reset();
         }
     }
