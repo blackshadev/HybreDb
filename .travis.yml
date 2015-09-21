@@ -1,0 +1,8 @@
+language: csharp
+solution: HybreDb.sln
+install:
+  - nuget restore HybreDb.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release HybreDb.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./HybreDbTest/bin/Release/HybreDbTest.dll
