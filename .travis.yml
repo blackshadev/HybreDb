@@ -6,3 +6,7 @@ install:
 script:
   - xbuild /p:Configuration=Release HybreDb.sln
   - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./HybreDbTest/bin/Release/HybreDbTest.dll
+mono:
+  - latest
+  - 3.12.0
+  - 3.10.0
