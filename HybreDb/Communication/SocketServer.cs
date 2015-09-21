@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -29,8 +30,6 @@ namespace HybreDb.Communication {
         public SocketServer Server;
 
         private bool Disposed = false;
-        private bool IsBusy = false;
-        private Object NotBusyLock;
 
         
         /// <summary>
@@ -41,7 +40,7 @@ namespace HybreDb.Communication {
         public ClientState(SocketServer s, Socket cSocket) {
             Server = s;
             Socket = cSocket;
-            NotBusyLock = new Object();
+            //NotBusyLock = new Object();
             
             
             WaitForMessage();
@@ -52,12 +51,13 @@ namespace HybreDb.Communication {
         ///     Waits for a message by first receiving the length of the upcoming message
         /// </summary>
         public void WaitForMessage() {
-            lock (NotBusyLock) {
-                IsBusy = false;
-                Monitor.PulseAll(NotBusyLock);
+            if (!Server.IsRunning || !Socket.Connected) {
+                Dispose();
+                return;
             }
 
-            DataOffset = 0;
+
+            //DataOffset = 0;
             Buffer = new byte[4];
             try {
                 Socket.BeginReceive(Buffer, 0, 4, SocketFlags.None, ReadLengthCallback, null);
@@ -71,18 +71,14 @@ namespace HybreDb.Communication {
         ///     Reads the length of the upcomming message
         /// </summary>
         public void ReadLengthCallback(IAsyncResult ar) {
-            lock (NotBusyLock) {
-                IsBusy = true;
-            }
-            if (Disposed) {
-                IsBusy = false;
-                return;
-            }
-
-
-                DataLength = BitConverter.ToInt32(Buffer, 0);
+            DataLength = BitConverter.ToInt32(Buffer, 0);
             Buffer = new byte[DataLength];
 
+            // The buffer is set zeroed when the socket closes. So upon receiving a 0 length message, dispose
+            if (DataLength < 1 || !Socket.Connected) {
+                Dispose();
+                return;
+            }
             try {
                 Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
             }
@@ -95,8 +91,6 @@ namespace HybreDb.Communication {
         ///     Reads a part of the message and updates the data offset
         /// </summary>
         public void ReadCallback(IAsyncResult ar) {
-            if (!Socket.Connected) return;
-
             try {
                 DataOffset += Socket.EndReceive(ar);
 
@@ -105,6 +99,7 @@ namespace HybreDb.Communication {
                         null);
                 else {
                     Server.ClientDataReceived(this);
+                    
                     WaitForMessage();
                 }
             }
@@ -139,17 +134,13 @@ namespace HybreDb.Communication {
         }
 
         protected void Dispose(bool all) {
-            lock (NotBusyLock) {
-                if (IsBusy) 
-                    Monitor.Wait(NotBusyLock);
-                
-                Disposed = true;
-                Socket.Close();
-                Socket.Dispose();
-                Buffer = null;
-                DataLength = 0;
-                DataOffset = 0;
-            }
+
+            Disposed = true;
+            DataLength = 0;
+            DataOffset = 0;
+            Socket.Dispose();
+            Buffer = null;
+
         }
     }
 
@@ -168,7 +159,7 @@ namespace HybreDb.Communication {
         public delegate void ClientDataReceivedEventHandler(object s, ClientDataReceivedEvent e);
 
         protected ManualResetEvent Accepted;
-        protected bool IsRunning;
+        public bool IsRunning { get; protected set; }
         protected int Port;
         protected Socket Server;
         protected List<ClientState> Clients;
@@ -201,13 +192,7 @@ namespace HybreDb.Communication {
 
                 Accepted.WaitOne();
             }
-            
-            lock (Clients) {
-                Clients.ForEach(c => {
-                    c.Dispose();
-                });
-            }
-
+            Server.Close();
         }
 
         public void ClientDataReceived(ClientState s) {
