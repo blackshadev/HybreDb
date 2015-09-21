@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -138,12 +139,14 @@ namespace HybreDb.Communication {
         protected bool IsRunning;
         protected int Port;
         protected Socket Server;
+        protected List<ClientState> Clients;
 
         public SocketServer(int port = 4242) {
             Server = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             Port = port;
-
+            
             Accepted = new ManualResetEvent(false);
+            Clients = new List<ClientState>();
         }
 
         /// <summary>
@@ -180,13 +183,18 @@ namespace HybreDb.Communication {
         /// </summary>
         /// <param name="ar"></param>
         public void AcceptCallback(IAsyncResult ar) {
-            Accepted.Set();
 
             Socket listener = Server;
             Socket cSocket = listener.EndAccept(ar);
 
-            var c = new ClientState(this, cSocket);
+            lock (Clients) {
+                Clients.Add(new ClientState(this, cSocket));
+            }
+
+            Accepted.Set();
+
         }
+        
 
         /// <summary>
         ///     Stops accepting messages and disposes the server socket
@@ -194,6 +202,9 @@ namespace HybreDb.Communication {
         public virtual void Stop() {
             IsRunning = false;
             Accepted.Set();
+            lock (Clients) {
+                Clients.ForEach(c => c.Dispose());
+            }
             Server.Dispose();
         }
     }
