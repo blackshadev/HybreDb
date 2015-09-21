@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/blackshadev/HybreDb.svg?branch=master)](https://travis-ci.org/blackshadev/HybreDb)
+
 # HybreDb
 Hybrid Relational Database
 
