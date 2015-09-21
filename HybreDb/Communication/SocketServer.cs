@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -27,6 +28,11 @@ namespace HybreDb.Communication {
 
         public SocketServer Server;
 
+        private bool Disposed = false;
+        private bool IsBusy = false;
+        private Object NotBusyLock;
+
+        
         /// <summary>
         ///     Client socket
         /// </summary>
@@ -35,18 +41,22 @@ namespace HybreDb.Communication {
         public ClientState(SocketServer s, Socket cSocket) {
             Server = s;
             Socket = cSocket;
-
+            NotBusyLock = new Object();
+            
+            
             WaitForMessage();
         }
 
-        public void Dispose() {
-            Dispose(true);
-        }
 
         /// <summary>
         ///     Waits for a message by first receiving the length of the upcoming message
         /// </summary>
         public void WaitForMessage() {
+            lock (NotBusyLock) {
+                IsBusy = false;
+                Monitor.PulseAll(NotBusyLock);
+            }
+
             DataOffset = 0;
             Buffer = new byte[4];
             try {
@@ -61,7 +71,16 @@ namespace HybreDb.Communication {
         ///     Reads the length of the upcomming message
         /// </summary>
         public void ReadLengthCallback(IAsyncResult ar) {
-            DataLength = BitConverter.ToInt32(Buffer, 0);
+            lock (NotBusyLock) {
+                IsBusy = true;
+            }
+            if (Disposed) {
+                IsBusy = false;
+                return;
+            }
+
+
+                DataLength = BitConverter.ToInt32(Buffer, 0);
             Buffer = new byte[DataLength];
 
             try {
@@ -76,6 +95,8 @@ namespace HybreDb.Communication {
         ///     Reads a part of the message and updates the data offset
         /// </summary>
         public void ReadCallback(IAsyncResult ar) {
+            if (!Socket.Connected) return;
+
             try {
                 DataOffset += Socket.EndReceive(ar);
 
@@ -112,12 +133,23 @@ namespace HybreDb.Communication {
             Socket.EndSend(ar);
         }
 
+
+        public void Dispose() {
+            Dispose(true);
+        }
+
         protected void Dispose(bool all) {
-            Socket.Close();
-            Socket.Dispose();
-            Buffer = null;
-            DataLength = 0;
-            DataOffset = 0;
+            lock (NotBusyLock) {
+                if (IsBusy) 
+                    Monitor.Wait(NotBusyLock);
+                
+                Disposed = true;
+                Socket.Close();
+                Socket.Dispose();
+                Buffer = null;
+                DataLength = 0;
+                DataOffset = 0;
+            }
         }
     }
 
@@ -169,6 +201,13 @@ namespace HybreDb.Communication {
 
                 Accepted.WaitOne();
             }
+            
+            lock (Clients) {
+                Clients.ForEach(c => {
+                    c.Dispose();
+                });
+            }
+
         }
 
         public void ClientDataReceived(ClientState s) {
@@ -183,14 +222,21 @@ namespace HybreDb.Communication {
         /// </summary>
         /// <param name="ar"></param>
         public void AcceptCallback(IAsyncResult ar) {
+            if (!IsRunning) return;
 
             Socket listener = Server;
-            Socket cSocket = listener.EndAccept(ar);
+            try {
+                
+                Socket cSocket = listener.EndAccept(ar);
+                lock (Clients) {
+                    Clients.Add(new ClientState(this, cSocket));
+                }
 
-            lock (Clients) {
-                Clients.Add(new ClientState(this, cSocket));
             }
-
+            catch (Exception) {
+                return;
+            }
+            
             Accepted.Set();
 
         }
@@ -202,10 +248,7 @@ namespace HybreDb.Communication {
         public virtual void Stop() {
             IsRunning = false;
             Accepted.Set();
-            lock (Clients) {
-                Clients.ForEach(c => c.Dispose());
-            }
-            Server.Dispose();
+
         }
     }
 }
