@@ -45,6 +45,7 @@ namespace HybreDb.Tables {
 
         protected AIndexTree(string name) {
             Name = name;
+            Tree = new DiskTree<TKey, TValue>(name + ".idx.bin", Table.BucketSize, Table.CacheSize);
         }
 
         public abstract void Add(TKey d, Number n);
@@ -53,7 +54,15 @@ namespace HybreDb.Tables {
         public abstract void Remove(TKey d, Number n);
         public void Remove(object d, Number n) => Add((TKey)d, n);
 
-        
+
+        public Numbers Match(object k) {
+            if (k.GetType() != typeof(TKey))
+                throw new ArgumentException("Data with wrong type given. Expected `" + typeof(TKey).Name + "` got `" +
+                                            k.GetType().Name + "`");
+            return Match((TKey)k);
+        }
+        public abstract Numbers Match(TKey k);
+
         public abstract void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> d);
 
         public void Init() => Tree.Init();
@@ -61,15 +70,13 @@ namespace HybreDb.Tables {
         public void Read() => Tree.Read();
         public void Revert() => Tree.Revert();
         public void Drop() => Tree.Drop();
-
-        public abstract Numbers Match(object k);
-
+        
         public void Dispose() {
             Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected abstract void Dispose(bool all);
+        protected void Dispose(bool all) => Tree.Dispose();
     }
 
 
@@ -78,23 +85,8 @@ namespace HybreDb.Tables {
     /// </summary>
     public class IndexTree<TKey> : AIndexTree<TKey, Numbers>
         where TKey : IDataType, new() {
-        
 
-        public IndexTree(string name) : base(name) {
-            Tree = new DiskTree<TKey, Numbers>(name + ".idx.bin", Table.BucketSize, Table.CacheSize);
-        }
-
-        /// <summary>
-        ///     Give the numbers of indices matching the given object.
-        /// </summary>
-        /// <param name="d">Object to match</param>
-        public override Numbers Match(object d) {
-            if (d.GetType() != typeof (TKey))
-                throw new ArgumentException("Data with wrong type given. Expected `" + typeof (TKey).Name + "` got `" +
-                                            d.GetType().Name + "`");
-            return Match((TKey) d);
-        }
-        
+        public IndexTree(string n) : base(n) {}
         
 
         public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> data) {
@@ -108,7 +100,7 @@ namespace HybreDb.Tables {
         ///     Give the numbers of indices matching the given key value
         /// </summary>
         /// <param name="d">Key value to match</param>
-        public Numbers Match(TKey d) {
+        public override Numbers Match(TKey d) {
             return Tree.Get(d) ?? new Numbers();
         }
 
@@ -155,13 +147,32 @@ namespace HybreDb.Tables {
 
             if (empty) Tree.Remove(d);
         }
+        
+    }
 
-        /// <summary>
-        ///     Release all resources held by the tree
-        /// </summary>
-        protected override void Dispose(bool disposing) {
-            Tree.Dispose();
+    public class UniqueIndexTree<TKey> : AIndexTree<TKey, Number>
+        where TKey : IDataType, new() {
+        
+        public UniqueIndexTree(string name) : base(name) {}
+
+        
+        public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> d) {
+            throw new NotImplementedException();
+        }
+
+        public override Numbers Match(TKey k) {
+            var num = Tree[k];
+            var nums = new Numbers();
+            if (num != null) nums.Add(num);
+            return nums;
+        }
+
+        public override void Add(TKey d, Number n) {
+            Tree.Insert(d, n);
+        }
+
+        public override void Remove(TKey d, Number n) {
+            Tree.Remove(d);
         }
     }
-    
 }
