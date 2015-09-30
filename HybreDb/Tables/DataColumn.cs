@@ -54,13 +54,12 @@ namespace HybreDb.Tables {
         /// <summary>
         ///     System Type of the data in this column
         /// </summary>
-        public Type Type {
-            get { return DataType.GetSystemType(); }
-        }
+        public Type Type => DataType.GetSystemType();
 
-        public int DataIndex {
-            get { return Table.Columns.IndexOf(Name); }
-        }
+        /// <summary>
+        /// Gets the index of the column within the table
+        /// </summary>
+        public int DataIndex => Table.Columns.IndexOf(Name);
 
         /// <summary>
         ///     Index tree
