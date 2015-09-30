@@ -40,7 +40,7 @@ namespace HybreDb.BPlusTree {
 
         public TValue this[TKey k] {
             get { return Get(k); }
-            //set { Root.Insert(k.GetHashCode(), value); }
+            set { Insert(k, value); }
         }
 
         public void Dispose() {
