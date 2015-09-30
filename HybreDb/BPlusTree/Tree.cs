@@ -38,6 +38,12 @@ namespace HybreDb.BPlusTree {
         public int BucketSize { get; protected set; }
         public INode<TKey, TValue> Root { get; protected set; }
 
+        /// <summary>
+        /// Sets and gets the a item with the given key.
+        /// </summary>
+        /// <remarks>The setter wil call the Insert value, this will fail when the key value already existed</remarks>
+        /// <param name="k">The key of the item</param>
+        /// <returns>The item bound to given key</returns>
         public TValue this[TKey k] {
             get { return Get(k); }
             set { Insert(k, value); }
