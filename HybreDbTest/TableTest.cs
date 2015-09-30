@@ -25,32 +25,38 @@ namespace HybreDbTest {
             Console.WriteLine("After insert");
             Console.WriteLine(tab.ToString());
 
+            Assert.IsTrue(tab.Rows.Count() == 5, "Missing rows");
+
             tab = Db.Reopen(tab);
 
             Console.WriteLine("After Read");
             Console.WriteLine(tab.ToString());
 
+            Assert.IsTrue(tab.Rows.Count() == 5, "Missing rows after read");
+
             Console.WriteLine("\nTessa lookup");
             IEnumerable<DataRow> tessas = tab.FindRows(new KeyValuePair<string, object>("Name", new Text("Tessa")));
 
             Console.WriteLine(String.Join("\n", tessas.Select(n => n.ToString())));
+            Assert.IsTrue(tessas.Count() == 2, "Invalid lookup on indexed column");
 
             Console.WriteLine("\n 22 lookup");
-            IEnumerable<DataRow> tters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(22)));
+            IEnumerable<DataRow> tters = tab.FindRows(new KeyValuePair<string, object>("Unindexed_Age", new Number(22)));
             Console.WriteLine(String.Join("\n", tters.Select(n => n.ToString())));
+            Assert.IsTrue(tters.Count() == 2, "Invalid lookup on unindexed column");
 
             foreach (DataRow r in tessas.ToArray())
                 tab.Remove(r.Index);
-
+            
             tab.Commit();
-
+            
             Console.WriteLine("\nAfter Delete");
             Console.WriteLine(tab.ToString());
+            Assert.IsTrue(tab.Rows.Count() == 3, "Invalid row count after delete");
 
             foreach (DataRow r in tters.ToArray())
                 tab.Update(r.Index, "Age", new Number(23));
-
-
+            
             tab = Db.Reopen(tab);
 
             Console.WriteLine("\nAfter Read");
@@ -59,6 +65,7 @@ namespace HybreDbTest {
             Console.WriteLine("\n 23 lookup");
             IEnumerable<DataRow> dters = tab.FindRows(new KeyValuePair<string, object>("Age", new Number(23)));
             Console.WriteLine(String.Join("\n", dters.Select(n => n.ToString())));
+            Assert.IsTrue(dters.Count() == 2, "Invalid lookup on index column after delete");
         }
 
         [TestCase]
