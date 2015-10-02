@@ -32,7 +32,7 @@ namespace HybreDb.Tables {
                 ByName.Add(cols[i].Name, i);
                 cols[i].Table = t;
 
-                if (!cols[i].HasIndex) continue;
+                if (cols[i].IndexType == IndexType.None) continue;
 
                 IndexedColumnsList.Add(i);
                 cols[i].CreateIndex();

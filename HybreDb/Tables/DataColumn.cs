@@ -14,7 +14,8 @@ namespace HybreDb.Tables {
         /// <summary>
         ///     Whenever this column has an index associated with the data
         /// </summary>
-        public bool HasIndex;
+        public IndexType IndexType;
+        
 
         /// <summary>
         ///     Whenever the column is hidden to the user
@@ -30,27 +31,8 @@ namespace HybreDb.Tables {
         ///     Reference to the table containing this column
         /// </summary>
         internal Table Table;
-
-        public DataColumn() {}
-
-        /// <summary>
-        ///     Creates a existing DataColumn based on a BinaryStream and bound to a given table
-        /// </summary>
-        public DataColumn(Table t, BinaryReader rdr) {
-            Table = t;
-            Deserialize(rdr);
-        }
-
-        /// <summary>
-        ///     Creates a definition of a DataColumn which is not yet bound to a table
-        /// </summary>
-        public DataColumn(string name, DataTypes.Types type, bool idx = false, bool hidden = false) {
-            Name = name;
-            DataType = type;
-            HasIndex = idx;
-            Hidden = hidden;
-        }
-
+        
+        
         /// <summary>
         ///     System Type of the data in this column
         /// </summary>
@@ -65,6 +47,27 @@ namespace HybreDb.Tables {
         ///     Index tree
         /// </summary>
         public IIndexTree Index { get; protected set; }
+
+
+        public DataColumn() { }
+
+        /// <summary>
+        ///     Creates a existing DataColumn based on a BinaryStream and bound to a given table
+        /// </summary>
+        public DataColumn(Table t, BinaryReader rdr) {
+            Table = t;
+            Deserialize(rdr);
+        }
+
+        /// <summary>
+        ///     Creates a definition of a DataColumn which is not yet bound to a table
+        /// </summary>
+        public DataColumn(string name, DataTypes.Types type, bool idx = false, bool hidden = false, bool unique = false) {
+            Name = name;
+            DataType = type;
+            HasIndex = idx;
+            Hidden = hidden;
+        }
 
 
         /// <summary>

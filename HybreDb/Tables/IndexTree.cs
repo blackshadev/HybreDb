@@ -7,6 +7,13 @@ using HybreDb.Storage;
 using HybreDb.Tables.Types;
 
 namespace HybreDb.Tables {
+
+    public enum IndexType {
+        None,
+        Index,
+        UniqueIndex
+    }
+
     /// <summary>
     ///     Interface allowing interaction with a untyped genetic IndexedTree
     /// </summary>
