@@ -12,3 +12,6 @@ mono:
   - 3.10.0
 notifications:
   email: false
+branches:
+  only:
+    - master
