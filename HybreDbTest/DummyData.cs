@@ -11,6 +11,39 @@ namespace HybreDbTest {
         public const int Seed = 42;
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
 
+        public static IDataType[][] Rows = new IDataType[][] {
+            new IDataType[] {
+                new Text("Vincent"),
+                new Number(22),
+                new Number(22),
+                new HybreDb.Tables.Types.DateTime(DateTime.Now)
+            },
+            new IDataType[] {
+                new Text("Wouter"),
+                new Number(22),
+                new Number(22),
+                new HybreDb.Tables.Types.DateTime(DateTime.Now)
+            },
+            new IDataType[] {
+                new Text("Tessa"),
+                new Number(20),
+                new Number(20),
+                new HybreDb.Tables.Types.DateTime(DateTime.Now)
+            },
+            new IDataType[] {
+                new Text("Tessa"),
+                new Number(26),
+                new Number(26),
+                new HybreDb.Tables.Types.DateTime(DateTime.Now)
+            },
+            new IDataType[] {
+                new Text("Stefan"),
+                new Number(21),
+                new Number(21),
+                new HybreDb.Tables.Types.DateTime(DateTime.Now)
+            }
+        };
+
         public static Table TestTable(Database db, string n) {
             var cols = new[] {
                 new DataColumn("Name", DataTypes.Types.Text, true),
@@ -22,36 +55,11 @@ namespace HybreDbTest {
         }
 
         public static void TestRows(Table tab) {
-            tab.Insert(new IDataType[] {
-                new Text("Vincent"),
-                new Number(22),
-                new Number(22),
-                new HybreDb.Tables.Types.DateTime(DateTime.Now)
-            });
-            tab.Insert(new IDataType[] {
-                new Text("Wouter"),
-                new Number(22),
-                new Number(22),
-                new HybreDb.Tables.Types.DateTime(DateTime.Now)
-            });
-            tab.Insert(new IDataType[] {
-                new Text("Tessa"),
-                new Number(20),
-                new Number(20),
-                new HybreDb.Tables.Types.DateTime(DateTime.Now)
-            });
-            tab.Insert(new IDataType[] {
-                new Text("Tessa"),
-                new Number(26),
-                new Number(26),
-                new HybreDb.Tables.Types.DateTime(DateTime.Now)
-            });
-            tab.Insert(new IDataType[] {
-                new Text("Stefan"),
-                new Number(21),
-                new Number(21),
-                new HybreDb.Tables.Types.DateTime(DateTime.Now)
-            });
+
+            for(var i = 0; i < Rows.Length; i++) {
+                tab.Insert(Rows[i]);
+            }
+            
         }
 
         public static void TestRelations(Table tab) {

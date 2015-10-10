@@ -127,7 +127,7 @@ namespace HybreDb.Communication {
         public void SendCallback(IAsyncResult ar) {
             try {
                 Socket.EndSend(ar);
-            } catch(Exception e) {
+            } catch(Exception) {
                 Dispose(true);
             }
         }

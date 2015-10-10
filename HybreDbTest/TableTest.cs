@@ -72,8 +72,8 @@ namespace HybreDbTest {
         public void BulkInsert() {
             IDataType[][] set = GenerateDataset(N);
             var cols = new[] {
-                new DataColumn {Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true},
-                new DataColumn {Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true},
+                new DataColumn {Name = "Name", DataType = DataTypes.Types.Text, IndexType = IndexTree.IndexType.Index },
+                new DataColumn {Name = "Age", DataType = DataTypes.Types.Number, IndexType = IndexTree.IndexType.Index },
                 new DataColumn {Name = "UnIndexed_Age", DataType = DataTypes.Types.Number},
                 new DataColumn {Name = "Inserted", DataType = DataTypes.Types.DateTime}
             };
@@ -114,8 +114,8 @@ namespace HybreDbTest {
             IDataType[][] set = GenerateDataset(N);
 
             var cols = new[] {
-                new DataColumn {Name = "Name", DataType = DataTypes.Types.Text, HasIndex = true},
-                new DataColumn {Name = "Age", DataType = DataTypes.Types.Number, HasIndex = true},
+                new DataColumn {Name = "Name", DataType = DataTypes.Types.Text, IndexType = IndexTree.IndexType.Index},
+                new DataColumn {Name = "Age", DataType = DataTypes.Types.Number, IndexType = IndexTree.IndexType.Index},
                 new DataColumn {Name = "UnIndexed_Age", DataType = DataTypes.Types.Number},
                 new DataColumn {Name = "Inserted", DataType = DataTypes.Types.DateTime}
             };

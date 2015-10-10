@@ -8,10 +8,20 @@ using HybreDb.Tables.Types;
 
 namespace HybreDb.Tables {
 
-    public enum IndexType {
-        None,
-        Index,
-        UniqueIndex
+    public static class IndexTree {
+        public enum IndexType {
+            None,
+            Index,
+            UniqueIndex
+        }
+
+        public static Type GetType(IndexType t) {
+            switch (t) {
+                case IndexType.Index: return typeof(IndexTree<>);
+                case IndexType.UniqueIndex: return typeof(UniqueIndexTree<>);
+                default: return null;
+            }
+        }
     }
 
     /// <summary>
@@ -34,6 +44,7 @@ namespace HybreDb.Tables {
         void Drop();
 
         Numbers Match(object k);
+        
     }
 
     public abstract class AIndexTree<TKey, TValue> : IIndexTree
@@ -59,7 +70,7 @@ namespace HybreDb.Tables {
         public void Add(object d, Number n) => Add((TKey) d, n);
 
         public abstract void Remove(TKey d, Number n);
-        public void Remove(object d, Number n) => Add((TKey)d, n);
+        public void Remove(object d, Number n) => Remove((TKey)d, n);
 
 
         public Numbers Match(object k) {
@@ -84,6 +95,9 @@ namespace HybreDb.Tables {
         }
 
         protected void Dispose(bool all) => Tree.Dispose();
+
+        
+
     }
 
 

@@ -14,7 +14,11 @@ namespace HybreDb.Tables {
         /// <summary>
         ///     Whenever this column has an index associated with the data
         /// </summary>
-        public IndexType IndexType;
+        public IndexTree.IndexType IndexType;
+
+        public bool HasIndex {
+            get { return IndexType != IndexTree.IndexType.None; }
+        }
         
 
         /// <summary>
@@ -62,12 +66,25 @@ namespace HybreDb.Tables {
         /// <summary>
         ///     Creates a definition of a DataColumn which is not yet bound to a table
         /// </summary>
-        public DataColumn(string name, DataTypes.Types type, bool idx = false, bool hidden = false, bool unique = false) {
+        public DataColumn(string name, DataTypes.Types type, IndexTree.IndexType idx = IndexTree.IndexType.None, bool hidden = false) {
             Name = name;
             DataType = type;
-            HasIndex = idx;
+            IndexType = idx;
             Hidden = hidden;
         }
+
+        /// <summary>
+        ///     Creates a definition of a DataColumn which is not yet bound to a table
+        /// </summary>
+        public DataColumn(string name, DataTypes.Types type, bool idx, bool hidden = false, bool unique = false) :
+            this(
+                name, 
+                type, 
+                !idx ?
+                    IndexTree.IndexType.None : unique ?
+                        IndexTree.IndexType.UniqueIndex : IndexTree.IndexType.Index, 
+                hidden
+            )  { }
 
 
         /// <summary>
@@ -76,7 +93,7 @@ namespace HybreDb.Tables {
         public void Serialize(BinaryWriter wrtr) {
             wrtr.Write((byte) DataType);
             wrtr.Write(Name);
-            wrtr.Write(HasIndex);
+            wrtr.Write((byte)IndexType);
             wrtr.Write(Hidden);
         }
 
@@ -88,7 +105,7 @@ namespace HybreDb.Tables {
             DataType = (DataTypes.Types) rdr.ReadByte();
             Name = rdr.ReadString();
 
-            HasIndex = rdr.ReadBoolean();
+            IndexType = (IndexTree.IndexType)rdr.ReadByte();
             Hidden = rdr.ReadBoolean();
         }
 
@@ -103,7 +120,7 @@ namespace HybreDb.Tables {
         public void CreateIndex() {
             if (!HasIndex) return;
 
-            Type t = typeof (IndexTree<>).MakeGenericType(new[] {DataType.GetSystemType()});
+            Type t = IndexTree.GetType(IndexType).MakeGenericType(new[] {DataType.GetSystemType()});
             Index =
                 (IIndexTree) Activator.CreateInstance(t, new object[] {Table.Database.GetPath(Table.Name + "_" + Name)});
         }
@@ -168,7 +185,7 @@ namespace HybreDb.Tables {
         /// </summary>
         public void Drop() {
             if (HasIndex) Index.Drop();
-            HasIndex = false;
+            IndexType = IndexTree.IndexType.None;
         }
     }
 }
