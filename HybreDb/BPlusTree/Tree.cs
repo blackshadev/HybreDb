@@ -159,6 +159,8 @@ namespace HybreDb.BPlusTree {
             return nodes[0].Value;
         }
 
+        public void Clear() { Init(); }
+
 
         protected virtual void Dispose(bool disposing) {
             Root.Dispose();

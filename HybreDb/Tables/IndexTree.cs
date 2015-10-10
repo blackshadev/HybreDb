@@ -41,6 +41,7 @@ namespace HybreDb.Tables {
 
         void Revert();
 
+        void Clear();
         void Drop();
 
         Numbers Match(object k);
@@ -87,6 +88,7 @@ namespace HybreDb.Tables {
         public void Commit() => Tree.Write();
         public void Read() => Tree.Read();
         public void Revert() => Tree.Revert();
+        public void Clear() => Tree.Clear();
         public void Drop() => Tree.Drop();
         
         public void Dispose() {
@@ -95,9 +97,7 @@ namespace HybreDb.Tables {
         }
 
         protected void Dispose(bool all) => Tree.Dispose();
-
         
-
     }
 
 
@@ -177,8 +177,13 @@ namespace HybreDb.Tables {
         public UniqueIndexTree(string name) : base(name) {}
 
         
-        public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> d) {
-            throw new NotImplementedException();
+        public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> data) {
+            KeyValuePair<TKey, Number>[] typed =
+                data.Select(e => {
+                    if (e.Value.Nums.Count != 1) throw new InvalidOperationException("Duplicate keys");
+                    return new KeyValuePair<TKey, Number>((TKey)e.Key, e.Value.First());
+                }).ToArray();
+            Tree.Init(typed);
         }
 
         public override Numbers Match(TKey k) {

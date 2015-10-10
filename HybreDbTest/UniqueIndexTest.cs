@@ -76,5 +76,20 @@ namespace HybreDbTest {
             Assert.IsTrue(res.First()["Age"].CompareTo(DummyData.Rows[3][1]) == 0, "Wrong data row returned");
 
         }
+
+        [TestCase]
+        public void BulkInsert() {
+            var tab = Database.NewTable("testTabBulk", Columns);
+
+            tab.BulkInsert(new[] { DummyData.Rows[0], DummyData.Rows[2], DummyData.Rows[4] });
+            Assert.IsTrue(tab.Rows.Count() == 3, "Missing rows");
+            Database.DropTable("testTabBulk");
+            tab = Database.NewTable("testTabBulk", Columns);
+            try {
+                tab.BulkInsert(DummyData.Rows);
+                Assert.IsTrue(false, "Shouldnt succeded");
+            } catch(Exception) { }
+            Assert.IsTrue(tab.Rows.Count() == 0, "Should be empty");
+        }
     }
 }

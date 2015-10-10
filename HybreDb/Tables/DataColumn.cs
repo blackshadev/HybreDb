@@ -185,7 +185,6 @@ namespace HybreDb.Tables {
         /// </summary>
         public void Drop() {
             if (HasIndex) Index.Drop();
-            IndexType = IndexTree.IndexType.None;
         }
     }
 }

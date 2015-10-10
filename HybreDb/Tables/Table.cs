@@ -136,7 +136,8 @@ namespace HybreDb.Tables {
 
         /// <summary>
         ///     Performs a bulk insert on a table.
-        ///     Also bulk inserts all indexed columns
+        ///     Also bulk inserts all indexed columns.
+        ///     When some insert function fails, the table will be cleared
         /// </summary>
         public void BulkInsert(IDataType[][] data) {
             if (Rows.Any()) throw new Exception("Bulk insert can only be performed on an empty table");
@@ -162,10 +163,18 @@ namespace HybreDb.Tables {
                 }
             }
 
-            Rows.Init(rows);
+            try {
+                Rows.Init(rows);
 
-            foreach (var kvp in indices)
-                Columns[kvp.Key].Index.Init(kvp.Value);
+                foreach (var kvp in indices)
+                    Columns[kvp.Key].Index.Init(kvp.Value);
+            } catch(Exception e) {
+                Rows.Clear();
+                foreach (var kvp in indices)
+                    Columns[kvp.Key].Index.Clear();
+
+                throw e;
+            }
         }
 
         /// <summary>
