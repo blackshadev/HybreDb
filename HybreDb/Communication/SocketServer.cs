@@ -28,9 +28,7 @@ namespace HybreDb.Communication {
         protected int DataOffset;
 
         public SocketServer Server;
-
-        private bool Disposed = false;
-
+        
         
         /// <summary>
         ///     Client socket
@@ -138,8 +136,7 @@ namespace HybreDb.Communication {
         }
 
         protected void Dispose(bool all) {
-
-            Disposed = true;
+            
             DataLength = 0;
             DataOffset = 0;
             Socket.Dispose();

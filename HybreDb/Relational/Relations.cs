@@ -37,7 +37,7 @@ namespace HybreDb.Relational {
             int c = rdr.ReadInt32();
 
             for (int i = 0; i < c; i++) {
-                var rel = new Relation(SourceTable.Database, rdr);
+                var rel = new MultiRelation(SourceTable.Database, rdr);
 
                 AddRelation(rel);
             }
@@ -98,7 +98,7 @@ namespace HybreDb.Relational {
             if (ByName.ContainsKey(name))
                 throw new ArgumentException("Relation with the same name already exists on this table");
 
-            var r = new Relation(name, s, d, attrs);
+            var r = new MultiRelation(name, s, d, attrs);
 
             AddRelation(r);
 
