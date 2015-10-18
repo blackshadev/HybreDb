@@ -11,7 +11,7 @@ namespace HybreDbTest {
         public const int Seed = 42;
         public const string Chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0987654321";
 
-        public static IDataType[][] Rows = new IDataType[][] {
+        public static IDataType[][] Rows = {
             new IDataType[] {
                 new Text("Vincent"),
                 new Number(22),

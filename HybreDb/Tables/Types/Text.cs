@@ -24,12 +24,12 @@ namespace HybreDb.Tables.Types {
             return String.Compare(Data, o.Data, StringComparison.Ordinal);
         }
 
-        public override void Serialize(BinaryWriter wrtr) {
-            wrtr.Write(Data);
+        public override void Serialize(BinaryWriter b) {
+            b.Write(Data);
         }
 
-        public override void Deserialize(BinaryReader rdr) {
-            Read(rdr);
+        public override void Deserialize(BinaryReader b) {
+            Read(b);
         }
 
         public void Read(BinaryReader rdr) {

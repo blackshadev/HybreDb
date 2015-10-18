@@ -56,18 +56,18 @@ namespace HybreDb.BPlusTree {
             return found;
         }
 
-        public virtual LeafNode<TKey, TValue> GetLeaf(TKey k) {
-            INode<TKey, TValue> n = Buckets.ValueAt(Buckets.NearestIndex(k));
-            LeafNode<TKey, TValue> v = n.GetLeaf(k);
+        public virtual LeafNode<TKey, TValue> GetLeaf(TKey key) {
+            INode<TKey, TValue> n = Buckets.ValueAt(Buckets.NearestIndex(key));
+            LeafNode<TKey, TValue> v = n.GetLeaf(key);
 
             return v;
         }
 
 
-        public virtual bool Update(TKey k, NodeUpdateHandler<TKey, TValue> h) {
-            int idx = Buckets.NearestIndex(k);
+        public virtual bool Update(TKey key, NodeUpdateHandler<TKey, TValue> h) {
+            int idx = Buckets.NearestIndex(key);
             INode<TKey, TValue> n = Buckets.ValueAt(idx);
-            bool c = n.Update(k, h);
+            bool c = n.Update(key, h);
 
             return c;
         }
@@ -173,9 +173,8 @@ namespace HybreDb.BPlusTree {
         }
 
         public virtual bool Merge(INode<TKey, TValue> n) {
-            if (!(n is BaseNode<TKey, TValue>)) return false;
-
-            var _n = (BaseNode<TKey, TValue>) n;
+            var _n =  n as BaseNode<TKey, TValue>;
+            if (_n == null) return false;
 
             _n.Buckets.AddBegin(Buckets);
 

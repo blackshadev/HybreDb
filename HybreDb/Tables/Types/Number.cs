@@ -4,7 +4,8 @@ using System.Runtime.CompilerServices;
 
 namespace HybreDb.Tables.Types {
     public class Number : DataType {
-        private int Data;
+        // Should be read only but cannot because it is set in the Read function
+        int Data;
 
         public Number() {}
 
@@ -17,13 +18,13 @@ namespace HybreDb.Tables.Types {
             Read(rdr);
         }
 
-        public override void Serialize(BinaryWriter wrtr) {
-            wrtr.Write(Data);
+        public override void Serialize(BinaryWriter b) {
+            b.Write(Data);
         }
 
 
-        public override void Deserialize(BinaryReader rdr) {
-            Read(rdr);
+        public override void Deserialize(BinaryReader b) {
+            Read(b);
         }
 
         public void Read(BinaryReader rdr) {

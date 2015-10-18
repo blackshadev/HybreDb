@@ -13,8 +13,8 @@ using HybreDb.Tables;
 namespace HybreDbTest {
     public class UniqueIndexTest {
 
-        Database Database;
-        DataColumn[] Columns;
+        readonly Database Database;
+        readonly DataColumn[] Columns;
         
         public UniqueIndexTest() {
             Database = new Database("UniqueTest", true);

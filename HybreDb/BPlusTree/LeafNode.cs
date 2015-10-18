@@ -77,8 +77,8 @@ namespace HybreDb.BPlusTree {
         }
 
         public virtual bool Merge(INode<TKey, TValue> n) {
-            if (!(n is LeafNode<TKey, TValue>)) return false;
-            var _n = (LeafNode<TKey, TValue>) n;
+            var _n =  n as LeafNode<TKey, TValue>;
+            if (_n == null) return false;
 
             _n.Buckets.AddBegin(Buckets);
 

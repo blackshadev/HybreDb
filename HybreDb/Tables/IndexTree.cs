@@ -44,7 +44,7 @@ namespace HybreDb.Tables {
         void Clear();
         void Drop();
 
-        Numbers Match(object k);
+        Numbers Match(object key);
         
     }
 
@@ -67,20 +67,20 @@ namespace HybreDb.Tables {
             Tree = new DiskTree<TKey, TValue>(name + ".idx.bin", Table.BucketSize, Table.CacheSize);
         }
 
-        public abstract void Add(TKey d, Number n);
-        public void Add(object d, Number n) => Add((TKey) d, n);
+        public abstract void Add(TKey key, Number num);
+        public void Add(object key, Number num) => Add((TKey) key, num);
 
-        public abstract void Remove(TKey d, Number n);
-        public void Remove(object d, Number n) => Remove((TKey)d, n);
+        public abstract void Remove(TKey key, Number num);
+        public void Remove(object key, Number num) => Remove((TKey)key, num);
 
 
-        public Numbers Match(object k) {
-            if (k.GetType() != typeof(TKey))
+        public Numbers Match(object key) {
+            if (key.GetType() != typeof(TKey))
                 throw new ArgumentException("Data with wrong type given. Expected `" + typeof(TKey).Name + "` got `" +
-                                            k.GetType().Name + "`");
-            return Match((TKey)k);
+                                            key.GetType().Name + "`");
+            return Match((TKey)key);
         }
-        public abstract Numbers Match(TKey k);
+        public abstract Numbers Match(TKey key);
 
         public abstract void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> d);
 
@@ -110,9 +110,9 @@ namespace HybreDb.Tables {
         public IndexTree(string n) : base(n) {}
         
 
-        public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> data) {
+        public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> d) {
             KeyValuePair<TKey, Numbers>[] typed =
-                data.Select(e => new KeyValuePair<TKey, Numbers>((TKey) e.Key, e.Value)).ToArray();
+                d.Select(e => new KeyValuePair<TKey, Numbers>((TKey) e.Key, e.Value)).ToArray();
             Tree.Init(typed);
         }
 
@@ -120,20 +120,20 @@ namespace HybreDb.Tables {
         /// <summary>
         ///     Give the numbers of indices matching the given key value
         /// </summary>
-        /// <param name="d">Key value to match</param>
-        public override Numbers Match(TKey d) {
-            return Tree.Get(d) ?? new Numbers();
+        /// <param name="key">Key value to match</param>
+        public override Numbers Match(TKey key) {
+            return Tree.Get(key) ?? new Numbers();
         }
 
         /// <summary>
         ///     Adds given key with number value to the index tree
         /// </summary>
-        /// <param name="d"></param>
+        /// <param name="key"></param>
         /// <param name="num"></param>
-        public override void Add(TKey d, Number num) {
+        public override void Add(TKey key, Number num) {
             var nums = new Numbers {num};
 
-            bool c = Tree.Update(d, (n, k, v) => {
+            bool c = Tree.Update(key, (n, k, v) => {
                 // Not yet present in the tree and not yet full
                 if (v == null && n.Count < n.Capacity - 1) {
                     n.Buckets.Add(k, nums);
@@ -150,12 +150,12 @@ namespace HybreDb.Tables {
             if (c) return;
 
             // Update failed due to full node, so we need to insert manually
-            Tree.Insert(d, nums);
+            Tree.Insert(key, nums);
         }
 
-        public override void Remove(TKey d, Number num) {
+        public override void Remove(TKey key, Number num) {
             bool empty = false;
-            bool c = Tree.Update(d, (l, k, v) => {
+            bool c = Tree.Update(key, (l, k, v) => {
                 if (v == null) return false;
 
                 v.Remove(num);
@@ -166,7 +166,7 @@ namespace HybreDb.Tables {
             });
 
 
-            if (empty) Tree.Remove(d);
+            if (empty) Tree.Remove(key);
         }
         
     }
@@ -177,28 +177,28 @@ namespace HybreDb.Tables {
         public UniqueIndexTree(string name) : base(name) {}
 
         
-        public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> data) {
+        public override void Init(IEnumerable<KeyValuePair<IDataType, Numbers>> d) {
             KeyValuePair<TKey, Number>[] typed =
-                data.Select(e => {
+                d.Select(e => {
                     if (e.Value.Nums.Count != 1) throw new InvalidOperationException("Duplicate keys");
                     return new KeyValuePair<TKey, Number>((TKey)e.Key, e.Value.First());
                 }).ToArray();
             Tree.Init(typed);
         }
 
-        public override Numbers Match(TKey k) {
-            var num = Tree[k];
+        public override Numbers Match(TKey key) {
+            var num = Tree[key];
             var nums = new Numbers();
             if (num != null) nums.Add(num);
             return nums;
         }
 
-        public override void Add(TKey d, Number n) {
-            Tree.Insert(d, n);
+        public override void Add(TKey key, Number num) {
+            Tree.Insert(key, num);
         }
 
-        public override void Remove(TKey d, Number n) {
-            Tree.Remove(d);
+        public override void Remove(TKey key, Number num) {
+            Tree.Remove(key);
         }
     }
 }

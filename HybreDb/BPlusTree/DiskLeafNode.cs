@@ -92,13 +92,13 @@ namespace HybreDb.BPlusTree {
             return r;
         }
 
-        public override bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r) {
+        public override bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
             BeginAccess();
-            l.BeginAccess();
-            r.BeginAccess();
-            bool n = base.Borrow(l, r);
-            r.EndAccess(n);
-            l.EndAccess(n);
+            left.BeginAccess();
+            right.BeginAccess();
+            bool n = base.Borrow(left, right);
+            right.EndAccess(n);
+            left.EndAccess(n);
             EndAccess(n);
             return n;
         }

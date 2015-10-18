@@ -86,7 +86,7 @@ namespace HybreDbTest {
             Time("Count", () => { i = tab.Rows.Count(); });
             Assert.IsFalse(i != N, "Missing records");
 
-            Time("Commit", () => { tab.Commit(); });
+            Time("Commit", tab.Commit);
 
             Time("\nRead in", () => { tab = Db.Reopen(tab); });
 
@@ -129,7 +129,7 @@ namespace HybreDbTest {
             });
 
 
-            Time("Commit", () => { tab.Commit(); });
+            Time("Commit", tab.Commit);
 
             Time("Count", () => { i = tab.Rows.Count(); });
             Assert.IsFalse(i != N, "Missing records");

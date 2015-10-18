@@ -64,8 +64,8 @@ namespace HybreDb.Tables.Types {
         }
 
 
-        public override void Deserialize(BinaryReader rdr) {
-            Read(rdr);
+        public override void Deserialize(BinaryReader b) {
+            Read(b);
         }
 
         public void Read(BinaryReader b) {

@@ -35,9 +35,9 @@ namespace HybreDb.BPlusTree {
             return r;
         }
 
-        public override bool Update(TKey k, NodeUpdateHandler<TKey, TValue> h) {
+        public override bool Update(TKey key, NodeUpdateHandler<TKey, TValue> h) {
             BeginAccess();
-            bool r = base.Update(k, h);
+            bool r = base.Update(key, h);
             EndAccess(r);
 
             return r;
@@ -51,17 +51,17 @@ namespace HybreDb.BPlusTree {
             return r;
         }
 
-        public override RemoveResult Remove(TKey k) {
+        public override RemoveResult Remove(TKey key) {
             BeginAccess();
 
-            RemoveResult r = base.Remove(k);
+            RemoveResult r = base.Remove(key);
             EndAccess(true);
             return r;
         }
 
-        public override LeafNode<TKey, TValue> GetLeaf(TKey k) {
+        public override LeafNode<TKey, TValue> GetLeaf(TKey key) {
             BeginAccess();
-            LeafNode<TKey, TValue> r = base.GetLeaf(k);
+            LeafNode<TKey, TValue> r = base.GetLeaf(key);
             EndAccess();
             return r;
         }
@@ -90,13 +90,13 @@ namespace HybreDb.BPlusTree {
             return r;
         }
 
-        public override bool Borrow(INode<TKey, TValue> l, INode<TKey, TValue> r) {
+        public override bool Borrow(INode<TKey, TValue> left, INode<TKey, TValue> right) {
             BeginAccess();
-            l.BeginAccess();
-            r.BeginAccess();
-            bool n = base.Borrow(l, r);
-            r.EndAccess(n);
-            l.EndAccess(n);
+            left.BeginAccess();
+            right.BeginAccess();
+            bool n = base.Borrow(left, right);
+            right.EndAccess(n);
+            left.EndAccess(n);
             EndAccess(n);
             return n;
         }
