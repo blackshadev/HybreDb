@@ -114,10 +114,15 @@ namespace HybreDbTest {
                 t.Commit();
             }
 
+            int iX = 0;
             Table t2 = DbB["Test"];
             Time("Row Count", () => Console.WriteLine("Row Count: " + t2.Rows.Count()));
 
-            Time("Relation Count", () => Console.WriteLine("Relation Count: " + t2.Relations["Knows"].Count()));
+            Time("Relation Count", () => {
+                iX = t2.Relations["Knows"].Count();
+                Console.WriteLine("Relation Count: " + iX);
+            });
+            Assert.IsTrue(iX == N_R, "Relation count mismatch");
 
             Trace.WriteLine("Read operations " + t2.Rows.Reads);
             Trace.WriteLine("Write operations " + t2.Rows.Writes);
@@ -127,10 +132,19 @@ namespace HybreDbTest {
             Console.WriteLine("\nAfter reopen");
             Trace.WriteLine("\nAfter reopen");
 
-            Time("Row Count", () => Console.WriteLine("Row Count: " + t2.Rows.Count()));
+            Time("Row Count", () => {
+                iX = t2.Rows.Count();
+                Console.WriteLine("Row Count: " + iX);
+            });
+            Assert.IsTrue(iX == N, "Row mismatch after reopen");
 
-            Time("Relation Count", () => Console.WriteLine("Relation Count: " + t2.Relations["Knows"].Count()));
+            Time("Relation Count", () => {
+                iX = t2.Relations["Knows"].Count();
+                Console.WriteLine("Relation Count: " + iX);
 
+            });
+            Assert.IsTrue(iX == N_R, "Relation count mismatch");
+            
             Time("Row Count", () => Console.WriteLine("Row Count: " + t2.Rows.Count()));
 
             Time("Relation Count", () => Console.WriteLine("Relation Count: " + t2.Relations["Knows"].Count()));
@@ -140,7 +154,7 @@ namespace HybreDbTest {
             Trace.WriteLine("Free operations " + t2.Rows.Freed);
         }
 
-        private static void Time(string txt, Action act) {
+        static void Time(string txt, Action act) {
             GC.Collect();
             Stopwatch sw = Stopwatch.StartNew();
             act();

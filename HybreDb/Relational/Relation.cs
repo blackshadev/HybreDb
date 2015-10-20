@@ -11,8 +11,16 @@ using HybreDb.Tables.Types;
 namespace HybreDb.Relational {
 
 
+    public enum RelationType {
+        Unknown = 0,
+        MultiRelation = 1,
+        UniqueRelation = 2
+    };
+
     public abstract class Relation : IByteSerializable, IEnumerable<KeyValuePair<NumberPair, DataRow>>, IDisposable {
         protected Database Database;
+
+        public abstract RelationType RelationType { get; }
 
         /// <summary>
         ///     Relation to which the relation goes
@@ -35,6 +43,14 @@ namespace HybreDb.Relational {
         /// </summary>
         public Table Table;
 
+
+        /// <summary>
+        ///     Creates a new relation between given tables
+        /// </summary>
+        /// <param name="name">Name of the relation</param>
+        /// <param name="src">Source table of the relation</param>
+        /// <param name="dest">Destination table of the relation</param>
+        /// <param name="type">Relation type</param>
         protected Relation(string name, Table src, Table dest) {
             if (src.Database != dest.Database)
                 throw new ArgumentException("Tables must reside in the same database");
@@ -44,7 +60,7 @@ namespace HybreDb.Relational {
 
             Source = src;
             Destination = dest;
-
+            
         }
 
         protected Relation(Database db, BinaryReader rdr) {
@@ -111,6 +127,7 @@ namespace HybreDb.Relational {
         #region Serialisation
 
         public void Serialize(BinaryWriter wrtr) {
+            wrtr.Write((byte)RelationType);
             wrtr.Write(Name);
 
             wrtr.Write(Source.Name);
@@ -128,74 +145,28 @@ namespace HybreDb.Relational {
         public abstract void Add(Number a, Number b, IDataType[] dat);
         public abstract DataRow Get(Number a, Number b);
 
+
+
+        public static Relation Create(RelationType type, string name, Table src, Table dest, DataColumn[] cols) {
+            switch(type) {
+                case RelationType.MultiRelation: return new MultiDirectedRelation(name, src, dest, cols);
+            }
+
+            throw new FormatException("Unsupported relation type");
+        }
+
+        public static Relation Create(Database db, BinaryReader rdr) {
+            var type = (RelationType)rdr.ReadByte();
+            switch(type) {
+                case RelationType.MultiRelation: return new MultiDirectedRelation(db, rdr);
+            }
+
+
+            throw new FormatException("Unsupported relation type");
+        }
     }
 
 
 
-    /// <summary>
-    ///     Class implementing a relation between two tables
-    ///     It consists both of the definition and the actual data.
-    /// </summary>
-    /// <remarks>
-    ///     All Relations in HybreDb are directional.
-    ///     Undirectional relations are just relations who insert and delete data for both directions
-    /// </remarks>
-    public class MultiRelation : Relation {
-        
-        /// <summary>
-        ///     Creates a new relation between given tables
-        /// </summary>
-        /// <param name="name">Name of the relation</param>
-        /// <param name="src">Source table of the relation</param>
-        /// <param name="dest">Destination table of the relation</param>
-        /// <param name="attrs">Data attributes which each item in the relation holds</param>
-        public MultiRelation(string name, Table src, Table dest, DataColumn[] attrs) : base(name, src, dest) {
-            var cols = new DataColumn[attrs.Length + 3];
-            Array.Copy(attrs, 0, cols, 3, attrs.Length);
-
-            cols[0] = new DataColumn(".rel", DataTypes.Types.NumberPair, true, true);
-            cols[1] = new DataColumn(".rel.src", DataTypes.Types.Number, true);
-            cols[2] = new DataColumn(".rel.dest", DataTypes.Types.Number, true);
-
-
-            Table = new Table(Database, Source.Name + "." + Name + "." + Destination.Name, cols);
-
-            Commit();
-        }
-
-        /// <summary>
-        ///     Creates a already existsing relation by reading it in from the BinaryReader
-        /// </summary>
-        public MultiRelation(Database db, BinaryReader rdr) : base(db, rdr) {}
-
-
-        /// <summary>
-        ///     Adds a new item to the relation.
-        /// </summary>
-        /// <param name="a">Primary key in the source table</param>
-        /// <param name="b">Primary key in the destinayion table</param>
-        /// <param name="dat">Data belonging to the relation, must match relation's attributes</param>
-        public override void Add(Number a, Number b, IDataType[] dat) {
-            var d = new IDataType[dat.Length + 3];
-            Array.Copy(dat, 0, d, 3, dat.Length);
-
-            d[0] = new NumberPair(a, b);
-            d[1] = a;
-            d[2] = b;
-
-            Table.Insert(d);
-        }
-
-        /// <summary>
-        ///     Gets the relation data of the relation between two given records
-        /// </summary>
-        /// <param name="a">Primary key in the source table</param>
-        /// <param name="b">Primary key in the destination table</param>
-        public override DataRow Get(Number a, Number b) {
-            var nums = new NumberPair(a, b);
-
-            return Table.FindRows(new KeyValuePair<string, object>(".rel", nums)).First();
-        }
-        
-    }
+   
 }

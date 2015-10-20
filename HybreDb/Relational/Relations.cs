@@ -37,7 +37,7 @@ namespace HybreDb.Relational {
             int c = rdr.ReadInt32();
 
             for (int i = 0; i < c; i++) {
-                var rel = new MultiRelation(SourceTable.Database, rdr);
+                var rel = Relation.Create(SourceTable.Database, rdr);
 
                 AddRelation(rel);
             }
@@ -54,8 +54,7 @@ namespace HybreDb.Relational {
                 Relation r;
                 if (!ByName.TryGetValue(n, out r))
                     throw new KeyNotFoundException("No such relation found");
-
-
+                
                 return r;
             }
         }
@@ -98,9 +97,9 @@ namespace HybreDb.Relational {
             if (ByName.ContainsKey(name))
                 throw new ArgumentException("Relation with the same name already exists on this table");
 
-            var r = new MultiRelation(name, s, d, attrs);
-
+            var r = Relation.Create(RelationType.MultiRelation, name, s, d, attrs);
             AddRelation(r);
+            r.Commit();
 
             return r;
         }
