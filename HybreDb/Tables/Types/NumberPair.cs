@@ -7,11 +7,14 @@ namespace HybreDb.Tables.Types {
     ///     Datatype containing two Numbers
     /// </summary>
     public class NumberPair : DataType {
+        public Number A { get; protected set; }
+        public Number B { get; protected set; }
+
         public NumberPair() {}
 
         public NumberPair(Tuple<int, int> a) {
             A = a.Item1;
-            A = a.Item2;
+            B = a.Item2;
         }
 
         public NumberPair(BinaryReader rdr) {
@@ -21,10 +24,7 @@ namespace HybreDb.Tables.Types {
         public NumberPair(Number a, Number b) {
             A = a;
             B = b;
-        }
-
-        public Number A { get; protected set; }
-        public Number B { get; protected set; }
+        }      
 
         public override int GetHashCode() {
             return A.GetHashCode() ^ B.GetHashCode();
@@ -68,7 +68,7 @@ namespace HybreDb.Tables.Types {
             Read(b);
         }
 
-        public void Read(BinaryReader b) {
+        protected virtual void Read(BinaryReader b) {
             A = new Number(b);
             B = new Number(b);
         }

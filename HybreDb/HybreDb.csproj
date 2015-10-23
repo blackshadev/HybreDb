@@ -107,6 +107,7 @@
     <Compile Include="Tables\Types\DataTypes.cs" />
     <Compile Include="Tables\IndexTree.cs" />
     <Compile Include="Tables\Table.cs" />
+    <Compile Include="Tables\Types\OrderedNumberPair.cs" />
     <Compile Include="Test\TestData.cs" />
   </ItemGroup>
   <ItemGroup>
