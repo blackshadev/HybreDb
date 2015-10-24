@@ -44,6 +44,22 @@ namespace HybreDbTest {
             }
         };
 
+        public static Tuple<Tuple<int, int>, IDataType[]>[] Relations = {
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(0, 1), new IDataType[] { new Text("UvA")   }),
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(0, 2), new IDataType[] { new Text("Baken") }),
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(0, 3), new IDataType[] { new Text("Zus")   }),
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(0, 4), new IDataType[] { new Text("UvA")   }),
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(1, 2), new IDataType[] { new Text("UvA")   }),
+
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(2, 0), new IDataType[] { new Text("Baken") }),
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(2, 1), new IDataType[] { new Text("UvA")   }),
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(2, 0), new IDataType[] { new Text("UvA")   }),
+            new Tuple<Tuple<int, int>, IDataType[]>(new Tuple<int, int>(4, 0), new IDataType[] { new Text("UvA")   })
+
+        };
+        public static int UniqueRelationMarker = 5;
+
+
         public static Table TestTable(Database db, string n) {
             var cols = new[] {
                 new DataColumn("Name", DataTypes.Types.Text, true),
@@ -63,16 +79,11 @@ namespace HybreDbTest {
         }
 
         public static void TestRelations(Table tab) {
-            tab.Relations["Knows"].Add(0, 1, new IDataType[] {new Text("UvA")});
-            tab.Relations["Knows"].Add(0, 2, new IDataType[] {new Text("Baken")});
-            tab.Relations["Knows"].Add(0, 3, new IDataType[] {new Text("Zus")});
-            tab.Relations["Knows"].Add(0, 4, new IDataType[] {new Text("UvA")});
 
-            tab.Relations["Knows"].Add(2, 0, new IDataType[] {new Text("Baken")});
-            tab.Relations["Knows"].Add(1, 2, new IDataType[] {new Text("UvA")});
-            tab.Relations["Knows"].Add(2, 1, new IDataType[] {new Text("UvA")});
-            tab.Relations["Knows"].Add(2, 0, new IDataType[] {new Text("UvA")});
-            tab.Relations["Knows"].Add(4, 0, new IDataType[] {new Text("UvA")});
+            for(var i = 0; i < Relations.Length; i++) {
+                var fromTo = Relations[i].Item1;
+                tab.Relations["Knows"].Add(fromTo.Item1, fromTo.Item2, Relations[i].Item2);
+            }
         }
 
         public static IDataType[][] RandomDataset(int N) {

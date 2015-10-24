@@ -35,7 +35,8 @@ namespace HybreDb.Tables {
             Number = 0,
             Text = 1,
             DateTime = 2,
-            NumberPair = 3
+            NumberPair = 3,
+            OrderedNumberPair = 4
         };
 
         /// <summary>
@@ -51,6 +52,8 @@ namespace HybreDb.Tables {
                     return new DateTime();
                 case Types.NumberPair:
                     return new NumberPair();
+                case Types.OrderedNumberPair:
+                    return new OrderedNumberPair();
                 default:
                     return null;
             }
@@ -70,6 +73,8 @@ namespace HybreDb.Tables {
                     return new DateTime(rdr);
                 case Types.NumberPair:
                     return new NumberPair(rdr);
+                case Types.OrderedNumberPair:
+                    return new OrderedNumberPair(rdr);
                 default:
                     return null;
             }
@@ -87,7 +92,9 @@ namespace HybreDb.Tables {
                 case Types.DateTime:
                     return new DateTime((string) d);
                 case Types.NumberPair:
-                    return new NumberPair((Tuple<int, int>) d);
+                    return new NumberPair((Tuple<int, int>)d);
+                case Types.OrderedNumberPair:
+                    return new NumberPair((Tuple<int, int>)d);
                 default:
                     return null;
             }
@@ -106,6 +113,8 @@ namespace HybreDb.Tables {
                     return typeof (DateTime);
                 case Types.NumberPair:
                     return typeof (NumberPair);
+                case Types.OrderedNumberPair:
+                    return typeof(OrderedNumberPair);
                 default:
                     return null;
             }

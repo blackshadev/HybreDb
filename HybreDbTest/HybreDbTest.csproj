@@ -81,6 +81,7 @@
     <Compile Include="RelationsTest.cs" />
     <Compile Include="JsonTest.cs" />
     <Compile Include="SocketServerTest.cs" />
+    <Compile Include="UndirectedRelationTest.cs" />
     <Compile Include="UniqueIndexTest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -77,7 +77,8 @@
     <Compile Include="Communication\SocketServer.cs" />
     <Compile Include="Communication\ThreadedSocketServer.cs" />
     <Compile Include="HybreDb.cs" />
-    <Compile Include="Relational\MultiRelation.cs" />
+    <Compile Include="Relational\DirectedRelation.cs" />
+    <Compile Include="Relational\UndirectedRelation.cs" />
     <Compile Include="Tables\DataRowSerializer.cs" />
     <Compile Include="Tables\Types\DateTime.cs" />
     <Compile Include="BPlusTree\IDataType.cs" />

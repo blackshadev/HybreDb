@@ -12,9 +12,9 @@ namespace HybreDb.Relational {
     ///     Class implementing a directed relation between two tables
     ///     It consists both of the definition and the actual data.
     /// </summary>
-    public class MultiDirectedRelation : Relation {
+    public class DirectedRelation : Relation {
 
-        public override RelationType RelationType { get { return RelationType.MultiRelation; } }
+        public override RelationType RelationType { get { return RelationType.DirectedRelation; } }
 
         /// <summary>
         ///     Creates a new relation between given tables
@@ -23,7 +23,7 @@ namespace HybreDb.Relational {
         /// <param name="src">Source table of the relation</param>
         /// <param name="dest">Destination table of the relation</param>
         /// <param name="attrs">Data attributes which each item in the relation holds</param>
-        public MultiDirectedRelation(string name, Table src, Table dest, DataColumn[] attrs) : base(name, src, dest) {
+        public DirectedRelation(string name, Table src, Table dest, DataColumn[] attrs) : base(name, src, dest) {
             var cols = new DataColumn[attrs.Length + 3];
             Array.Copy(attrs, 0, cols, 3, attrs.Length);
 
@@ -38,7 +38,7 @@ namespace HybreDb.Relational {
         /// <summary>
         ///     Creates a already existsing relation by reading it in from the BinaryReader
         /// </summary>
-        public MultiDirectedRelation(Database db, BinaryReader rdr) : base(db, rdr) { }
+        public DirectedRelation(Database db, BinaryReader rdr) : base(db, rdr) { }
 
 
         /// <summary>

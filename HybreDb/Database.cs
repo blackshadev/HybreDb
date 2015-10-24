@@ -208,8 +208,9 @@ namespace HybreDb {
         /// <param name="srcTable">Name of the source table</param>
         /// <param name="destTable">Name of the destination table</param>
         /// <param name="attrs">Attribute definitions of each relation</param>
+        /// <param name="t">Relation type, defaults to a DirectedRelation</param>
         /// <returns></returns>
-        public Relation NewRelation(string relName, string srcTable, string destTable, DataColumn[] attrs) {
+        public Relation NewRelation(string relName, string srcTable, string destTable, DataColumn[] attrs, RelationType t = RelationType.DirectedRelation) {
             CheckUserIdentifier(relName);
 
             foreach (DataColumn c in attrs)
@@ -217,7 +218,7 @@ namespace HybreDb {
 
             Table src = Tables[srcTable];
             Table dst = Tables[destTable];
-            Relation r = src.Relations.Add(relName, src, dst, attrs);
+            Relation r = src.Relations.Add(relName, src, dst, attrs, t);
 
             return r;
         }

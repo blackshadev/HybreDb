@@ -92,12 +92,13 @@ namespace HybreDb.Relational {
         /// <param name="s">Source table, must match the current source table</param>
         /// <param name="d">Destination table</param>
         /// <param name="attrs">Attributes of the relation</param>
+        /// <param name="t">Type of the relation</param>
         /// <returns></returns>
-        public Relation Add(string name, Table s, Table d, DataColumn[] attrs) {
+        public Relation Add(string name, Table s, Table d, DataColumn[] attrs, RelationType t) {
             if (ByName.ContainsKey(name))
                 throw new ArgumentException("Relation with the same name already exists on this table");
 
-            var r = Relation.Create(RelationType.MultiRelation, name, s, d, attrs);
+            var r = Relation.Create(t, name, s, d, attrs);
             AddRelation(r);
             r.Commit();
 

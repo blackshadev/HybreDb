@@ -13,8 +13,8 @@ namespace HybreDb.Relational {
 
     public enum RelationType {
         Unknown = 0,
-        MultiRelation = 1,
-        UniqueRelation = 2
+        DirectedRelation = 1,
+        UndirectedRelation = 2
     };
 
     public abstract class Relation : IByteSerializable, IEnumerable<KeyValuePair<NumberPair, DataRow>>, IDisposable {
@@ -143,13 +143,17 @@ namespace HybreDb.Relational {
         #endregion
 
         public abstract void Add(Number a, Number b, IDataType[] dat);
+
+        // TODO why does this return one datarow instead of multiple?
         public abstract DataRow Get(Number a, Number b);
 
 
 
         public static Relation Create(RelationType type, string name, Table src, Table dest, DataColumn[] cols) {
             switch(type) {
-                case RelationType.MultiRelation: return new MultiDirectedRelation(name, src, dest, cols);
+                case RelationType.DirectedRelation: return new DirectedRelation(name, src, dest, cols);
+                case RelationType.UndirectedRelation: return new UndirectedRelation(name, src, dest, cols);
+
             }
 
             throw new FormatException("Unsupported relation type");
@@ -158,7 +162,9 @@ namespace HybreDb.Relational {
         public static Relation Create(Database db, BinaryReader rdr) {
             var type = (RelationType)rdr.ReadByte();
             switch(type) {
-                case RelationType.MultiRelation: return new MultiDirectedRelation(db, rdr);
+                case RelationType.DirectedRelation: return new DirectedRelation(db, rdr);
+                case RelationType.UndirectedRelation: return new UndirectedRelation(db, rdr);
+
             }
 
 
