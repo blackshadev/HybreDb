@@ -4,6 +4,7 @@ using HybreDb.BPlusTree.DataTypes;
 using HybreDb.Relational;
 using HybreDb.Tables;
 using Newtonsoft.Json;
+using System;
 
 namespace HybreDb.Actions {
     public class HybreActionCreateRelation : IHybreAction {
@@ -12,6 +13,9 @@ namespace HybreDb.Actions {
 
         [JsonProperty("data")]
         public Dictionary<string, object>[] Data;
+
+        [JsonProperty("relationType")]
+        public RelationType RelationType;
 
         [JsonProperty("destinationTable")]
         public string Destination;

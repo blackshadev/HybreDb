@@ -121,6 +121,7 @@ namespace HybreDb.Relational {
 
         public void Drop() {
             Table.Drop();
+            Dispose(true);
         }
 
 

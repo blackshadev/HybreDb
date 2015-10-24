@@ -55,7 +55,7 @@ namespace HybreDb.Communication {
             }
 
 
-            //DataOffset = 0;
+            DataOffset = 0;
             Buffer = new byte[4];
             try {
                 Socket.BeginReceive(Buffer, 0, 4, SocketFlags.None, ReadLengthCallback, null);
@@ -80,7 +80,8 @@ namespace HybreDb.Communication {
             try {
                 Socket.BeginReceive(Buffer, DataOffset, DataLength, SocketFlags.None, ReadCallback, null);
             }
-            catch {
+            catch(Exception e) {
+                Console.WriteLine(e.ToString());
                 Dispose();
             }
         }

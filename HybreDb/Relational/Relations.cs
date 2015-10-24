@@ -123,6 +123,16 @@ namespace HybreDb.Relational {
             }
         }
 
+        public void DropRelation(string relName) {
+            var rel = ByName[relName];
+
+            ByTable[rel.Source].Remove(rel.Name);
+            rel.Destination.Relations.ForeignRelations.Remove(rel);
+
+            rel.Drop();
+            rel.Dispose();
+        }
+
 
         protected virtual void Dispose(bool disposing) {
             foreach (Relation r in this) r.Dispose();

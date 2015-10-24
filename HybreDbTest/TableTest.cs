@@ -9,6 +9,8 @@ using HybreDb.Tables.Types;
 using NUnit.Framework;
 using DateTime = System.DateTime;
 using Text = HybreDb.Tables.Types.Text;
+using HybreDb.Actions;
+using HybreDb.Actions.Result;
 
 namespace HybreDbTest {
     public class TableTest {
@@ -107,6 +109,43 @@ namespace HybreDbTest {
             });
 
             Assert.IsFalse(i != N, "Missing records");
+        }
+
+        [TestCase]
+        public void Json() {
+            var createTable = @"{ 
+                ""method"": ""CreateTable"", 
+                ""params"": { 
+                    ""columns"": [{ 
+                        ""DataType"": ""Text"", ""Name"": ""Test""
+                    }], 
+                    ""table"": ""JsonTestTable"",
+                    ""data"": [{
+                        ""Test"": ""Vincent""
+                    }, { ""Test"": ""Tessa"" }]
+            } }";
+            var act = HybreAction.Parse(createTable);
+            act.Execute(Db);
+
+            var t = Db["JsonTestTable"];
+            Assert.IsNotNull(t, "Table not created");
+
+            int c = t.Rows.Count();
+            Assert.IsTrue(c == 2, "Invalid row count");
+
+
+            var listTables = @"{ 
+                ""method"": ""ListTable"", 
+                ""params"": {
+                    ""table"": ""JsonTestTable""
+                } 
+            }";
+
+            act = HybreAction.Parse(listTables);
+            var res = (HybreUniformResult)act.Execute(Db);
+            c = res.TableData.Values.First().Count();
+            Assert.IsTrue(c == 2, "Not enough Rows");
+
         }
 
         [TestCase]

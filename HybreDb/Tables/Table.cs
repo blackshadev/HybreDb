@@ -12,7 +12,7 @@ namespace HybreDb.Tables {
     public class Table : IDisposable {
         public const int BucketSize = 64;
         public const int CacheSize = 2048;
-
+        
         /// <summary>
         ///     Column structure of the data contained in the table
         /// </summary>

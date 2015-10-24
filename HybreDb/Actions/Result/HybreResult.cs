@@ -69,6 +69,9 @@ namespace HybreDb.Actions.Result {
         public static void SerializeRelation(JsonWriter writer, Relation rel, IEnumerable<DataRow> rows) {
             writer.WriteStartObject();
 
+            writer.WritePropertyName("relationType");
+            writer.WriteValue(rel.RelationType);
+
             writer.WritePropertyName("sourceTable");
             writer.WriteValue(rel.Source.Name);
 
@@ -80,7 +83,7 @@ namespace HybreDb.Actions.Result {
 
             writer.WritePropertyName("rows");
             SerializeDataRows(writer, rel.Table, rows);
-
+            
             writer.WriteEndObject();
         }
 
@@ -91,8 +94,12 @@ namespace HybreDb.Actions.Result {
                 writer.WritePropertyName(rel.Name);
                 writer.WriteStartObject();
 
+                writer.WritePropertyName("relationType");
+                writer.WriteValue(rel.RelationType);
+
                 writer.WritePropertyName("name");
                 writer.WriteValue(rel.Name);
+
 
                 writer.WritePropertyName("sourceTable");
                 writer.WriteValue(rel.Source.Name);

@@ -10,5 +10,6 @@ namespace HybreDb.BPlusTree.DataTypes {
         ///     Helper function which should return the native datatype representing the data
         /// </summary>
         object GetValue();
+        
     }
 }

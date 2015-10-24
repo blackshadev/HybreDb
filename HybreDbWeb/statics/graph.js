@@ -4,8 +4,8 @@
     this.jControl = $(dom);
     this.jLabel = $("<p/>").appendTo(this.jControl);
     this.jGraph = $("<div/>", { style: "height:100%;" }).appendTo(this.jControl);
-    
-    
+
+
     this.data = { nodes: new vis.DataSet(), edges: new vis.DataSet() };
     this.options = {
         groups: {},
@@ -89,6 +89,7 @@ HybreResult.prototype.createEdges = function(data) {
     var iX = 0;
     for (var rel in data) {
         var c = randomColor();
+        console.log(data);
         var from_tab = data[rel].sourceTable;
         var to_tab = data[rel].destinationTable;
 
@@ -102,7 +103,7 @@ HybreResult.prototype.createEdges = function(data) {
                 color: {
                     color: c
                 },
-                style: "arrow",
+                style: data[rel].relationType === 1 ? "arrow" : "none",
                 title: this.createTitle(r, rel)
             });
         }

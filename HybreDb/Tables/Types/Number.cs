@@ -70,5 +70,6 @@ namespace HybreDb.Tables.Types {
 
             return Data.CompareTo(n.Data);
         }
+        
     }
 }

@@ -26,7 +26,7 @@ namespace HybreDbTest {
 
             t.Write();
 
-            for(var i = 0; i < DummyData.UniqueRelationMarker; i++) {
+            for (var i = 0; i < DummyData.UniqueRelationMarker; i++) {
                 var fromTo = DummyData.Relations[i].Item1;
                 t.Relations["Knows"].Add(fromTo.Item1, fromTo.Item2, DummyData.Relations[i].Item2);
             }
@@ -44,8 +44,12 @@ namespace HybreDbTest {
             var dr_1 = t.Relations["Knows"].Get(2, 0);
             var dr_2 = t.Relations["Knows"].Get(0, 2);
             Assert.AreSame(dr_1, dr_2, "Invalid undirected relation matched");
-                        
+
         }
 
+        [TestCase]
+        public void JsonRelation() {
+            var createRelation = "{ \"method\": \"CreateRelation\" }";
+        }
     }
 }
