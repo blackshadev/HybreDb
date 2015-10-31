@@ -16,6 +16,7 @@ namespace HybreDb.Relational {
             }
         }
 
+       
         public UndirectedRelation(string name, Table src, Table dest, DataColumn[] attrs) : base(name, src, dest) {
             var cols = new DataColumn[attrs.Length + 3];
             Array.Copy(attrs, 0, cols, 3, attrs.Length);
@@ -46,9 +47,34 @@ namespace HybreDb.Relational {
             Table.Insert(d);
         }
 
+        #region accessors
+        public override Numbers this[Number a, Number b] {
+            get {
+                var pair = new OrderedNumberPair(a, b);
+                return Table.FindKeys(new KeyValuePair<string, object>(".rel", pair));
+            }
+        }
+
+
         public override DataRow Get(Number a, Number b) {
             var nums = new OrderedNumberPair(a, b);
             return Table.FindRows(new KeyValuePair<string, object>(".rel", nums)).First();
         }
+
+        public override Numbers GetSource(Number num) {
+            var nums = new Numbers();
+            nums.Add(Table.FindKeys(new KeyValuePair<string, object>(".rel.src", num)));
+            nums.Add(Table.FindKeys(new KeyValuePair<string, object>(".rel.dest", num)));
+            return nums;
+        }
+
+        public override Numbers GetDestination(Number num) {
+            var nums = new Numbers();
+            nums.Add(Table.FindKeys(new KeyValuePair<string, object>(".rel.src", num)));
+            nums.Add(Table.FindKeys(new KeyValuePair<string, object>(".rel.dest", num)));
+            return nums;
+        }
+
+        #endregion
     }
 }

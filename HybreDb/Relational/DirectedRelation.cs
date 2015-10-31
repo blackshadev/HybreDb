@@ -16,6 +16,7 @@ namespace HybreDb.Relational {
 
         public override RelationType RelationType { get { return RelationType.DirectedRelation; } }
 
+        
         /// <summary>
         ///     Creates a new relation between given tables
         /// </summary>
@@ -58,6 +59,8 @@ namespace HybreDb.Relational {
             Table.Insert(d);
         }
 
+        #region accessors
+
         /// <summary>
         ///     Gets the relation data of the relation between two given records
         /// </summary>
@@ -68,6 +71,24 @@ namespace HybreDb.Relational {
 
             return Table.FindRows(new KeyValuePair<string, object>(".rel", nums)).First();
         }
+
+        public override Numbers this[Number a, Number b] {
+            get {
+                var pair = new NumberPair(a, b);
+                return Table.FindKeys(new KeyValuePair<string, object>(".rel", pair));
+            }
+        }
+
+
+        public override Numbers GetSource(Number num) {
+            return Table.FindKeys(new KeyValuePair<string, object>(".rel.src", num));
+        }
+
+        public override Numbers GetDestination(Number num) {
+            return Table.FindKeys(new KeyValuePair<string, object>(".rel.dest", num));
+        }
+
+        #endregion
 
     }
 }

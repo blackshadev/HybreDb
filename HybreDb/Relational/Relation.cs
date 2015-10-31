@@ -143,10 +143,21 @@ namespace HybreDb.Relational {
         }
         #endregion
 
-        public abstract void Add(Number a, Number b, IDataType[] dat);
+        #region Accessors
+        public abstract Numbers this[Number a, Number b] { get; }
+
+        public abstract Numbers GetSource(Number num);
+        public abstract Numbers GetDestination(Number num);
+
 
         // TODO why does this return one datarow instead of multiple?
+        // Only used in tests, this should be changed
         public abstract DataRow Get(Number a, Number b);
+        #endregion
+
+        public abstract void Add(Number a, Number b, IDataType[] dat);
+
+        
 
 
 
