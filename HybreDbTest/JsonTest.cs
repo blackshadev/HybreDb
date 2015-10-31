@@ -7,6 +7,7 @@ using HybreDb.Actions;
 using HybreDb.Tables;
 using Newtonsoft.Json;
 using NUnit.Framework;
+using System.Threading;
 
 namespace HybreDbTest {
     public class JsonTest {
@@ -140,6 +141,8 @@ namespace HybreDbTest {
             var hybre = new HybreDb.HybreDb("SocketServerTest", 4242, true);
             TestData(hybre.Database);
             hybre.Start();
+
+            Thread.Sleep(500);
 
             string resp = SendAndReceive(strJson7);
             Console.WriteLine(resp);
