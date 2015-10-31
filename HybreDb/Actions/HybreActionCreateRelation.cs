@@ -27,9 +27,11 @@ namespace HybreDb.Actions {
         public string Source;
 
         public HybreResult Execute(Database db) {
-            Relation rel = db.NewRelation(RelationName, Source, Destination, Attributes);
+            Relation rel = db.NewRelation(RelationName, Source, Destination, Attributes, RelationType);
 
-            var data = new IDataType[Data.Length][];
+            int len = Data != null ? Data.Length : 0;
+
+            var data = new IDataType[len][];
 
             for (int i = 0; i < data.Length; i++)
                 data[i] = HybreAction.ParseDataWithRel(rel, Data[i]);
